@@ -7,7 +7,7 @@ module.exports = {
 
         if (!this._sequelize) {
 
-            this._sequelize = new Sequelize(config.db_connection_string, config.db_username, config.db_password, {
+            this._sequelize = new Sequelize(config.db_connection_string, {
                 pool: {
                     max: config.db_pool_max,
                     min: config.db_pool_min,

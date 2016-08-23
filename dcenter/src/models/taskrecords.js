@@ -1,7 +1,7 @@
 var Sequelize = require("sequelize");
 var db = require('../libs/db');
 
-var model_decl = ["tasks", {
+var model_decl = ["taskrecords", {
 
     // GUID
     id: { type: Sequelize.STRING, allowNull: false, primaryKey: true },
@@ -28,10 +28,10 @@ var model_decl = ["tasks", {
     target: { type: Sequelize.STRING, allowNull: false, defaultValue: ''},
 
     // 开始时间
-    stime: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0},
+    stime: { type: Sequelize.BIGINT(13), allowNull: false, defaultValue: 0},
 
     // 结束时间
-    etime: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0},
+    etime: { type: Sequelize.BIGINT(13), allowNull: false, defaultValue: 0},
 
     // 进度
     progress: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0},

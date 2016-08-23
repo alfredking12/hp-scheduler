@@ -1,9 +1,18 @@
 module.exports = {
-    ok: function(data, req, res, next) {
-        res.send({
+    ok: function(req, res, next, data) {
+        var msg = {
             ret: 0, 
-            msg: "success",
-            data: data 
+            msg: "success"
+        };
+        if (data) msg.data = data;
+        res.send(msg);
+        next();
+    },
+    
+    fail: function(req, res, next, msg, code) {
+        res.send({
+            ret: code || 1, 
+            msg: msg
         });
         next();
     }

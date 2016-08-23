@@ -1,7 +1,7 @@
 var Sequelize = require("sequelize");
 var db = require('../libs/db');
 
-var model_decl = ["tasks", {
+var model_decl = ["tasklogs", {
 
     // 自增ID
     id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
@@ -10,7 +10,7 @@ var model_decl = ["tasks", {
     taskrecord_id: { type: Sequelize.STRING, allowNull: false },
 
     // 时间
-    time: { type: Sequelize.INTEGER, allowNull: false},
+    time: { type: Sequelize.BIGINT(13), allowNull: false},
 
     // 日志消息
     message: {type: Sequelize.STRING, allowNull: false, defaultValue: ''},

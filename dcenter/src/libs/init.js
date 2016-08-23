@@ -10,7 +10,7 @@ module.exports = {
         Tasks.define();
         TaskLogs.define();
         TaskRecords.define();
-        db.sync({force: false});
+        db.sync({force: true});
     },
 
     reset: function() {

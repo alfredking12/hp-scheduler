@@ -1,0 +1,46 @@
+{
+    "ret": 0,
+    "msg": "success",
+    "data": [{
+        "id": "1",
+        "task_id": "1",
+        "name": "5分钟未付款订单自动取消",
+        "detail": "5分钟未付款订单自动取消",
+        "trigger_code": "AXV031A4",
+        "param": "123",
+        "stime": 1234,
+        "etime": 1234,
+        "progress ": 0,
+        "status": 0
+    },{
+        "id": "2",
+        "task_id": "2",
+        "name": "订单已发货发送通知消息",
+        "detail": "订单已发货发送通知消息",
+        "trigger_code": "AXV031A5",
+        "stime": 1234,
+        "etime": 1234,
+        "progress ": 50,
+        "target": 1
+    },{
+        "id": "3",
+        "task_id": "3",
+        "name": "订单已发货发送通知消息",
+        "detail": "订单已发货发送通知消息",
+        "trigger_code": "AXV031A5",
+        "stime": 1234,
+        "etime": 1234,
+        "progress ": 100,
+        "target": 2
+    },{
+        "id": "4",
+        "task_id": "4",
+        "name": "订单已发货发送通知消息",
+        "detail": "订单已发货发送通知消息",
+        "trigger_code": "AXV031A5",
+        "stime": 1234,
+        "etime": 1234,
+        "progress ": 50,
+        "target": 3
+    }]
+}

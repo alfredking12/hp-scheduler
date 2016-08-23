@@ -1,0 +1,22 @@
+{
+  "name": "dcenter",
+  "version": "0.0.1",
+  "description": "dispatcher center",
+  "main": "app.js",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alfredking12/hp-scheduler.git/dcenter"
+  },
+  "keywords": [
+    "schedule"
+  ],
+  "author": "alfredking12",
+  "license": "MIT"
+}

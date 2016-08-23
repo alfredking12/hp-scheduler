@@ -1,0 +1,14 @@
+{
+    "ret": 0,
+    "msg": "success",
+    "data": {
+        "id": "3",
+        "name": "轮询间隔5分钟触发",
+        "code": "AXV0B1A5",
+        "stime": 1422342342343,
+        "etime": 1422348342343,
+        "repeat": 0,
+        "type": 0,
+        "value": "300"
+    }
+}

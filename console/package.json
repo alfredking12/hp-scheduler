@@ -1,0 +1,18 @@
+{
+  "name": "console",
+  "version": "0.0.1",
+  "description": "hp-scheduler web console, admin hp-scheduler",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alfredking12/hp-scheduler.git/console"
+  },
+  "keywords": [
+    "schedule"
+  ],
+  "author": "alfredking12",
+  "license": "MIT"
+}

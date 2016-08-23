@@ -1,0 +1,7 @@
+{
+    "detail": "5分钟未付款订单自动取消",
+    "trigger_code": "AXV031A4",
+    "param": "13",
+    "type": 0,
+    "target": "order_auto_cancel"
+}

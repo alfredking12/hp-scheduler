@@ -1,0 +1,67 @@
+{
+    "ret": 0,
+    "msg": "success",
+    "data": [{
+        "id": "1",
+        "taskrecord_id": "1",
+        "name": "5分钟未付款订单自动取消",
+        "time": 1481234123412,
+        "message": "开始执行",
+        "progress": 0
+    },{
+        "id": "2",
+        "taskrecord_id": "1",
+        "name": "5分钟未付款订单自动取消",
+        "time": 1481234123412,
+        "message": "执行...",
+        "progress": 50
+    },{
+        "id": "3",
+        "taskrecord_id": "1",
+        "name": "5分钟未付款订单自动取消",
+        "time": 1481234123412,
+        "message": "执行完成",
+        "progress": 100
+    },{
+        "id": "1",
+        "taskrecord_id": "2",
+        "name": "5分钟未付款订单自动取消",
+        "time": 1481234123412,
+        "message": "开始执行",
+        "progress": 0
+    },{
+        "id": "1",
+        "taskrecord_id": "2",
+        "name": "5分钟未付款订单自动取消",
+        "time": 1481234123412,
+        "message": "调试信息"
+    },{
+        "id": "1",
+        "taskrecord_id": "2",
+        "name": "5分钟未付款订单自动取消",
+        "time": 1481234123412,
+        "message": "执行失败",
+        "progress": -1
+    },{
+        "id": "1",
+        "taskrecord_id": "3",
+        "name": "5分钟未付款订单自动取消",
+        "time": 1481234123412,
+        "message": "开始执行",
+        "progress": 0
+    },{
+        "id": "1",
+        "taskrecord_id": "3",
+        "name": "5分钟未付款订单自动取消",
+        "time": 1481234123412,
+        "message": "执行...",
+        "progress": 50
+    },{
+        "id": "1",
+        "taskrecord_id": "3",
+        "name": "5分钟未付款订单自动取消",
+        "time": 1481234123412,
+        "message": "执行完成",
+        "progress": 100
+    }]
+}

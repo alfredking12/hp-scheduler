@@ -1,0 +1,20 @@
+{
+    "ret": 0,
+    "msg": "success",
+    "data": [{
+        "id": "1",
+        "name": "5分钟未付款订单自动取消",
+        "detail": "5分钟未付款订单自动取消",
+        "trigger_code": "AXV031A4",
+        "param": "123",
+        "type": 0,
+        "target": "order_auto_cancel"
+    },{
+        "id": "2",
+        "name": "订单已发货发送通知消息",
+        "detail": "订单已发货发送通知消息",
+        "trigger_code": "AXV031A5",
+        "type": 0,
+        "target": "order_deliver_notify"
+    }]
+}

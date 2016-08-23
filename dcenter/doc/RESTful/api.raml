@@ -1,0 +1,166 @@
+#%RAML 0.8
+title: 分布式任务调度中心
+baseUri: http://{env}.myhopin.com/dcenter
+mediaType: application/json
+baseUriParameters:
+  env:
+    description: 环境标识
+    
+
+# 触发器管理
+
+/triggers:
+    description: 触发器管理
+    get:
+        description: 查询触发器列表
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: !include examples/triggers_get_response.json
+    post:
+        description: 新建任务
+        body:
+            application/json:
+                example: !include examples/triggers_add_request.json
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: !include examples/triggers_add_response.json
+    /{id}:
+        get:
+            description: 根据触发器主键查询触发器详情
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: !include examples/triggers_item_get_response.json
+        put:
+            description: 更新触发器设置
+            body:
+                application/json:
+                    example: !include examples/triggers_item_put_request.json
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: !include examples/triggers_item_put_response.json
+        delete:
+            description: 删除触发器
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: !include examples/triggers_item_delete_response.json
+
+    /code/{code}:
+        get:
+            description: 根据触发器标识查询触发器详情
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: !include examples/triggers_item_get_response.json
+
+
+
+# 任务管理
+
+/tasks:
+    description: 任务管理
+    get:
+        description: 查询任务列表
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: !include examples/tasks_get_response.json
+    post:
+        description: 新建任务
+        body:
+            application/json:
+                example: !include examples/tasks_add_request.json
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: !include examples/tasks_add_response.json
+    /{id}:
+        get:
+            description: 查询任务详情
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: !include examples/tasks_item_get_response.json
+        put:
+            description: 更新任务设置
+            body:
+                application/json:
+                    example: !include examples/tasks_item_put_request.json
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: !include examples/tasks_item_put_response.json
+        delete:
+            description: 删除任务
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: !include examples/tasks_item_delete_response.json
+
+# 任务流水
+/taskrecords:
+    description: 任务流水
+    get:
+        description: 查询任务流水列表
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: !include examples/taskrecords_get_response.json
+    /{id}:
+        get:
+            description: 查询任务流水详情
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: !include examples/taskrecords_item_get_response.json
+
+# 任务日志
+/tasklogs:
+    description: 任务日志
+    get:
+        description: 查询任务日志列表
+        queryParameters:
+            stime:
+                description: 开始时间(13位时间戳)
+                type: integer
+            etime:
+                description: 结束时间(13位时间戳)
+                type: integer
+            key:
+                description: 关键字模糊查询
+                type: string
+            page:
+                description: 查询第几页数据
+                type: integer
+                required: true
+                example: 1
+            per_page:
+                description: 查询一页数据的条数
+                type: integer
+                minimum: 10
+                maximum: 200
+                default: 30
+                example: 50
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: !include examples/tasklogs_get_response.json
+

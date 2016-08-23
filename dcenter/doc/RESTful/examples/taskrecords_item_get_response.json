@@ -1,0 +1,16 @@
+{
+    "ret": 0,
+    "msg": "success",
+    "data": {
+        "id": "1",
+        "task_id": "1",
+        "name": "5分钟未付款订单自动取消",
+        "detail": "5分钟未付款订单自动取消",
+        "trigger_code": "AXV031A4",
+        "param": "123",
+        "stime": 1234,
+        "etime": 1234,
+        "progress ": 0,
+        "status": 0
+    }
+}

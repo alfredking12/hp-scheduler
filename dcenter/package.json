@@ -18,5 +18,14 @@
     "schedule"
   ],
   "author": "alfredking12",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.0.1",
+    "moment": "^2.14.1",
+    "mysql": "^2.11.1",
+    "node-schedule": "^1.1.1",
+    "node-uuid": "^1.4.7",
+    "restify": "^4.1.1",
+    "sequelize": "^3.24.1"
+  }
 }

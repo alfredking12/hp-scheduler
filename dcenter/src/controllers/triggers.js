@@ -1,5 +1,6 @@
 var Triggers = require('../models/triggers');
 var util = require('../libs/util');
+var scheduler = require('../libs/scheduler');
 
 module.exports = {
 
@@ -19,10 +20,20 @@ module.exports = {
     addItem: function (req, res, next) {
         var data = req.body;
 
+        //TODO: v0.0.2 重复次数（需删除）        
+        if (data.repeat !== undefined)
+            delete data.repeat;
+
+        if (!scheduler.validate(data)) {
+            util.fail(req, res, next, "触发器设置参数不正确");
+            return;
+        }
+
         Triggers.define()
             .create(data)
             .then(function (data) {
                 util.ok(req, res, next, data);
+                scheduler.add(data);
             })
             .catch(next);
     },
@@ -44,11 +55,10 @@ module.exports = {
 
     //更新触发器
     updateItem: function (req, res, next) {
+
         var id = req.params.id;
         var data = req.body;
         
-        console.log("update", {id: id, data: data});
-
         if (data.id !== undefined)
             delete data.id;
 
@@ -57,6 +67,17 @@ module.exports = {
 
         if (data.code !== undefined)
             delete data.code;
+
+        //TODO: v0.0.2 重复次数（需删除）        
+        if (data.repeat !== undefined)
+            delete data.repeat;
+
+        if ((data.type !== null && data.type !== undefined) || (data.value !== null && data.value !== undefined)) {
+            if (!scheduler.validate(data)) {
+                util.fail(req, res, next, "触发器设置参数不正确");
+                return;
+            }
+        }
 
         var TriggerModel = Triggers.define();
         TriggerModel
@@ -73,6 +94,7 @@ module.exports = {
             })
             .then(function (data) {
                 util.ok(req, res, next, data);
+                scheduler.update(data);
             })
             .catch(next);
     },
@@ -89,6 +111,7 @@ module.exports = {
             })
             .then(function (count) {
                 util.ok(req, res, next);
+                scheduler.remove(data);
             })
             .catch(next);
     },

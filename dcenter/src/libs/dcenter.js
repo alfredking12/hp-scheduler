@@ -1,9 +1,16 @@
 var restify = require('restify');
 var Log = require('./log.js');
 var ReqCtx = require('./reqctx.js');
-var ReqCtx = require('./reqctx.js');
 
-module.exports = {
+var db = require('../libs/db');
+var Triggers = require('../models/triggers');
+var TaskLogs = require('../models/tasklogs');
+var Tasks = require('../models/tasks');
+var TaskRecords = require('../models/taskrecords');
+
+var scheduler = require('./scheduler');
+
+var dcenter = {
 
     createServer: function () {
 
@@ -32,11 +39,51 @@ module.exports = {
             }
         }
 
-        require('../libs/init').init();
+        dcenter.init();
 
         return server;
+    },
+
+    init: function() {
+        var TriggerModel = Triggers.define();
+        Tasks.define();
+        TaskLogs.define();
+        TaskRecords.define();
+        db.sync({force: false});
+
+        // scheduler.add({
+        //     id: "",
+        //     name: "轮询间隔5分钟触发",
+        //     code: "AXV0B1A5",
+        //     stime: 0,
+        //     etime: 0,
+        //     //TODO: v0.0.2 重复次数
+        //     //repeat: 0,
+        //     type: 1,
+        //     value: "*/3 * * * * *"
+        // });
+
+        TriggerModel
+            .findAll()
+            .then(function(data){
+                scheduler.init(data);
+            })
+            .catch(function(err){
+                Log.e(err);
+                process.exit(1);
+            });
+    },
+
+    reset: function() {
+        Triggers.define();
+        Tasks.define();
+        TaskLogs.define();
+        TaskRecords.define();
+        db.sync({force: true});
     }
 }
+
+module.exports = dcenter;
 
 function api_exit(req, res, body, next) {
     Log.log_exist(req, body);

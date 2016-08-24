@@ -6,13 +6,13 @@
 curl http://localhost:9001/triggers
 
 # 新建触发器
-curl -H "Content-Type: application/json" -X POST -d '{"name": "轮询间隔5分钟触发","code": "AXV0B1A5","stime": 1422342342343,"etime": 1422348342343,"repeat": 0,"type": 0,"value": "300"}' http://localhost:9001/triggers
+curl -H "Content-Type: application/json" -X POST -d '{"name": "轮询间隔5分钟触发","code": "AXV0B1A5","stime": 1472020095370,"etime": 1472020895370,"repeat": 0,"type": 0,"value": "300"}' http://localhost:9001/triggers
 
 # 触发器详情
 curl http://localhost:9001/triggers/1
 
 # 修改触发器
-curl -H "Content-Type: application/json" -X PUT -d '{"name": "轮询间隔5分钟触发","code": "AXV0B1A5","stime": 1422888882343,"etime": 1422999992343,"repeat": 0,"type": 0,"value": "300"}' http://localhost:9001/triggers/1
+curl -H "Content-Type: application/json" -X PUT -d '{"name": "轮询间隔5分钟触发","code": "AXV0B1A5","stime": 1472020495370,"etime": 1472021295370,"repeat": 0,"type": 0,"value": "300"}' http://localhost:9001/triggers/1
 
 # 触发器详情(标识)
 curl http://localhost:9001/triggers/code/AXV0B1A5

@@ -133,8 +133,7 @@ var Log = {
                 item.log = arg1;
             } else {
                 if (arg1 && arg1.ctx) {
-                    //TODO: 参数不正确
-                    return;
+                    throw new Errpr("参数不正确");
                 } else if (arg1 instanceof Error) {
                     item.err = arg1;
                 } else {
@@ -156,8 +155,7 @@ var Log = {
                     item.msg = arg1;
                     item.err = arg2;
                 } else {
-                    //TODO: 参数不正确
-                    return;
+                    throw new Errpr("参数不正确");
                 }
 
             }
@@ -170,12 +168,10 @@ var Log = {
                 item.msg = arg2;
                 item.err = arg3;
             } else {
-                //TODO: 参数不正确
-                return;
+                throw new Errpr("参数不正确");
             }
         } else {
-            //TODO: 参数不正确
-            return;
+            throw new Errpr("参数不正确");
         }
 
         if (item.log) {

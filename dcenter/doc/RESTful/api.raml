@@ -111,7 +111,30 @@ baseUriParameters:
                     body:
                         application/json:
                             example: !include examples/tasks_item_delete_response.json
-
+    /disable/{id}:
+        put:
+            description: 禁用任务
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: !include examples/tasks_item_disable_response.json
+    /enable/{id}:
+        put:
+            description: 启用任务
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: !include examples/tasks_item_enable_response.json
+    /run_once/{id}:
+        post:
+            description: 启用任务
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: !include examples/tasks_item_run_once_response.json
 # 任务流水
 /taskrecords:
     description: 任务流水

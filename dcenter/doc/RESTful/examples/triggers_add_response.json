@@ -7,7 +7,8 @@
         "code": "AXV0B1A5",
         "stime": 1422342342343,
         "etime": 1422348342343,
-        "repeat": 0,
+        //TODO: v0.0.2 重复次数
+        //"repeat": 0,
         "type": 0,
         "value": "300"
     }

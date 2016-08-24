@@ -6,13 +6,11 @@ var model_decl = ["triggers", {
     // 自增ID
     id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
 
-    // TODO: 唯一
     // 触发器名称
-    name: {type: Sequelize.STRING, allowNull: false},
+    name: {type: Sequelize.STRING, allowNull: false, unique: true},
 
-    // TODO: 唯一
     // 触发器标识
-    code: {type: Sequelize.STRING, allowNull: false},
+    code: {type: Sequelize.STRING, allowNull: false, unique: true},
 
     // 开始时间
     stime: { type: Sequelize.BIGINT(13), allowNull: false, defaultValue: 0},

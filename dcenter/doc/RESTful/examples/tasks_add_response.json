@@ -8,6 +8,7 @@
         "trigger_code": "AXV031A4",
         "param": "123",
         "type": 0,
-        "target": "order_auto_cancel"
+        "target": "order_auto_cancel",
+        "disable": 0
     }
 }

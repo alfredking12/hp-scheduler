@@ -6,9 +6,8 @@ var model_decl = ["tasks", {
     // 自增ID
     id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
 
-    // TODO: 唯一
     // 任务名称
-    name: {type: Sequelize.STRING, allowNull: false},
+    name: {type: Sequelize.STRING, allowNull: false, unique: true},
 
     // 任务描述
     detail: {type: Sequelize.STRING, allowNull: false, defaultValue: ''},

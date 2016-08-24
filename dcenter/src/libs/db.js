@@ -22,5 +22,11 @@ module.exports = {
 
     sync: function(options) {
         this.sequelize().sync(options);
+    },
+
+    select: function(sql, options) {
+        options = options || {};
+        options.type = sequelize.QueryTypes.SELECT;
+        return this.sequelize().query(sql, options);
     }
 }

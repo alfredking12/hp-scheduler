@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alfredking12/hp-scheduler.git/dcenter"
+    "url": "https://github.com/alfredking12/hp-scheduler/tree/master/dcenter"
   },
   "keywords": [
     "schedule"

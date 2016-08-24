@@ -10,6 +10,8 @@ var TaskRecords = require('../models/taskrecords');
 
 var scheduler = require('./scheduler');
 
+var MQ = require('./mq');
+
 var dcenter = {
 
     createServer: function () {
@@ -50,6 +52,29 @@ var dcenter = {
         TaskLogs.define();
         TaskRecords.define();
         db.sync({force: false});
+
+        var i = 0;
+        setInterval(function(){
+            if (i > 100) return;            
+            MQ.send("demo", [JSON.stringify({
+                taskid: '41b572eb-b221-4dc0-9da9-7ff91c5c3824' + (i++)
+            })]);
+        }, 3000);
+
+        MQ.recv("__dispatcher_center_callback", function(msg) {
+
+            //TODO: 写入TaskLogs
+            //TODO: 更新任务记录状态
+
+            /*
+                var data = JSON.parse(msg);
+                data.taskid;
+                data.message;
+                data.time;
+                data.progress;
+            */
+        });
+
 
         // scheduler.add({
         //     id: "",

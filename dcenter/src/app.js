@@ -2,9 +2,10 @@
 var dcenter = require('./libs/dcenter.js');
 var Log = require('./libs/log.js');
 
-process.on('uncaughtException', function(err) {
-    Log.e('### UncaughtException:' + err.stack);
-});
+
+// process.on('uncaughtException', function(err) {
+//     Log.e('### UncaughtException:' + err.stack);
+// });
 
 var server = dcenter.createServer(
     require('./routers/tasks'),

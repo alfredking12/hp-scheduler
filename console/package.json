@@ -8,11 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alfredking12/hp-scheduler.git/console"
+    "url": "https://github.com/alfredking12/hp-scheduler/tree/master/console"
   },
   "keywords": [
     "schedule"
   ],
   "author": "alfredking12",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "material-ui": "^0.15.4"
+  }
 }

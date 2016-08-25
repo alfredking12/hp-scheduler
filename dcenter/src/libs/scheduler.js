@@ -1,6 +1,17 @@
 var schedule = require('node-schedule');
 var parser = require('cron-parser');
+
+// DB Models
+var Triggers = require('../models/triggers');
+var TaskLogs = require('../models/tasklogs');
 var Tasks = require('../models/tasks');
+var TaskRecords = require('../models/taskrecords');
+
+// MQ
+var MQ = require('./mq');
+
+// LIB
+var db = require('./db');
 var Log = require('./log');
 
 function scheduler() {
@@ -8,12 +19,145 @@ function scheduler() {
         return new TaskCenter();
     }
     
+    var _this = this;
+
     this.triggers = {};
 
-    this.init = function(triggers) {
-        for (var i=0;i<triggers.length;i++) {
-            this.add(triggers[i]);
-        }
+    this.initTriggers = function() {
+        Triggers.define()
+            .findAll()
+            .then(function(data){
+                for (var i=0;i<data.length;i++) {
+                    _this.add(data[i]);
+                }
+            })
+            .catch(function(err){
+                Log.e(err);
+                process.exit(1);
+            });
+    }
+
+    this.init = function() {
+
+        // var i = 0;
+        // setInterval(function(){
+        //     if (i > 100) return;            
+        //     MQ.send("demo", [JSON.stringify({
+        //         taskid: '41b572eb-b221-4dc0-9da9-7ff91c5c3824' + (i++)
+        //     })]);
+        // }, 3000);
+
+        // scheduler.add({
+        //     id: "",
+        //     name: "轮询间隔5分钟触发",
+        //     code: "AXV0B1A5",
+        //     stime: 0,
+        //     etime: 0,
+        //     //TODO: v0.0.2 重复次数
+        //     //repeat: 0,
+        //     type: 1,
+        //     value: "*/3 * * * * *"
+        // });
+
+        Triggers.define();
+        Tasks.define();
+        TaskLogs.define();
+        TaskRecords.define();
+        db.sync({force: false});
+        
+        this.listenLogs();
+        this.initTriggers();        
+    },
+
+    this.listenLogs = function() {
+
+        MQ.recv("__dispatcher_center_callback", function(msg) {
+            var data = JSON.parse(msg);
+
+            if (!data.taskid || !data.time) {
+                Log.e('日志参数错误:' + msg);
+                return;
+            }
+
+            var taskid = data.taskid;
+
+            var log = {
+                taskrecord_id: data.taskid,
+                time: data.time,
+                message: data.message,
+                progress: data.progress
+            };
+
+
+            // 写入TaskLogs
+            TaskLogs.define().create(log)
+                .then(function(data){
+                })
+                .catch(function(err){
+                    Log.f('写入日志数据失败:' + JSON.stringify(log), err);
+                });
+
+            var TaskRecordModel = TaskRecords.define();
+            TaskRecordModel.findById(taskid)
+                .then(function(data){
+
+                    //日志顺序颠倒，忽略
+                    if (data.status === 2 || data.status === 3 || data.status === 4) {
+                        return;
+                    }
+                    
+                    var item = {};
+
+                    if (!data.stime) {
+                        item.stime = log.time;
+                    }
+
+                    if (!data.etime) {
+                        item.etime = log.time;
+                    } else {
+                        //日志顺序颠倒，忽略
+                        if (data.etime > log.time) {
+                            return;
+                        }
+                    }
+
+                    item.progress = log.progress;
+                    if (item.progress === undefined) item.process = null;
+
+                    if (data.progress !== null && item.progress !== null) {
+
+                        if (progress < 0) {
+                            progress = -1;
+                        } else if (progress > 100) {
+                            progress = 100;
+                        }
+
+                        //日志顺序颠倒，忽略
+
+                        if (data.progress > progress) {
+                            return;
+                        }
+                    }
+
+                    if (item.progress === -1) {
+                        item.status = 3;
+                    } else if (item.progress === 100) {
+                        item.status = 2;
+                    } else {
+                        item.status = 1;
+                    }
+
+                    // 更新任务记录状态
+                    return TaskRecordModel.update(item, {where: {id: taskid}});
+                })
+                .then(function(data){
+                })
+                .catch(function(err){
+                    Log.f("更新任务记录状态失败", err);
+                });
+
+        });
+
     }
 
     this.update = function(trigger) {
@@ -69,14 +213,12 @@ function scheduler() {
             try {
                 var interval = parseInt(trigger.value);
             } catch (error) {
-                Log.e(error);
                 return false;
             }
         } else {
             try {
                 var interval = parser.parseExpression(trigger.value);
             } catch (error) {
-                Log.e(error);
                 return false;
             }
         }
@@ -203,7 +345,7 @@ function scheduler() {
                     }
                 }
                 else {
-                    Log.d("SCHEDULER::: " + JSON.stringify(trigger));
+                    Log.d("SCHEDULER:::EMPTY::: " + JSON.stringify(trigger));
                 }
             })
             .catch(function(err){
@@ -237,8 +379,34 @@ function scheduler() {
     }
 
     this.run = function(task) {
-        //TODO:
-        Log.i("SCHEDULER::: " + JSON.stringify(trigger));
+        //Log.i("SCHEDULER::: " + JSON.stringify(task)); return ;
+        
+        var data = {
+            task_id: task.id,
+            name: task.name,
+            detail: task.detail || '',
+            param: task.param || '',
+            trigger_code: task.trigger_code,
+            type: task.type,
+            target: task.target
+        }
+
+        // 插入一条任务记录
+        TaskRecords
+            .define()
+            .create(data)
+            .then(function(data){
+                MQ.send(task.target, JSON.stringify({
+                    task_id: data.id,
+                    param: data.param || ''
+                }), function(err){
+                    if (err)
+                        Log.f("发送任务消息失败:" + task.name + ", recordId:" + data.id, err);
+                });
+            })
+            .catch(function(err){
+                Log.f("触发任务失败:" + task.name, err);                
+            });
     }
 }
 

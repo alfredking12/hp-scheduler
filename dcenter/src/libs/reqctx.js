@@ -8,7 +8,7 @@ var ReqCtx = {
 
         if (req) {
             this.id = uuid.v4();
-            this.name = req.url;
+            this.name = req.method + " " + req.url;
             this.stime = new Date().getTime();
         }
     },

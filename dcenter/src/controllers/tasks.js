@@ -8,41 +8,11 @@ module.exports = {
 
     getList: function(req,res,next) {
 
-        //var promise = db.select("select Tasks.id, Tasks.name, Tasks.disable, Tasks.trigger_code, Triggers.type, Triggers.value, Triggers.stime, Triggers.etime, Triggers.repeat from Tasks join Triggers on Tasks.triggers_code = Triggers.code order by Tasks.updatedAt DESC", {});
-        var promise = Tasks.define().findAll({order: [ ['updatedAt', 'DESC'] ]});
-
-        promise.then(function (data) {
-                var ret = [];
-                for (var i=0;i<data.length;i++) {
-                    var item = data[i];
-
-                    var task = {
-                        id: item.id,
-                        name: item.name,
-                        trigger_code: item.trigger_code,
-                        disable: item.disable,
-                    };
-
-                    //TODO: v0.0.2 任务状态
-                    // var trigger = {
-                    //     type: item.type,
-                    //     value: item.value,
-                    //     stime: item.stime,
-                    //     etime: item.etime,
-                    //     repeat: item.repeat,
-                    // }
-
-                    var obj = {
-                        id: item.id,
-                        name: item.name,
-                        trigger_code: item.trigger_code,
-                        //TODO: v0.0.2 任务状态
-                        status: "",
-                        disable: item.disable
-                    };
-                    ret.push(obj);
-                }
-                util.ok(req, res, next, ret);
+        Tasks
+            .define()
+            .findAll({order: [ ['updatedAt', 'DESC'] ]})
+            .then(function (data) {
+                util.ok(req, res, next, data);
             }).catch(next);
     },
 

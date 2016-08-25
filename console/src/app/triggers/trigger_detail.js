@@ -418,14 +418,14 @@ class TriggerCreate extends TriggerDetail {
         var start = this.merge(this.state.data.start_date, this.state.data.start_time);
         var end = this.merge(this.state.data.end_date, this.state.data.end_time);
 
-        if (!end) {
+        if (end) {
 
             if (end.getTime() <= new Date().getTime()) {
                 this.showAlert('错误提示', '结束时间必须大于当前时间');
                 return;
             }
 
-            if (!start && start.getTime() >= end.getTime()) {
+            if (start && start.getTime() >= end.getTime()) {
                 this.showAlert('错误提示', '结束时间必须大于开始时间');
                 return;
             }
@@ -434,9 +434,10 @@ class TriggerCreate extends TriggerDetail {
         var data = {
             name: this.state.data.name,
             code: this.state.data.code,
-            stime: start ? start.getTime() : null,
-            etime: end ? end.getTime() : null,
-            value: this.state.data.value
+            stime: start ? start.getTime() : undefined,
+            etime: end ? end.getTime() : undefined,
+            value: parseInt(this.state.data.value),
+            type: parseInt(this.state.data.type || 0)
         };
 
         this._submit(data);

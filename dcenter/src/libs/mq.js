@@ -4,7 +4,7 @@ var Log = require('./log');
 
 var MQ = {
 
-    send: function(routeKey, msgs) {
+    send: function(routeKey, msgs, cb) {
         if (!Array.isArray(msgs)) {
             msgs = [msgs];
         }
@@ -13,6 +13,7 @@ var MQ = {
             
             if (err) {
                 Log.i("send: 连接MQ失败");
+                cb && cb(err);
                 return ;
             }
 
@@ -23,6 +24,7 @@ var MQ = {
                 if (err) {
                     Log.i("send: 连接管道失败");
                     conn.close();
+                    cb && cb(err);
                     return ;
                 }
 
@@ -36,6 +38,7 @@ var MQ = {
                     Log.i(" [x] Sent " + msg);
                 }
 
+                cb && cb();
                 //conn.close();
             });
         });

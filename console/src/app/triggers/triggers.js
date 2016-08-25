@@ -2,13 +2,31 @@ import React from 'react';
 import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import BaseComponent from '../libs/BaseComponent';
 import Paper from 'material-ui/Paper';
-
-import TriggerDetail from './trigger_detail';
+import IconButton from 'material-ui/IconButton';
+import ActionEdit from 'material-ui/svg-icons/editor/mode-edit';
 
 import request from 'superagent/lib/client';
 
+import BaseComponent from '../libs/BaseComponent';
+
+import TriggerDetail from './trigger_detail';
+
+
+
+const styles = {
+    smallIcon: {
+        width: 18,
+        height: 18,
+    },
+    small: {
+        float: 'right',
+        marginRight: 0,
+        width: 72,
+        height: 24,
+        padding: 0,
+    },
+}
 
 const TriggerOpts = {
     None: -1,
@@ -175,6 +193,8 @@ export default class Triggers extends BaseComponent {
 
     render() {
 
+        var _this = this;
+
         const getTable = () => {
             if (this.state.data.length == 0)
                 return null;
@@ -192,6 +212,7 @@ export default class Triggers extends BaseComponent {
                         height={this.state.height}
                         fixedHeader={this.state.fixedHeader}
                         fixedFooter={this.state.fixedFooter}
+                        selectable={false}
                         >
                         <TableHeader
                             displaySelectAll={false}
@@ -202,7 +223,7 @@ export default class Triggers extends BaseComponent {
                                 <TableHeaderColumn>触发器名称</TableHeaderColumn>
                                 <TableHeaderColumn>触发器类型</TableHeaderColumn>
                                 <TableHeaderColumn>触发器标识</TableHeaderColumn>
-                                <TableHeaderColumn>操作</TableHeaderColumn>
+                                <TableHeaderColumn style={{textAlign: 'right', paddingRight: '48px'}}>操作</TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
                         <TableBody
@@ -211,24 +232,31 @@ export default class Triggers extends BaseComponent {
                             stripedRows={this.state.stripedRows}
                             >
                             {this.state.data.map((row, index) => (
-                                <TableRow key={index}>
-                                    <TableRowColumn>{row.index}</TableRowColumn>
-                                    <TableRowColumn>{row.name}</TableRowColumn>
-                                    <TableRowColumn>{row.status}</TableRowColumn>
-                                    <TableRowColumn>{row.status}</TableRowColumn>
-                                    <TableRowColumn>
-                                        
+                                <TableRow
+                                    key={index}
+                                    style={{height: '28px'}}
+                                    >
+                                    <TableRowColumn
+                                    style={{height: '28px'}}>{index + 1}</TableRowColumn>
+                                    <TableRowColumn
+                                    style={{height: '28px'}}>{row.name}</TableRowColumn>
+                                    <TableRowColumn
+                                    style={{height: '28px'}}>{row.type == 0 ? '普通触发器' : 'Cron触发器'}</TableRowColumn>
+                                    <TableRowColumn
+                                    style={{height: '28px'}}>{row.code}</TableRowColumn>
+                                    <TableRowColumn
+                                    style={{height: '28px'}}>
+                                        <IconButton
+                                            iconStyle={styles.smallIcon}
+                                            style={styles.small}
+                                            onTouchTap={_this.handleEdit.bind(_this, row)} 
+                                            >
+                                            <ActionEdit />
+                                        </IconButton>
                                     </TableRowColumn>
                                 </TableRow>
                             )) }
                         </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TableRowColumn colSpan="5" style={{ textAlign: 'center' }}>
-                                    分页区域
-                                </TableRowColumn>
-                            </TableRow>
-                        </TableFooter>
                     </Table>
                 </Paper>
             );
@@ -268,6 +296,7 @@ export default class Triggers extends BaseComponent {
                     modal={false}
                     open={this.state.triggerOpt != TriggerOpts.None}
                     onRequestClose={this.handleClose}
+                    autoScrollBodyContent={true}
                     >
                     {getTriggerComponent()}
                 </Dialog>
@@ -283,7 +312,7 @@ export default class Triggers extends BaseComponent {
     }
 
     handleEdit(item) {
-        this.setState({triggerOpt: TriggerOpts.Create, triggerId: item.id});
+        this.setState({triggerOpt: TriggerOpts.Edit, triggerId: item.id});
     }
 
     handleEnable() {
@@ -295,11 +324,11 @@ export default class Triggers extends BaseComponent {
     }
 
     _load(cb) {
-        setTimeout(function () {
-            cb(null, tableData)
-        }, 1000);
-        return;
-        //TODO: 调用接口获取数据
+        // setTimeout(function () {
+        //     cb(null, tableData)
+        // }, 1000);
+        // return;
+        //调用接口获取数据
         return request
             .get('http://localhost:9001/triggers')
             .set('Accept', 'application/json')
@@ -321,7 +350,7 @@ export default class Triggers extends BaseComponent {
 
             _this.hideLoading();
 
-            if (err) {
+            if (err || data.ret != 0) {
                 _this.showAlert('提示', '加载触发器列表失败', '重新加载', function() {
                     setTimeout(function(){
                         _this.load(cb);
@@ -329,7 +358,7 @@ export default class Triggers extends BaseComponent {
                 });
             } else {
                 _this.setState({
-                    data: tableData
+                    data: data.data
                 });
             }
         });

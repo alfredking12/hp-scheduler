@@ -4,7 +4,7 @@ var db = require('../libs/db');
 var model_decl = ["taskrecords", {
 
     // GUID
-    id: { type: Sequelize.STRING, allowNull: false, primaryKey: true },
+    id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
 
     // 任务表主键
     task_id: { type: Sequelize.INTEGER, allowNull: false },
@@ -28,13 +28,13 @@ var model_decl = ["taskrecords", {
     target: { type: Sequelize.STRING, allowNull: false, defaultValue: ''},
 
     // 开始时间
-    stime: { type: Sequelize.BIGINT(13), allowNull: false, defaultValue: 0},
+    stime: { type: Sequelize.BIGINT(13)},
 
     // 结束时间
-    etime: { type: Sequelize.BIGINT(13), allowNull: false, defaultValue: 0},
+    etime: { type: Sequelize.BIGINT(13)},
 
     // 进度
-    progress: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0},
+    progress: { type: Sequelize.INTEGER },
 
     // 状态：0-未开始 1-执行中 2-执行成功 3-执行失败 4-执行超时(暂不支持)
     status: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0}

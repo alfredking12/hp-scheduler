@@ -30,7 +30,7 @@ var Log = {
         var log_item = new Log.LogItem();
         log_item.pid = process.pid;
         log_item.level = 40000;
-        log_item.time = moment().format('yyyy-MM-dd HH:mm:ss.SSS');
+        log_item.time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
         log_item.context_id = ReqCtx.get(req).id;
         log_item.context_name = ReqCtx.get(req).name;
         log_item.action = "1";
@@ -47,17 +47,16 @@ var Log = {
     log_exist: function(req, body) {
         var spent = (new Date().getTime()) - ReqCtx.get(req).stime;
 
-        var log_item = {
-            pid: process.pid,
-            level: 40000,
-            time: moment().format('yyyy-MM-dd HH:mm:ss.SSS'),
-            context_id: ReqCtx.get(req).id,
-            context_name: ReqCtx.get(req).name,
-            action: "2",
-            msg: {
-                spent: spent
-            }
-        }
+        var log_item = new Log.LogItem();
+        log_item.pid = process.pid;
+        log_item.level = 40000;
+        log_item.time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+        log_item.context_id = ReqCtx.get(req).id;
+        log_item.context_name = ReqCtx.get(req).name;
+        log_item.action = "2";
+        log_item.msg = {
+            spent: spent
+        };
 
         if (Buffer.isBuffer(body)) {
             log_item.msg.output = "#<base64>#";
@@ -80,7 +79,7 @@ var Log = {
         var log_item = new Log.LogItem();
         log_item.pid = process.pid;
         log_item.level = level;
-        log_item.time = moment().format('yyyy-MM-dd HH:mm:ss.SSS');
+        log_item.time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
         log_item.message = JSON.stringify(msg);
         if (exception && exception instanceof Error) {
             exception = exception.stack;
@@ -183,7 +182,7 @@ var Log = {
         var log_item = {
             pid: process.pid,
             level: level,
-            time: moment().format('yyyy-MM-dd HH:mm:ss.SSS')
+            time: moment().format('YYYY-MM-DD HH:mm:ss.SSS')
         };
     },
     

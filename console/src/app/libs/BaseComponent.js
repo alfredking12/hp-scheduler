@@ -122,9 +122,10 @@ export default class BaseComponent extends React.Component {
     }
 
     handleAction(index, e) {
+        var cb = this.callback;
         this._close();
-        this.callback && this.callback(index);
-    } 
+        cb && cb(index);
+    }
 
     handleClose() {
         this._close();

@@ -3,6 +3,7 @@ var Triggers = require('../models/triggers');
 var util = require('../libs/util');
 var db = require('../libs/db');
 var scheduler = require('../libs/scheduler');
+var Log = require('../libs/log');
 
 module.exports = {
 
@@ -22,9 +23,12 @@ module.exports = {
         Triggers
             .define()
             .findOne({
-                code: data.trigger_code
+                where: {
+                    code: data.trigger_code
+                }
             })
             .then(function(trigger){
+                Log.i("addItem find trigger: " + JSON.stringify(trigger));
                 if (trigger == null) {
                     util.fail(req, res, next, "触发器标识不存在");
                 } else {
@@ -61,7 +65,6 @@ module.exports = {
         if (data.name !== undefined)
             delete data.name;
 
-
         var TaskModel = Tasks.define();
         var promise = null;
 
@@ -70,7 +73,9 @@ module.exports = {
             promise = Triggers
                 .define()
                 .findOne({
-                    code: data.trigger_code
+                    where: {
+                        code: data.trigger_code
+                    }
                 })
                 .then(function(trigger){
                     if (trigger == null) {

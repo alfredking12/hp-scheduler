@@ -35,7 +35,7 @@ var MQ = {
                 for(var i=0;i<msgs.length;i++) {
                     var msg = msgs[i];
                     ch.sendToQueue(q, new Buffer(msg), {persistent: true});
-                    Log.i(" [x] Sent " + msg);
+                    Log.i(" [" + q + "] Sent " + msg);
                 }
 
                 cb && cb();
@@ -69,7 +69,7 @@ var MQ = {
                 ch.prefetch(1);
                 ch.consume(q, function(msg) {
                     var m = msg.content.toString();
-                    Log.i(" [x] Recv " + m);
+                    Log.i("[ " + q + "] Recv " + m);
                     cb(m);
                     ch.ack(msg);
                 }, {noAck: false});

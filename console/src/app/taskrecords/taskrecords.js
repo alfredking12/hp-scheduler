@@ -1,22 +1,21 @@
 import React from 'react';
+
 import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
-import BaseComponent from '../libs/BaseComponent';
 import IconButton from 'material-ui/IconButton';
-import ActionEdit from 'material-ui/svg-icons/editor/mode-edit';
-import DeleteEdit from 'material-ui/svg-icons/action/delete';
+import ActionView from 'material-ui/svg-icons/action/visibility';
+import ActionLog from 'material-ui/svg-icons/action/schedule';
 
 import request from 'superagent/lib/client';
 
-import TaskDetail from './task_detail';
+import BaseComponent from '../libs/BaseComponent';
+
+import TaskRecordDetail from './taskrecord_detail';
 
 import config from '../config/config';
 
-const TaskOpts = {
+const TaskRecordOpts = {
     None: -1,
-    Create: 0,
-    Edit: 1,
     View: 2
 }
 
@@ -34,7 +33,7 @@ const styles = {
     },
 }
 
-export default class Tasks extends BaseComponent {
+export default class TaskRecords extends BaseComponent {
 
     constructor(props, context) {
         super(props, context);
@@ -44,19 +43,18 @@ export default class Tasks extends BaseComponent {
             fixedFooter: true,
             stripedRows: true,
             showRowHover: false,
-            height: (window.innerHeight - 130) + 'px',
+            height: (window.innerHeight - 142) + 'px',
 
-            taskOpt: TaskOpts.None,
+            taskRecordOpt: TaskRecordOpts.None,
 
             data: []
         });
 
-        this.handleCreate = this.handleCreate.bind(this);
         this.handleClose = this.handleClose.bind(this);
     }
 
     handleResize = (e) => {
-        this.setState({height: (window.innerHeight - 130) + 'px'});
+        this.setState({height: (window.innerHeight - 142) + 'px'});
     }
 
     componentDidMount() {
@@ -68,20 +66,26 @@ export default class Tasks extends BaseComponent {
         window.removeEventListener('resize', this.handleResize);
     }
 
+    status(item) {
+        if (item.status == 2) {
+            return '成功';
+        } else if (item.status == 0) {
+            return '未开始';
+        } else if (item.status == 1) {
+            return '执行中:' + item.progress + "%";
+        } else if (item.status == 3) {
+            return '执行超时';
+        } else {
+            return '未知';
+        }
+    }
+
     render() {
         var _this = this;
 
         const getTable = () => {
             return (
                 <div>
-                    <div style={{ overflow: 'hidden' }}>
-                        <FlatButton
-                            label="新建任务"
-                            primary={true}
-                            style={{marginLeft: 10}}
-                            onTouchTap={this.handleCreate} 
-                            />
-                    </div>
                     <Table
                         height={this.state.height}
                         fixedHeader={this.state.fixedHeader}
@@ -94,9 +98,13 @@ export default class Tasks extends BaseComponent {
                             <TableRow displayBorder={true}>
                                 <TableHeaderColumn tooltip="序号" style={{width: '20px'}}>#</TableHeaderColumn>
                                 <TableHeaderColumn>任务名称</TableHeaderColumn>
-                                <TableHeaderColumn>任务类型</TableHeaderColumn>
-                                <TableHeaderColumn>触发器标识</TableHeaderColumn>
-                                <TableHeaderColumn style={{textAlign: 'right', paddingRight: '48px'}}>操作</TableHeaderColumn>
+                                <TableHeaderColumn>任务标识</TableHeaderColumn>
+                                <TableHeaderColumn>创建时间</TableHeaderColumn>
+                                <TableHeaderColumn>开始时间</TableHeaderColumn>
+                                <TableHeaderColumn>结束时间</TableHeaderColumn>
+                                <TableHeaderColumn style={{width: '20px', textAlign:'center'}}>耗时</TableHeaderColumn>
+                                <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>执行结果</TableHeaderColumn>
+                                <TableHeaderColumn style={{textAlign: 'right', width: '50px'}}>操作</TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
                         <TableBody
@@ -109,53 +117,48 @@ export default class Tasks extends BaseComponent {
                                     style={{height: '28px'}}>
                                     <TableRowColumn style={{height: '28px', width: '20px'}}>{index + 1}</TableRowColumn>
                                     <TableRowColumn style={{height: '28px'}}>{row.name}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{'MQ类型'}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.trigger_code}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>
+                                    <TableRowColumn style={{height: '28px'}}>{row.id}</TableRowColumn>
+                                    <TableRowColumn style={{height: '28px'}}>{row.updatedAt}</TableRowColumn>
+                                    <TableRowColumn style={{height: '28px'}}>{row.stime}</TableRowColumn>
+                                    <TableRowColumn style={{height: '28px'}}>{row.etime}</TableRowColumn>
+                                    <TableRowColumn style={{height: '28px', width: '20px', textAlign:'center'}}>{row.etime ? ((row.etime - row.stime) + 'ms') : '-'}</TableRowColumn>
+                                    <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{_this.status(row)}</TableRowColumn>
+                                    <TableRowColumn style={{width: '50px', height: '28px'}}>
                                         <IconButton
                                             iconStyle={styles.smallIcon}
                                             style={styles.small}
-                                            onTouchTap={_this.handleEdit.bind(_this, row)} 
+                                            onTouchTap={_this.handleView.bind(_this, row)} 
                                             >
-                                            <ActionEdit />
+                                            <ActionView />
                                         </IconButton>
                                         <IconButton
                                             iconStyle={styles.smallIcon}
                                             style={styles.small}
-                                            onTouchTap={_this.handleDelete.bind(_this, row)} 
+                                            onTouchTap={_this.handleLog.bind(_this, row)} 
                                             >
-                                            <DeleteEdit />
+                                            <ActionLog />
                                         </IconButton>
                                     </TableRowColumn>
                                 </TableRow>
                             )) }
                         </TableBody>
+                        <TableFooter adjustForCheckbox={false} >
+                            <TableRow>
+                                <TableRowColumn colSpan="8" style={{textAlign: 'center'}}>
+                                    Super Footer
+                                </TableRowColumn>
+                            </TableRow>
+                        </TableFooter>
                     </Table>
                 </div>
             );
         }
 
-        const getTaskTitle = () => {
-            if (this.state.taskOpt === TaskOpts.None) {
-                return ' ';
-            } else if (this.state.taskOpt === TaskOpts.View) {
-                return '任务详情';
-            } else if (this.state.taskOpt === TaskOpts.Edit) {
-                return '修改任务';
-            } else if (this.state.taskOpt === TaskOpts.Create) {
-                return '新建任务';
-            }
-        }
-
-        const getTaskComponent = () => {
-            if (this.state.taskOpt === TaskOpts.None) {
+        const getTaskRecordComponent = () => {
+            if (this.state.taskRecordOpt === TaskRecordOpts.None) {
                 return null;
-            } else if (this.state.taskOpt === TaskOpts.View) {
-                return <TaskDetail.View id={this.state.taskId} />;
-            } else if (this.state.taskOpt === TaskOpts.Edit) {
-                return <TaskDetail.Edit id={this.state.taskId} onUpdated={this.handleUpdated} />;
-            } else if (this.state.taskOpt === TaskOpts.Create) {
-                return <TaskDetail.Create onCreated={this.handleCreated}  />;
+            } else if (this.state.taskRecordOpt === TaskRecordOpts.View) {
+                return <TaskRecordDetail data={this.state.taskRecord} />;
             }
         }
 
@@ -165,13 +168,12 @@ export default class Tasks extends BaseComponent {
                 {super.render()}
 
                 <Dialog
-                    title={getTaskTitle()}
+                    title={'任务记录信息'}
                     modal={false}
-                    open={this.state.taskOpt != TaskOpts.None}
+                    open={this.state.taskRecordOpt != TaskRecordOpts.None}
                     onRequestClose={this.handleClose}
-                    ref="task"
                     >
-                    {getTaskComponent()}
+                    {getTaskRecordComponent()}
                 </Dialog>
 
                 {getTable() }
@@ -180,50 +182,21 @@ export default class Tasks extends BaseComponent {
         );
     }
     
-    handleUpdated = () => {
-        this.handleClose();
-        this.load();
-    }
-    
-    handleCreated = () => {
-        this.handleClose();
-        this.load();
+    handleView(item) {
+        this.setState({taskRecordOpt: TaskRecordOpts.View, taskRecord: item});
     }
 
-    handleCreate() {
-        this.setState({taskOpt: TaskOpts.Create, taskId: null});
-    }
-
-    handleEdit(item) {
-        this.setState({taskOpt: TaskOpts.Edit, taskId: item.id});
-    }
-
-    handleDelete(item) {
-        var _this = this;
-        
-        this.showAlert('操作提示', '确认是否要删除任务吗?', ['取消', '删除'], function(index){
-            if (index == 1) {
-                request
-                    .delete(config.api_server + '/tasks/' + item.id)
-                    .set('Accept', 'application/json')
-                    .end(function (err, res) {
-                        if (err || res.body.ret) {
-                            _this.showAlert('错误提示', '删除任务失败', '知道了');
-                        } else {
-                            _this.load();
-                        }
-                    });
-            }
-        })
+    handleLog(item) {
+        alert('log');
     }
 
     handleClose() {
-        this.setState({ taskOpt: TaskOpts.None, taskId: null });
+        this.setState({ taskRecordOpt: TaskRecordOpts.None, taskRecord: null });
     }
 
     _load(cb) {
         request
-            .get(config.api_server + '/tasks')
+            .get(config.api_server + '/taskrecords')
             .set('Accept', 'application/json')
             .end(function (err, res) {
                 if (err) {
@@ -244,7 +217,7 @@ export default class Tasks extends BaseComponent {
             _this.hideLoading();
 
             if (err) {
-                _this.showAlert('提示', '加载任务列表失败', '重新加载', function() {
+                _this.showAlert('提示', '加载任务记录列表失败', '重新加载', function() {
                     setTimeout(function(){
                         _this.load(cb);
                     }, 0);

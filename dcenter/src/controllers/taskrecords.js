@@ -4,12 +4,23 @@ var util = require('../libs/util');
 module.exports = {
 
     getList: function(req,res,next) {
+        
+        var page = req.params.page || 0;
+        var per_page = req.params.per_page || 25;
+        var key = req.params.key;
+        var stime = req.params.stime;
+        var etime = req.params.etime;
+
+        var options = {
+            order: [
+                ['updatedAt', 'DESC'],
+            ],
+            offset: page * per_page,
+            limit: per_page
+        }
+
         TaskRecords.define()
-            .findAll({
-                order: [
-                    ['updatedAt', 'DESC'],
-                ]
-            }).then(function (data) {
+            .findAll(options).then(function (data) {
                 util.ok(req, res, next, data);
             }).catch(next);
     },

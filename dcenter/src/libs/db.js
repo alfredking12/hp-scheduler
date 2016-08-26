@@ -26,7 +26,7 @@ module.exports = {
 
     select: function(sql, options) {
         options = options || {};
-        options.type = sequelize.QueryTypes.SELECT;
+        options.type = Sequelize.QueryTypes.SELECT;
         return this.sequelize().query(sql, options);
     }
 }

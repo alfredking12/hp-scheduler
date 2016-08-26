@@ -15,15 +15,15 @@ var Log = {
         if (!(this instanceof Log.LogItem))
             return new Log.LogItem();
 
-        this.pid = null;
-        this.level = null;
-        this.time = null;
-        this.context_id  = null;
-        this.context_name = null;
-        this.action = null;
-        this.msg = null;
-        this.message = null;
-        this.exception = null;
+        this.pid = undefined;
+        this.level = undefined;
+        this.time = undefined;
+        this.context_id  = undefined;
+        this.context_name = undefined;
+        this.action = undefined;
+        this.msg = undefined;
+        this.message = undefined;
+        this.exception = undefined;
     },
 
     log_entry: function(req) {
@@ -69,6 +69,11 @@ var Log = {
 
             log_item.msg.output = JSON.stringify(body);
             log_item.msg.status = body.ret || 1;
+
+            if (ReqCtx.get(req).name.length == 0) {
+                log_item.msg = undefined;
+                log_item.action = undefined;
+            }
         }
         
         Log._log_item(log_item);
@@ -120,10 +125,10 @@ var Log = {
     _log: function(level, args) {
 
         var item = {
-            log: null,
-            req: null,
-            msg: null,
-            err: null
+            log: undefined,
+            req: undefined,
+            msg: undefined,
+            err: undefined
         }
         
         if (args.length === 1) {

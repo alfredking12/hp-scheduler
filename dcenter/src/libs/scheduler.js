@@ -74,15 +74,15 @@ function scheduler() {
         MQ.recv("__dispatcher_center_callback", function(msg) {
             var data = JSON.parse(msg);
 
-            if (!data.taskid || !data.time) {
+            if (!data.task_id || !data.time) {
                 Log.e('日志参数错误:' + msg);
                 return;
             }
 
-            var taskid = data.taskid;
+            var taskid = data.task_id;
 
             var log = {
-                taskrecord_id: data.taskid,
+                taskrecord_id: data.task_id,
                 time: data.time,
                 message: data.message,
                 progress: data.progress
@@ -126,15 +126,15 @@ function scheduler() {
 
                     if (data.progress !== null && item.progress !== null) {
 
-                        if (progress < 0) {
-                            progress = -1;
-                        } else if (progress > 100) {
-                            progress = 100;
+                        if (item.progress < 0) {
+                            item.progress = -1;
+                        } else if (item.progress > 100) {
+                            item.progress = 100;
                         }
 
                         //日志顺序颠倒，忽略
 
-                        if (data.progress > progress) {
+                        if (data.progress > item.progress) {
                             return;
                         }
                     }
@@ -381,6 +381,8 @@ function scheduler() {
     this.run = function(task) {
         //Log.i("SCHEDULER::: " + JSON.stringify(task)); return ;
         
+        //TODO: 重复任务不要重复触发
+
         var data = {
             task_id: task.id,
             name: task.name,
@@ -391,22 +393,37 @@ function scheduler() {
             target: task.target
         }
 
-        // 插入一条任务记录
-        TaskRecords
-            .define()
-            .create(data)
-            .then(function(data){
-                MQ.send(task.target, JSON.stringify({
-                    task_id: data.id,
-                    param: data.param || ''
-                }), function(err){
-                    if (err)
-                        Log.f("发送任务消息失败:" + task.name + ", recordId:" + data.id, err);
-                });
-            })
-            .catch(function(err){
-                Log.f("触发任务失败:" + task.name, err);                
+        var item = {
+            task_id: task.id,
+            param: data.param,
+            status: 0
+        };
+
+        var TaskRecordModel = TaskRecords.define();
+
+        TaskRecordModel.count({
+            where: item
+        }).then(function(cnt){
+            if (cnt !== 0) {
+                throw new Error('相同任务不要重复触发');
+            }
+
+            // 插入一条任务记录
+            return TaskRecordModel.create(data)
+            
+        }).then(function(data){
+
+            // 发送消息到MQ
+            MQ.send(task.target, JSON.stringify({
+                task_id: data.id,
+                param: data.param
+            }), function(err){
+                if (err)
+                    Log.f("发送任务消息失败:" + task.name + ", recordId:" + data.id, err);
             });
+        }).catch(function(err){
+            Log.f("触发任务失败:" + task.name + ',' + err.message);    
+        });
     }
 }
 

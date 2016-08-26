@@ -17,6 +17,7 @@ import request from 'superagent/lib/client';
 import BaseComponent from '../libs/BaseComponent';
 import validate from '../libs/validate';
 
+import config from '../config/config';
 
 const styles = {
     TextField: {
@@ -310,7 +311,6 @@ class TriggerView extends TriggerDetail {
         });
     }
 
-    
     componentDidMount() {
         this.load();
     }
@@ -318,7 +318,7 @@ class TriggerView extends TriggerDetail {
     _load(cb) {
         //调用接口获取数据
         return request
-            .get('http://localhost:9001/triggers/' + this.props.id)
+            .get(config.api_server + '/triggers/' + this.props.id)
             .set('Accept', 'application/json')
             .end(function (err, res) {
                 if (err) {
@@ -450,7 +450,7 @@ class TriggerEdit extends TriggerView {
         var _this = this;
 
         request
-            .put('http://localhost:9001/triggers/' + this.props.id)
+            .put(config.api_server + '/triggers/' + this.props.id)
             .set('Accept', 'application/json')
             .send(data)
             .end(function (err, res) {

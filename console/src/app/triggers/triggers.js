@@ -4,6 +4,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import ActionEdit from 'material-ui/svg-icons/editor/mode-edit';
+import DeleteEdit from 'material-ui/svg-icons/action/delete';
 
 import request from 'superagent/lib/client';
 //import moment from 'moment';
@@ -12,7 +13,7 @@ import BaseComponent from '../libs/BaseComponent';
 
 import TriggerDetail from './trigger_detail';
 
-
+import config from '../config/config';
 
 const styles = {
     smallIcon: {
@@ -22,7 +23,7 @@ const styles = {
     small: {
         float: 'right',
         marginRight: 0,
-        width: 72,
+        width: 24,
         height: 24,
         padding: 0,
     },
@@ -45,7 +46,7 @@ export default class Triggers extends BaseComponent {
             fixedFooter: true,
             stripedRows: true,
             showRowHover: false,
-            height: '400px',
+            height: (window.innerHeight - 130) + 'px',
 
             triggerOpt: TriggerOpts.None,
 
@@ -56,8 +57,17 @@ export default class Triggers extends BaseComponent {
         this.handleClose = this.handleClose.bind(this);
     }
 
+    handleResize = (e) => {
+        this.setState({height: (window.innerHeight - 130) + 'px'});
+    }
+
     componentDidMount() {
         this.load();
+        window.addEventListener('resize', this.handleResize);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
     }
 
     render() {
@@ -88,7 +98,7 @@ export default class Triggers extends BaseComponent {
                             adjustForCheckbox={false}
                             >
                             <TableRow displayBorder={true}>
-                                <TableHeaderColumn tooltip="序号" style={{width: '8px'}}>#</TableHeaderColumn>
+                                <TableHeaderColumn tooltip="序号" style={{width: '20px'}}>#</TableHeaderColumn>
                                 <TableHeaderColumn>触发器名称</TableHeaderColumn>
                                 <TableHeaderColumn>触发器标识</TableHeaderColumn>
                                 <TableHeaderColumn>触发器规则</TableHeaderColumn>
@@ -105,7 +115,7 @@ export default class Triggers extends BaseComponent {
                                     key={index}
                                     style={{height: '28px'}}
                                     >
-                                    <TableRowColumn style={{height: '28px', width: '8px'}}>{index + 1}</TableRowColumn>
+                                    <TableRowColumn style={{height: '28px', width: '20px'}}>{index + 1}</TableRowColumn>
                                     <TableRowColumn style={{height: '28px'}}>{row.name}</TableRowColumn>
                                     <TableRowColumn style={{height: '28px'}}>{row.code}</TableRowColumn>
                                     <TableRowColumn style={{height: '28px'}}>{row.type == 0 ? ('间隔: ' + row.value + 's') : ('cron: ' + row.value)}</TableRowColumn>
@@ -116,6 +126,13 @@ export default class Triggers extends BaseComponent {
                                             onTouchTap={_this.handleEdit.bind(_this, row)} 
                                             >
                                             <ActionEdit />
+                                        </IconButton>
+                                        <IconButton
+                                            iconStyle={styles.smallIcon}
+                                            style={styles.small}
+                                            onTouchTap={_this.handleDelete.bind(_this, row)} 
+                                            >
+                                            <DeleteEdit />
                                         </IconButton>
                                     </TableRowColumn>
                                 </TableRow>
@@ -179,6 +196,25 @@ export default class Triggers extends BaseComponent {
         this.setState({triggerOpt: TriggerOpts.Edit, triggerId: item.id});
     }
 
+    handleDelete(item) {
+        var _this = this;
+        
+        this.showAlert('操作提示', '确认是否要删除触发器吗?', ['取消', '删除'], function(index){
+            if (index == 1) {
+                request
+                    .delete(config.api_server + '/triggers/' + item.id)
+                    .set('Accept', 'application/json')
+                    .end(function (err, res) {
+                        if (err || res.body.ret) {
+                            _this.showAlert('错误提示', '删除触发器失败', '知道了');
+                        } else {
+                            _this.load();
+                        }
+                    });
+            }
+        })
+    }
+
     handleUpdated = () => {
         this.handleClose();
         this.load();
@@ -200,7 +236,7 @@ export default class Triggers extends BaseComponent {
         // return;
         //调用接口获取数据
         return request
-            .get('http://localhost:9001/triggers')
+            .get(config.api_server + '/triggers')
             .set('Accept', 'application/json')
             .end(function (err, res) {
                 if (err) {

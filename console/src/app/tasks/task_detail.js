@@ -13,6 +13,8 @@ import BaseComponent from '../libs/BaseComponent';
 
 import request from 'superagent/lib/client';
 
+import config from '../config/config';
+
 const styles = {
     TextField: {
         marginTop: 12
@@ -66,7 +68,16 @@ class TaskDetail extends BaseComponent {
             targetError: null,
             triggerCodeError: null,
             paramError: null,
-            descError: null
+            descError: null,
+            
+            data: {
+                name: '',
+                detail: '',
+                trigger_code: '',
+                param: '',
+                type: '0',
+                target: '',
+            }
         });
 
         this.handleChange = this.handleChange.bind(this);
@@ -205,7 +216,7 @@ class TaskDetail extends BaseComponent {
                     floatingLabelFixed={true}
                     fullWidth={true}
                     >
-                    <MenuItem value={0} primaryText="MQ类型" />
+                    <MenuItem value={'0'} primaryText="MQ类型" />
                 </SelectField>
 
                 <TextField
@@ -238,18 +249,78 @@ class TaskView extends TaskDetail {
             typeEditable: false,
             targetEditable: false,
             data: {
-                name: 'View: 任务名称',
-                detail: 'View: 任务描述',
-                trigger_code: 'View: 触发器标识',
-                param: 'View: 任务参数',
+                name: '',
+                detail: '',
+                trigger_code: '',
+                param: '',
                 type: '0',
-                target: 'View: 任务目标',
+                target: '',
+            }
+        });
+    }
+
+    
+    componentDidMount() {
+        this.load();
+    }
+    
+    _load(cb) {
+        //调用接口获取数据
+        return request
+            .get(config.api_server + '/tasks/' + this.props.id)
+            .set('Accept', 'application/json')
+            .end(function (err, res) {
+                if (err) {
+                    cb(err);
+                } else {
+                    cb(null, res.body);
+                }
+            });
+    }
+
+    load(cb) {
+
+        if (this.props.id == null) {
+            alert('id不能为空');
+            return;
+        }
+
+        var _this = this;
+
+        _this.showLoading();
+
+        this._load(function (err, data) {
+
+            _this.hideLoading();
+
+            if (err || data.ret != 0) {
+                _this.showAlert('提示', '获取任务数据失败', '重试', function() {
+                    setTimeout(function(){
+                        _this.load(cb);
+                    }, 0);
+                });
+            } else {
+                var item = {
+                    name: data.data.name,
+                    detail: data.data.detail,
+                    trigger_code: data.data.trigger_code,
+                    param: data.data.param,
+                    type: data.data.type + '',
+                    target: data.data.target
+                }
+                _this.setState({
+                    data: item
+                });
             }
         });
     }
 }
 
-class TaskEdit extends TaskDetail {
+TaskView.defaultProps = {
+    id: null
+}
+
+class TaskEdit extends TaskView {
 
     constructor(props, context) {
         super(props, context);
@@ -262,15 +333,7 @@ class TaskEdit extends TaskDetail {
             triggerCodeEditable: true,
             paramEditable: true,
             typeEditable: true,
-            targetEditable: true,
-            data: {
-                name: 'Edit: 任务名称',
-                detail: 'Edit: 任务描述',
-                trigger_code: 'Edit: 触发器标识',
-                param: 'Edit: 任务参数',
-                type: '0',
-                target: 'Edit: 任务目标',
-            }
+            targetEditable: true
         });
     }
 
@@ -292,14 +355,50 @@ class TaskEdit extends TaskDetail {
         );
     }
 
+    
     handleUpdate() {
 
-        if (!super.checkInput())
+        if (!this.checkInput())
             return;
 
-        //TODO:
-        alert('save');
+        var data = {
+            trigger_code: this.state.data.trigger_code,
+            detail: this.state.data.detail || '',
+            param: this.state.data.param || '',
+            type: parseInt(this.state.data.type || 0) + '',
+            target: this.state.data.target,
+        };
+
+        this._submit(data);
     }
+
+    _submit(data) {
+        var _this = this;
+
+        request
+            .put(config.api_server + '/tasks/' + this.props.id)
+            .set('Accept', 'application/json')
+            .send(data)
+            .end(function (err, res) {
+                if (err) {
+                    _this.showAlert('提示', '修改任务失败', '重试', function() {
+                        setTimeout(function(){
+                            _this.submit(data);
+                        }, 0);
+                    });
+                } else if (res.body.ret) {
+                    _this.showAlert('提示', res.body.msg, '知道了');
+                    
+                } else {
+                    _this.props.onUpdated && _this.props.onUpdated();
+                }
+            });
+    }
+}
+
+TaskEdit.defaultProps = {
+    id: null,
+    onUpdated: null
 }
 
 class TaskCreate extends TaskDetail {
@@ -308,24 +407,6 @@ class TaskCreate extends TaskDetail {
         super(props, context);
 
         this.handleCreate = this.handleCreate.bind(this);
-
-        Object.assign(this.state, {
-            nameEditable: true,
-            descEditable: true,
-            triggerCodeEditable: true,
-            paramEditable: true,
-            typeEditable: true,
-            targetEditable: true,
-
-            data: {
-                name: '',
-                detail: '',
-                trigger_code: '',
-                param: '',
-                type: '0',
-                target: '',
-            }
-        });
     }
 
     render() {
@@ -350,9 +431,41 @@ class TaskCreate extends TaskDetail {
         if (!super.checkInput())
             return;
 
-        //TODO:
-        alert('save');
+        var data = {
+            name:this.state.data.name,
+            trigger_code: this.state.data.trigger_code,
+            detail: this.state.data.detail || '',
+            param: this.state.data.param || '',
+            type: parseInt(this.state.data.type || 0) + '',
+            target: this.state.data.target,
+        };
+
+        this._submit(data);
     }
+
+    _submit(data) {
+        var _this = this;
+
+        request
+            .post(config.api_server + '/tasks')
+            .set('Accept', 'application/json')
+            .send(data)
+            .end(function (err, res) {
+                if (err) {
+                    _this.showAlert('提示', '创建任务失败', '重试', function() {
+                        setTimeout(function(){
+                            _this.submit(data);
+                        }, 0);
+                    });
+                } else {
+                    _this.props.onCreated && _this.props.onCreated();
+                }
+            });
+    }
+}
+
+TaskCreate.defaultProps = {
+    onCreated: null
 }
 
 exports.View = TaskView;

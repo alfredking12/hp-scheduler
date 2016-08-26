@@ -5,8 +5,7 @@ module.exports = function route(server) {
     server.post('/triggers', Triggers.addItem);
     server.get('/triggers/:id', Triggers.getItem);
     server.put('/triggers/:id', Triggers.updateItem);
-    //TODO: v0.0.2 删除触发器
-    //server.del('/triggers/:id', Triggers.deleteItem);
+    server.del('/triggers/:id', Triggers.deleteItem);
     //TODO: v0.0.2 暂时没用
     //server.get('/triggers/code/:code', Triggers.getItemWithCode);
 }

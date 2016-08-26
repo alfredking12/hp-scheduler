@@ -6,10 +6,12 @@ var ReqCtx = {
         if (!(this instanceof ReqCtx.Ctx))
             return new ReqCtx.Ctx(req);
 
+        this.id = uuid.v4();
+        this.stime = new Date().getTime();
+        this.name = "";
+        
         if (req) {
-            this.id = uuid.v4();
             this.name = req.method + " " + req.url;
-            this.stime = new Date().getTime();
         }
     },
 
@@ -19,11 +21,10 @@ var ReqCtx = {
     },
 
     get: function(req) {
-        try {
-            return req.ctx;
-        } catch (error) {
+        if (!req || !req.ctx)
             return ReqCtx.Ctx();
-        }
+        
+        return req.ctx;
     }
 }
 

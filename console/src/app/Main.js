@@ -15,6 +15,8 @@ import Paper from 'material-ui/Paper';
 
 import Tasks from './tasks/tasks';
 import Triggers from './triggers/triggers';
+import TaskRecords from './taskrecords/taskrecords';
+import TaskLogs from './tasklogs/tasklogs';
 
 var history = hashHistory;
 
@@ -100,8 +102,8 @@ const Main = () => (
                 ＜IndexRedirect to="/triggers" />
                 <Route path="/triggers" component={Triggers}/>
                 <Route path="/tasks" component={Tasks}/>
-                <Route path="/taskrecords" component={Triggers}/>
-                <Route path="/tasklogs" component={Tasks}/>
+                <Route path="/taskrecords" component={TaskRecords}/>
+                <Route path="/tasklogs" component={TaskLogs}/>
             </Route>
         </Router>
     </MuiThemeProvider>

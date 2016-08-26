@@ -82,11 +82,11 @@ export default class BaseComponent extends React.Component {
         const actions = this.state.actions
             ? this.state.actions.map(function(action, index){
                 return <FlatButton
-                label={this.state.actionTitle}
+                label={action}
                 primary={true}
                 onTouchTap={_this.handleAction.bind(_this, index)}
                 />;
-            })
+            }) 
             : [];
 
         return (
@@ -122,12 +122,8 @@ export default class BaseComponent extends React.Component {
     }
 
     handleAction(index, e) {
-
         this._close();
-
-        if (!this.callback) {
-            this.callback(index);
-        }
+        this.callback && this.callback(index);
     } 
 
     handleClose() {

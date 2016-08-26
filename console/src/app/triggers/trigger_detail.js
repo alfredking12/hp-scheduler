@@ -46,8 +46,6 @@ const Limit = {
     }
 }
 
-
-
 class TriggerDetail extends BaseComponent {
 
     constructor(props, context) {
@@ -63,12 +61,7 @@ class TriggerDetail extends BaseComponent {
 
             name_error: null,
             code_error: null,
-            value_error: null,
-
-            data: {
-                type: '0',
-                code: ' ',
-            }
+            value_error: null
         });
 
         this.handleChange = this.handleChange.bind(this);
@@ -112,16 +105,42 @@ class TriggerDetail extends BaseComponent {
         return true;
     }
 
-    /*
-"name": "轮询间隔5分钟触发",
-    "code": "AXV0B1A5",
-    "stime": 1422342342343,
-    "etime": 1422348342343,
-    //TODO: v0.0.2 重复次数
-    //"repeat": 0,
-    "type": 0,
-    "value": "300"
-*/
+    merge(date, time) {
+
+        if (!date || !time) return null;
+
+        var ret = new Date();
+        
+        ret.setFullYear(date.getFullYear());
+        ret.setMonth(date.getMonth());
+        ret.getDate(date.getDate());
+        
+        ret.setHours(time.getHours());
+        ret.setMinutes(time.getMinutes());
+        ret.setSeconds(time.getSeconds());
+
+        return ret;
+    }
+
+    date(timestamp) {
+        if (!timestamp) return null;
+        var t = new Date(timestamp);
+        var ret = new Date();
+        ret.setFullYear(t.getFullYear());
+        ret.setMonth(t.getMonth());
+        ret.getDate(t.getDate());
+        return ret;
+    }
+
+    time(timestamp) {
+        if (!timestamp) return null;
+        var t = new Date(timestamp);
+        var ret = new Date();
+        ret.setHours(t.getHours());
+        ret.setMinutes(t.getMinutes());
+        ret.setSeconds(t.getSeconds());
+        return ret;
+    }
 
     error(attr, msg) {
         var opt = {};
@@ -277,16 +296,75 @@ class TriggerView extends TriggerDetail {
 
         Object.assign(this.state, {
             nameEditable: false,
-            descEditable: false,
-            triggerCodeEditable: false,
-            paramEditable: false,
+            codeEditable: false,
+            stimeEditable: false,
+            etimeEditable: false,
             typeEditable: false,
-            targetEditable: false,
+            valueEditable: false,
             data: {
-                name: 'View: 触发器名称',
-                code: 'ASDFRRRR',
-                type: '0',
-                value: '1800'
+                name: '',
+                code: '',
+                type: '',
+                value: ''
+            }
+        });
+    }
+
+    
+    componentDidMount() {
+        this.load();
+    }
+    
+    _load(cb) {
+        //调用接口获取数据
+        return request
+            .get('http://localhost:9001/triggers/' + this.props.id)
+            .set('Accept', 'application/json')
+            .end(function (err, res) {
+                if (err) {
+                    cb(err);
+                } else {
+                    cb(null, res.body);
+                }
+            });
+    }
+
+    load(cb) {
+
+        if (this.props.id == null) {
+            alert('id不能为空');
+            return;
+        }
+
+        var _this = this;
+
+        _this.showLoading();
+
+        this._load(function (err, data) {
+
+            _this.hideLoading();
+
+            if (err || data.ret != 0) {
+                _this.showAlert('提示', '获取触发器数据失败', '重试', function() {
+                    setTimeout(function(){
+                        _this.load(cb);
+                    }, 0);
+                });
+            } else {
+                var item = {
+                    id: data.data.id,
+                    name: data.data.name,
+                    code: data.data.code,
+                    start_date: _this.date(data.data.stime), 
+                    start_time: _this.time(data.data.stime),
+                    end_date: _this.date(data.data.etime),
+                    end_time: _this.time(data.data.etime),
+                    type: data.data.type + '',
+                    value: data.data.value
+                }
+                _this.setState({
+                    data: item
+                });
             }
         });
     }
@@ -296,7 +374,7 @@ TriggerView.defaultProps = {
     id: null
 }
 
-class TriggerEdit extends TriggerDetail {
+class TriggerEdit extends TriggerView {
 
     constructor(props, context) {
         super(props, context);
@@ -305,20 +383,20 @@ class TriggerEdit extends TriggerDetail {
         
         Object.assign(this.state, {
             nameEditable: false,
-            descEditable: true,
-            triggerCodeEditable: true,
-            paramEditable: true,
+            codeEditable: false,
+            stimeEditable: true,
+            etimeEditable: true,
             typeEditable: true,
-            targetEditable: true,
+            valueEditable: true,
             data: {
-                name: 'Edit: 触发器名称',
-                code: 'ASDFRRRR',
-                type: '0',
-                value: '1800'
+                name: '',
+                code: '',
+                type: '',
+                value: ''
             }
         });
     }
-
+    
     render() {
         return (
             <div>
@@ -342,9 +420,55 @@ class TriggerEdit extends TriggerDetail {
         if (!super.checkInput())
             return;
 
-        //TODO:
-        alert('save');
+        var start = this.merge(this.state.data.start_date, this.state.data.start_time);
+        var end = this.merge(this.state.data.end_date, this.state.data.end_time);
+
+        if (end) {
+
+            if (end.getTime() <= new Date().getTime()) {
+                this.showAlert('错误提示', '结束时间必须大于当前时间');
+                return;
+            }
+
+            if (start && start.getTime() >= end.getTime()) {
+                this.showAlert('错误提示', '结束时间必须大于开始时间');
+                return;
+            }
+        }
+
+        var data = {
+            stime: start ? start.getTime() : undefined,
+            etime: end ? end.getTime() : undefined,
+            value: this.state.data.value,
+            type: parseInt(this.state.data.type || 0) + ''
+        };
+
+        this._submit(data);
     }
+
+    _submit(data) {
+        var _this = this;
+
+        request
+            .put('http://localhost:9001/triggers/' + this.props.id)
+            .set('Accept', 'application/json')
+            .send(data)
+            .end(function (err, res) {
+                if (err) {
+                    _this.showAlert('提示', '修改触发器失败', '重试', function() {
+                        setTimeout(function(){
+                            _this.submit(data);
+                        }, 0);
+                    });
+                } else if (res.body.ret) {
+                    _this.showAlert('提示', res.body.msg, '知道了');
+                    
+                } else {
+                    _this.props.onUpdated && _this.props.onUpdated();
+                }
+            });
+    }
+
 }
 
 TriggerEdit.defaultProps = {
@@ -360,18 +484,12 @@ class TriggerCreate extends TriggerDetail {
         this.handleCreate = this.handleCreate.bind(this);
 
         Object.assign(this.state, {
-            nameEditable: true,
-            descEditable: true,
-            triggerCodeEditable: true,
-            paramEditable: true,
-            typeEditable: true,
-            targetEditable: true,
 
             data: {
-                name: ' ',
-                code: ' ',
+                name: '',
+                code: '',
                 type: '0',
-                value: ' '
+                value: ''
             }
         });
     }
@@ -391,23 +509,6 @@ class TriggerCreate extends TriggerDetail {
                 </div>
             </div>
         );
-    }
-
-    merge(date, time) {
-
-        if (!date || !time) return null;
-
-        var ret = new Date();
-        
-        ret.setFullYear(date.getFullYear());
-        ret.setMonth(date.getMonth());
-        ret.getDate(date.getDate());
-        
-        ret.setHours(time.getHours());
-        ret.setMinutes(time.getMinutes());
-        ret.setSeconds(time.getSeconds());
-
-        return ret;
     }
 
     handleCreate() {

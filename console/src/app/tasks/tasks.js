@@ -3,12 +3,10 @@ import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow,
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import BaseComponent from '../libs/BaseComponent';
-import Paper from 'material-ui/Paper';
-
-import TaskDetail from './task_detail';
 
 import request from 'superagent/lib/client';
 
+import TaskDetail from './task_detail';
 
 const TaskOpts = {
     None: -1,
@@ -179,7 +177,7 @@ export default class Tasks extends BaseComponent {
             if (this.state.data.length == 0)
                 return null;
             return (
-                <Paper zDepth={2}>
+                <div>
                     <div style={{ overflow: 'hidden' }}>
                         <FlatButton
                             label="新建任务"
@@ -230,7 +228,7 @@ export default class Tasks extends BaseComponent {
                             </TableRow>
                         </TableFooter>
                     </Table>
-                </Paper>
+                </div>
             );
         }
 

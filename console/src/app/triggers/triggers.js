@@ -2,11 +2,11 @@ import React from 'react';
 import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
 import ActionEdit from 'material-ui/svg-icons/editor/mode-edit';
 
 import request from 'superagent/lib/client';
+//import moment from 'moment';
 
 import BaseComponent from '../libs/BaseComponent';
 
@@ -34,137 +34,6 @@ const TriggerOpts = {
     Edit: 1,
     View: 2
 }
-
-const tableData = [
-    {
-        index: 0,
-        name: '订单5分钟未付款自动取消',
-        status: 'Employed',
-    },
-    {
-        index: 1,
-        name: 'Randal White',
-        status: 'Unemployed',
-    },
-    {
-        index: 2,
-        name: 'Stephanie Sanders',
-        status: 'Employed',
-        selected: true,
-    },
-    {
-        index: 3,
-        name: 'Steve Brown',
-        status: 'Employed',
-    },
-    {
-        index: 4,
-        name: 'Joyce Whitten',
-        status: 'Employed',
-    },
-    {
-        index: 5,
-        name: 'Samuel Roberts',
-        status: 'Employed',
-    },
-    {
-        index: 6,
-        name: 'Adam Moore',
-        status: 'Employed',
-    },
-    {
-        index: 1,
-        name: 'Randal White',
-        status: 'Unemployed',
-    },
-    {
-        index: 2,
-        name: 'Stephanie Sanders',
-        status: 'Employed',
-        selected: true,
-    },
-    {
-        index: 3,
-        name: 'Steve Brown',
-        status: 'Employed',
-    },
-    {
-        index: 4,
-        name: 'Joyce Whitten',
-        status: 'Employed',
-    },
-    {
-        index: 5,
-        name: 'Samuel Roberts',
-        status: 'Employed',
-    },
-    {
-        index: 6,
-        name: 'Adam Moore',
-        status: 'Employed',
-    },
-    {
-        index: 1,
-        name: 'Randal White',
-        status: 'Unemployed',
-    },
-    {
-        index: 2,
-        name: 'Stephanie Sanders',
-        status: 'Employed',
-        selected: true,
-    },
-    {
-        index: 3,
-        name: 'Steve Brown',
-        status: 'Employed',
-    },
-    {
-        index: 4,
-        name: 'Joyce Whitten',
-        status: 'Employed',
-    },
-    {
-        index: 5,
-        name: 'Samuel Roberts',
-        status: 'Employed',
-    },
-    {
-        index: 6,
-        name: 'Adam Moore',
-        status: 'Employed',
-    },
-    {
-        index: 1,
-        name: 'Randal White',
-        status: 'Unemployed',
-    },
-    {
-        index: 2,
-        name: 'Stephanie Sanders',
-        status: 'Employed',
-    },
-    {
-        index: 3,
-        name: 'Steve Brown',
-        status: 'Employed',
-    },
-    {
-        index: 4,
-        name: 'Joyce Whitten',
-        status: 'Employed',
-    },
-    {
-        index: 5,
-        name: 'Samuel Roberts',
-        status: 'Employed',
-    },
-    {
-        index: 6,
-        name: 'Adam Moore',
-        status: 'Employed',
-    },
-];
 
 export default class Triggers extends BaseComponent {
 
@@ -199,7 +68,7 @@ export default class Triggers extends BaseComponent {
             if (this.state.data.length == 0)
                 return null;
             return (
-                <Paper zDepth={2}>
+                <div>
                     <div style={{ overflow: 'hidden' }}>
                         <FlatButton
                             label="新建触发器"
@@ -219,10 +88,10 @@ export default class Triggers extends BaseComponent {
                             adjustForCheckbox={false}
                             >
                             <TableRow displayBorder={true}>
-                                <TableHeaderColumn tooltip="序号">#</TableHeaderColumn>
+                                <TableHeaderColumn tooltip="序号" style={{width: '8px'}}>#</TableHeaderColumn>
                                 <TableHeaderColumn>触发器名称</TableHeaderColumn>
-                                <TableHeaderColumn>触发器类型</TableHeaderColumn>
                                 <TableHeaderColumn>触发器标识</TableHeaderColumn>
+                                <TableHeaderColumn>触发器规则</TableHeaderColumn>
                                 <TableHeaderColumn style={{textAlign: 'right', paddingRight: '48px'}}>操作</TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
@@ -236,16 +105,11 @@ export default class Triggers extends BaseComponent {
                                     key={index}
                                     style={{height: '28px'}}
                                     >
-                                    <TableRowColumn
-                                    style={{height: '28px'}}>{index + 1}</TableRowColumn>
-                                    <TableRowColumn
-                                    style={{height: '28px'}}>{row.name}</TableRowColumn>
-                                    <TableRowColumn
-                                    style={{height: '28px'}}>{row.type == 0 ? '普通触发器' : 'Cron触发器'}</TableRowColumn>
-                                    <TableRowColumn
-                                    style={{height: '28px'}}>{row.code}</TableRowColumn>
-                                    <TableRowColumn
-                                    style={{height: '28px'}}>
+                                    <TableRowColumn style={{height: '28px', width: '8px'}}>{index + 1}</TableRowColumn>
+                                    <TableRowColumn style={{height: '28px'}}>{row.name}</TableRowColumn>
+                                    <TableRowColumn style={{height: '28px'}}>{row.code}</TableRowColumn>
+                                    <TableRowColumn style={{height: '28px'}}>{row.type == 0 ? ('间隔: ' + row.value + 's') : ('cron: ' + row.value)}</TableRowColumn>
+                                    <TableRowColumn style={{height: '28px'}}>
                                         <IconButton
                                             iconStyle={styles.smallIcon}
                                             style={styles.small}
@@ -258,7 +122,7 @@ export default class Triggers extends BaseComponent {
                             )) }
                         </TableBody>
                     </Table>
-                </Paper>
+                </div>
             );
         }
 
@@ -278,11 +142,11 @@ export default class Triggers extends BaseComponent {
             if (this.state.triggerOpt === TriggerOpts.None) {
                 return null;
             } else if (this.state.triggerOpt === TriggerOpts.View) {
-                return <TriggerDetail.View />;
+                return <TriggerDetail.View id={this.state.triggerId} />;
             } else if (this.state.triggerOpt === TriggerOpts.Edit) {
-                return <TriggerDetail.Edit />;
+                return <TriggerDetail.Edit id={this.state.triggerId} onUpdated={this.handleUpdated} />;
             } else if (this.state.triggerOpt === TriggerOpts.Create) {
-                return <TriggerDetail.Create />;
+                return <TriggerDetail.Create  onCreated={this.handleCreated} />;
             }
         }
 
@@ -311,12 +175,18 @@ export default class Triggers extends BaseComponent {
         this.setState({triggerOpt: TriggerOpts.Create, triggerId: null});
     }
 
-    handleEdit(item) {
+    handleEdit = (item, e) => {
         this.setState({triggerOpt: TriggerOpts.Edit, triggerId: item.id});
     }
 
-    handleEnable() {
-
+    handleUpdated = () => {
+        this.handleClose();
+        this.load();
+    }
+    
+    handleCreated = () => {
+        this.handleClose();
+        this.load();
     }
 
     handleClose() {

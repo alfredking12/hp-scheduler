@@ -86,6 +86,7 @@ class TriggerDetail extends BaseComponent {
 
         if (code.length != Limit.code.Max) {
             this.error('code', '输入的内容长度必须为 ' + Limit.code.Max + ' 个字符');
+            return false;
         }
 
         if (value.trim().length == 0) {

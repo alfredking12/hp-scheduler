@@ -15,5 +15,20 @@ module.exports = {
             msg: msg
         });
         next();
+    },
+
+    toInt: function(value, defaultValue) {
+        
+        if (value === 0) return value;
+
+        if (value !== 0 && !value) {
+            console.log('defaultValue:' + defaultValue);
+            return defaultValue;
+        }
+
+        if(/^(\-|\+)?([0-9]+|Infinity)$/.test(value))
+            return Number(value);
+
+        return defaultValue;
     }
 }

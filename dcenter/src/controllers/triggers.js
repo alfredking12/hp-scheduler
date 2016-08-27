@@ -20,7 +20,7 @@ module.exports = {
     addItem: function (req, res, next) {
         var data = req.body;
 
-        //TODO: v0.0.2 重复次数（需删除）        
+        //TODO: v0.0.2 重复次数（需删除下面2行代码）        
         if (data.repeat !== undefined)
             delete data.repeat;
 
@@ -68,7 +68,7 @@ module.exports = {
         if (data.code !== undefined)
             delete data.code;
 
-        //TODO: v0.0.2 重复次数（需删除）        
+        //TODO: v0.0.2 重复次数（需删除下面2行代码）        
         if (data.repeat !== undefined)
             delete data.repeat;
 

@@ -4,5 +4,7 @@ module.exports = {
     db_pool_min: 0,
     db_pool_idle: 10000,
 
-    rabbitmq_url: 'amqp://mquser:Bysun@120.26.242.51:5672'
+    rabbitmq_url: 'amqp://mquser:Bysun@120.26.242.51:5672',
+
+    max_page_size: 200
 }

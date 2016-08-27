@@ -2,21 +2,24 @@ var moment = require('moment');
 var TaskLogs = require('../models/tasklogs');
 var util = require('../libs/util');
 var db = require('../libs/db');
+var config = require('../config/config');
 
 module.exports = {
     getList: function(req,res,next) {
 
-        var page = req.params.page || 0;
-        var per_page = req.params.per_page || 25;
+        var page = util.toInt(req.params.page, 0);
+        var per_page = util.toInt(req.params.per_page, 25);
         var key = req.params.key;
-        var stime = req.params.stime;
-        var etime = req.params.etime;
+        var stime = util.toInt(req.params.stime);
+        var etime = util.toInt(req.params.etime);
 
-        //TODO: 分页参数校验
+        if (per_page > config.max_page_size) per_page = config.max_page_size;
+
+        //TODO: 支持关键字模糊查询
+        //TODO: 支持日期范围查询
 
         var start = page * per_page;
         var end = start + per_page;
-        var cnt = 0;
 
         TaskLogs.define().count({})
             .then(function(cnt){

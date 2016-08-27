@@ -14,6 +14,11 @@ import TaskRecordDetail from './taskrecord_detail';
 
 import config from '../config/config';
 
+require('rc-pagination/assets/index.css');
+require('rc-select/assets/index.css');
+import Pagination from 'rc-pagination';
+import Select from 'rc-select';
+
 const TaskRecordOpts = {
     None: -1,
     View: 2
@@ -47,6 +52,10 @@ export default class TaskRecords extends BaseComponent {
 
             taskRecordOpt: TaskRecordOpts.None,
 
+
+            pageSize: 30,
+            page: 0,
+            count: 0,
             data: []
         });
 
@@ -72,8 +81,10 @@ export default class TaskRecords extends BaseComponent {
         } else if (item.status == 0) {
             return '未开始';
         } else if (item.status == 1) {
-            return '执行中:' + item.progress + "%";
+            return '执行中:' + (item.progress || 0) + "%";
         } else if (item.status == 3) {
+            return '失败' + (item.progress || 0) + "%";
+        } else if (item.status == 4) {
             return '执行超时';
         } else {
             return '未知';
@@ -83,9 +94,34 @@ export default class TaskRecords extends BaseComponent {
     render() {
         var _this = this;
 
+        var page = this.state.page;
+        var per_page = this.state.pageSize;
+
+
+        const pager = (style) => {
+            return (
+                <div style={{overflow: 'hidden'}}>
+                    <div style={style}>
+                        <Pagination 
+                            showSizeChanger
+                            className="ant-pagination"
+                            current={this.state.page + 1}
+                            defaultCurrent={1}
+                            total={this.state.count}
+                            pageSize={this.state.pageSize}
+                            onChange={this.handlePageChange.bind(this)} 
+                            pageSizeOptions={['30', '50', '100', '200']} 
+                            selectComponentClass={Select} 
+                            onShowSizeChange={this.handleSizeChange.bind(this)} />
+                    </div>
+                </div>
+            );
+        }
+
         const getTable = () => {
             return (
                 <div>
+                    {pager({paddingRight: '10px', float:'right'})}
                     <Table
                         height={this.state.height}
                         fixedHeader={this.state.fixedHeader}
@@ -102,7 +138,7 @@ export default class TaskRecords extends BaseComponent {
                                 <TableHeaderColumn>创建时间</TableHeaderColumn>
                                 <TableHeaderColumn>开始时间</TableHeaderColumn>
                                 <TableHeaderColumn>结束时间</TableHeaderColumn>
-                                <TableHeaderColumn style={{width: '20px', textAlign:'center'}}>耗时</TableHeaderColumn>
+                                <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>耗时</TableHeaderColumn>
                                 <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>执行结果</TableHeaderColumn>
                                 <TableHeaderColumn style={{textAlign: 'right', width: '50px'}}>操作</TableHeaderColumn>
                             </TableRow>
@@ -115,13 +151,13 @@ export default class TaskRecords extends BaseComponent {
                             {this.state.data.map((row, index) => (
                                 <TableRow key={index}
                                     style={{height: '28px'}}>
-                                    <TableRowColumn style={{height: '28px', width: '20px'}}>{index + 1}</TableRowColumn>
+                                    <TableRowColumn style={{height: '28px', width: '20px'}}>{index + 1 + page * per_page}</TableRowColumn>
                                     <TableRowColumn style={{height: '28px'}}>{row.name}</TableRowColumn>
                                     <TableRowColumn style={{height: '28px'}}>{row.id}</TableRowColumn>
                                     <TableRowColumn style={{height: '28px'}}>{row.updatedAt}</TableRowColumn>
                                     <TableRowColumn style={{height: '28px'}}>{row.stime}</TableRowColumn>
                                     <TableRowColumn style={{height: '28px'}}>{row.etime}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px', width: '20px', textAlign:'center'}}>{row.etime ? ((row.etime - row.stime) + 'ms') : '-'}</TableRowColumn>
+                                    <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{row.spent}</TableRowColumn>
                                     <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{_this.status(row)}</TableRowColumn>
                                     <TableRowColumn style={{width: '50px', height: '28px'}}>
                                         <IconButton
@@ -142,13 +178,7 @@ export default class TaskRecords extends BaseComponent {
                                 </TableRow>
                             )) }
                         </TableBody>
-                        <TableFooter adjustForCheckbox={false} >
-                            <TableRow>
-                                <TableRowColumn colSpan="8" style={{textAlign: 'center'}}>
-                                    Super Footer
-                                </TableRowColumn>
-                            </TableRow>
-                        </TableFooter>
+                        {pager({paddingBottom: '10px', paddingRight: '10px', float:'right'})}
                     </Table>
                 </div>
             );
@@ -182,6 +212,29 @@ export default class TaskRecords extends BaseComponent {
         );
     }
     
+    handlePageChange(page) {
+        this.setState({
+            page: page - 1
+        });
+
+        var _this = this;
+        setTimeout(function() {
+            _this.load();
+        }, 0);
+    }
+    
+    handleSizeChange(current, pageSize) {
+        this.setState({
+            pageSize: pageSize,
+            page: 0
+        });
+
+        var _this = this;
+        setTimeout(function() {
+            _this.load();
+        }, 0);
+    }
+    
     handleView(item) {
         this.setState({taskRecordOpt: TaskRecordOpts.View, taskRecord: item});
     }
@@ -195,8 +248,12 @@ export default class TaskRecords extends BaseComponent {
     }
 
     _load(cb) {
+        
+        var page = this.state.page;
+        var per_page = this.state.pageSize;
+
         request
-            .get(config.api_server + '/taskrecords')
+            .get(config.api_server + '/taskrecords?page=' + page + '&per_page=' + per_page)
             .set('Accept', 'application/json')
             .end(function (err, res) {
                 if (err) {
@@ -207,7 +264,7 @@ export default class TaskRecords extends BaseComponent {
             });
     }
 
-    load(cb) {
+    load() {
         var _this = this;
 
         _this.showLoading();
@@ -219,12 +276,13 @@ export default class TaskRecords extends BaseComponent {
             if (err) {
                 _this.showAlert('提示', '加载任务记录列表失败', '重新加载', function() {
                     setTimeout(function(){
-                        _this.load(cb);
+                        _this.load();
                     }, 0);
                 });
             } else {
                 _this.setState({
-                    data: data.data
+                    data: data.data.data,
+                    count: data.data.count
                 });
             }
         });

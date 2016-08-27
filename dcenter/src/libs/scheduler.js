@@ -101,50 +101,54 @@ function scheduler() {
             TaskRecordModel.findById(taskid)
                 .then(function(data){
 
-                    //日志顺序颠倒，忽略
-                    if (data.status === 2 || data.status === 3 || data.status === 4) {
-                        return;
-                    }
-                    
-                    var item = {};
+                    var item = {
+                        stime: log.time,
+                        etime: log.time,
+                        progress: log.progress,
+                    };
 
-                    if (!data.stime) {
-                        item.stime = log.time;
-                    }
-
-                    if (!data.etime) {
-                        item.etime = log.time;
-                    } else {
-                        //日志顺序颠倒，忽略
-                        if (data.etime > log.time) {
-                            return;
-                        }
-                    }
-
-                    item.progress = log.progress;
-                    if (item.progress === undefined) item.process = null;
-
-                    if (data.progress !== null && item.progress !== null) {
-
+                    if (item.progress) {
                         if (item.progress < 0) {
                             item.progress = -1;
                         } else if (item.progress > 100) {
                             item.progress = 100;
                         }
-
-                        //日志顺序颠倒，忽略
-
-                        if (data.progress > item.progress) {
-                            return;
-                        }
                     }
-
+                    
                     if (item.progress === -1) {
                         item.status = 3;
                     } else if (item.progress === 100) {
                         item.status = 2;
                     } else {
                         item.status = 1;
+                    }
+
+                    if (item.progress == -1) {
+                        delete item.progress;
+                    }
+
+                    if (data) {
+
+                        if (data.stime) {
+                            delete item.stime;
+                        }
+
+                        //日志顺序颠倒，忽略
+                        
+                        if (data.status === 2 || data.status === 3 || data.status === 4) {
+                            Log.w('日志顺序颠倒，忽略(A):::' + JSON.stringify(log));
+                            return;
+                        }
+
+                        if (data.etime && data.etime > log.time) {
+                            Log.w('日志顺序颠倒，忽略(B):::' + JSON.stringify(log)); 
+                            return;
+                        }
+                        
+                        if (data.progress && log.progress && log.progress != -1 && data.progress > log.progress) {
+                            Log.w('日志顺序颠倒，忽略(C):::' + JSON.stringify(log));
+                            return;
+                        }
                     }
 
                     // 更新任务记录状态
@@ -155,9 +159,7 @@ function scheduler() {
                 .catch(function(err){
                     Log.f("更新任务记录状态失败", err);
                 });
-
         });
-
     }
 
     this.update = function(trigger) {
@@ -381,7 +383,7 @@ function scheduler() {
     this.run = function(task) {
         //Log.i("SCHEDULER::: " + JSON.stringify(task)); return ;
         
-        //TODO: 重复任务不要重复触发
+        // 重复任务不要重复触发
 
         var data = {
             task_id: task.id,

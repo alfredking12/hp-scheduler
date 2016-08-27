@@ -6,9 +6,13 @@ import Dialog from 'material-ui/Dialog';
 import request from 'superagent/lib/client';
 
 import BaseComponent from '../libs/BaseComponent';
-import PageToolbar from '../libs/PageToolbar';
 
 import config from '../config/config';
+
+require('rc-pagination/assets/index.css');
+require('rc-select/assets/index.css');
+import Pagination from 'rc-pagination';
+import Select from 'rc-select';
 
 export default class TaskLogs extends BaseComponent {
 
@@ -22,6 +26,8 @@ export default class TaskLogs extends BaseComponent {
             showRowHover: false,
             height: (window.innerHeight - 300) + 'px',
 
+            pageSize: 30,
+            page: 0,
             count: 0,
             data: []
         });
@@ -53,20 +59,39 @@ export default class TaskLogs extends BaseComponent {
         return item.message;
     }
 
-    handleRefresh() {
-        this.load();
-    }
-
     render() {
         var _this = this;
 
 
-        var page = this.refs.pageToolbar ? this.refs.pageToolbar.state.page : 0;
-        var per_page = this.refs.pageToolbar ? this.refs.pageToolbar.state.per_page : 0;
+        var page = this.state.page;
+        var per_page = this.state.pageSize;
+
+
+        const pager = (style) => {
+            return (
+                <div style={{overflow: 'hidden'}}>
+                    <div style={style}>
+                        <Pagination 
+                            showSizeChanger
+                            className="ant-pagination"
+                            current={this.state.page + 1}
+                            defaultCurrent={1}
+                            total={this.state.count}
+                            pageSize={this.state.pageSize}
+                            onChange={this.handlePageChange.bind(this)} 
+                            pageSizeOptions={['30', '50', '100', '200']} 
+                            selectComponentClass={Select} 
+                            onShowSizeChange={this.handleSizeChange.bind(this)} />
+                    </div>
+                </div>
+            );
+        }
+                    
 
         const getTable = () => {
             return (
                 <div>
+                    {pager({paddingRight: '10px', float:'right'})}
                     <Table
                         height={this.state.height}
                         fixedHeader={this.state.fixedHeader}
@@ -101,11 +126,7 @@ export default class TaskLogs extends BaseComponent {
                             )) }
                         </TableBody>
                     </Table>
-                    <PageToolbar
-                        ref="pageToolbar"
-                        onRefresh={this.handleRefresh.bind(this)}
-                        count={this.state.count}
-                    />
+                    {pager({paddingBottom: '10px', paddingRight: '10px', float:'right'})}
                 </div>
             );
         }
@@ -120,14 +141,37 @@ export default class TaskLogs extends BaseComponent {
             </div>
         );
     }
+
+    handlePageChange(page) {
+        this.setState({
+            page: page - 1
+        });
+
+        var _this = this;
+        setTimeout(function() {
+            _this.load();
+        }, 0);
+    }
+    
+    handleSizeChange(current, pageSize) {
+        this.setState({
+            pageSize: pageSize,
+            page: 0
+        });
+
+        var _this = this;
+        setTimeout(function() {
+            _this.load();
+        }, 0);
+    }
     
     _load(cb) {
 
-        var page = this.refs.pageToolbar.state.page;
-        var per_page = this.refs.pageToolbar.state.per_page;
+        var page = this.state.page;
+        var per_page = this.state.pageSize;
 
         request
-            .get(config.api_server + '/tasklogs?page=' + page + '&per_page' + per_page)
+            .get(config.api_server + '/tasklogs?page=' + page + '&per_page=' + per_page)
             .set('Accept', 'application/json')
             .end(function (err, res) {
                 if (err) {

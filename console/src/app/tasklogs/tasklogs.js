@@ -14,6 +14,8 @@ require('rc-select/assets/index.css');
 import Pagination from 'rc-pagination';
 import Select from 'rc-select';
 
+//TODO: 支持时间范围查询和关键字查询
+
 export default class TaskLogs extends BaseComponent {
 
     constructor(props, context) {

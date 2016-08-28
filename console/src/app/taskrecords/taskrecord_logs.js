@@ -48,9 +48,6 @@ export default class TaskRecordLogs extends TaskLogList {
 
     handlePageChange(page) {
 
-        this.close();
-        return;
-        
         this.setState({
             page: page - 1
         });

@@ -463,7 +463,7 @@ class TriggerEdit extends TriggerView {
                     _this.showAlert('提示', res.body.msg, '知道了');
                     
                 } else {
-                    _this.props.onUpdated && _this.props.onUpdated();
+                    _this.close(true);
                 }
             });
     }
@@ -560,14 +560,10 @@ class TriggerCreate extends TriggerDetail {
                         }
                     });
                 } else {
-                    _this.props.onCreated && _this.props.onCreated();
+                    _this.close(true);
                 }
             });
     }
-}
-
-TriggerCreate.defaultProps = {
-    onCreated: null
 }
 
 exports.View = TriggerView;

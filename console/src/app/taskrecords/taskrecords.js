@@ -238,7 +238,10 @@ export default class TaskRecords extends BaseComponent {
     }
 
     handleLog(item) {
-        this.showDialog("任务日志", TaskRecordLogs, {});
+        this.showDialog({
+            title: "任务日志", 
+            type: TaskRecordLogs
+        });
     }
 
     handleClose() {

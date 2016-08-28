@@ -57,6 +57,8 @@ export default class BaseComponent extends React.Component {
         setTimeout(function(){
             var root = _this.refs[_this.state.__root_id];
 
+            if (!root) return;
+
             var left = (root.parentElement.scrollWidth - Loading_Size) / 2;
             var top = (root.parentElement.scrollHeight - Loading_Size) / 3;
 
@@ -75,14 +77,21 @@ export default class BaseComponent extends React.Component {
         window.removeEventListener('resize', this.handleResize.bind(this));
     }
 
-    close() {
-        this.props.parent && this.props.parent.__handleDialogClose();
+    close(data) {
+        this.props.__dialog_parent && this.props.__dialog_parent.__handleDialogClose();
+        this.props.__dialog_callback && this.props.__dialog_callback(this.props, data);
     }
 
-    showDialog(title, type, props) {
+    showDialog(options) {
+        var title = options.title;
+        var type = options.type;
+        var props = options.props || {};
+        var callback = options.callback;
+
         var component = React.createFactory(type);
         Object.assign(props, {
-            parent: this
+            __dialog_parent: this,
+            __dialog_callback: callback  
         });
         
         var _this = this;
@@ -126,6 +135,8 @@ export default class BaseComponent extends React.Component {
         setTimeout(function(){
             var root = _this.refs[_this.state.__root_id];
 
+            if (!root) return;
+            
             var left = (root.parentElement.scrollWidth - Loading_Size) / 2;
             var top = (root.parentElement.scrollHeight - Loading_Size) / 3;
 
@@ -217,6 +228,7 @@ export default class BaseComponent extends React.Component {
                     modal={false}
                     open={this.state.__dialog_show}
                     onRequestClose={this.__handleDialogClose.bind(this)}
+                    autoScrollBodyContent={true}
                     >
                     {this.state.__dialog_component}
                 </Dialog>

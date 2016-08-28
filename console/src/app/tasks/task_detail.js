@@ -390,7 +390,7 @@ class TaskEdit extends TaskView {
                     _this.showAlert('提示', res.body.msg, '知道了');
                     
                 } else {
-                    _this.props.onUpdated && _this.props.onUpdated();
+                    _this.close(true);
                 }
             });
     }
@@ -460,7 +460,7 @@ class TaskCreate extends TaskDetail {
                         }
                     });
                 } else {
-                    _this.props.onCreated && _this.props.onCreated();
+                    _this.close(true);
                 }
             });
     }

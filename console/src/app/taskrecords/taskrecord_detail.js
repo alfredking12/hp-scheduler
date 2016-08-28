@@ -23,7 +23,6 @@ export default class TaskRecordDetail extends TaskDetail.View {
             }
         });
     }
-
     
     componentDidMount() {
         this.load();

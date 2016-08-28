@@ -55,6 +55,9 @@ export default class BaseComponent extends React.Component {
     }
 
     handleResize() {
+
+        console.log('handleResize:' + this.constructor.name);
+
         var _this = this;
         setTimeout(function(){
             var root = _this.refs[_this.state.__root_id];
@@ -72,11 +75,16 @@ export default class BaseComponent extends React.Component {
     }
 
     componentDidMount() {
-        window.addEventListener('resize', this.handleResize.bind(this));
+        window.addEventListener('resize', this.__handleResize);
+
+        console.log('componentDidMount:' + this.constructor.name);
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize.bind(this));
+        this.__will_unmount = true;
+        window.removeEventListener('resize', this.__handleResize);
+
+        console.log('componentWillUnmount:' + this.constructor.name);
     }
 
     close(data) {
@@ -102,6 +110,10 @@ export default class BaseComponent extends React.Component {
             __dialog_title: title, 
             __dialog_component: component(props)
         })
+    }
+
+    __handleResize = (e) => {
+        this.handleResize(e);
     }
 
     showAlert(title, text, actions, callback) {
@@ -153,9 +165,11 @@ export default class BaseComponent extends React.Component {
     hideLoading() {
         var _this = this;
         setTimeout(function(){
-            _this.setState({
-                __loading_show: false
-            });
+            if (!_this.__will_unmount) {
+                _this.setState({
+                    __loading_show: false
+                });
+            }
         }, 1000);
     }
 

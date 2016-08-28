@@ -53,8 +53,6 @@ export default class TaskRecords extends BaseComponent {
             count: 0,
             data: []
         });
-
-        this.handleClose = this.handleClose.bind(this);
     }
 
     handleResize(e) {

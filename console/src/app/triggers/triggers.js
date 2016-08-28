@@ -149,7 +149,7 @@ export default class Triggers extends BaseComponent {
         });
     }
 
-    handleEdit = (item, e) => {
+    handleEdit(item) {
         var _this = this;
         this.showDialog({
             title: "修改触发器", 

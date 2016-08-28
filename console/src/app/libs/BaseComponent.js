@@ -49,6 +49,8 @@ export default class BaseComponent extends React.Component {
             __snack_title: '',
             __snack_duration: 0,
         };
+
+        this.__handleResize = this.__handleResize.bind(this);
     }
 
     handleResize() {
@@ -109,7 +111,7 @@ export default class BaseComponent extends React.Component {
         })
     }
 
-    __handleResize = (e) => {
+    __handleResize(e) {
         this.handleResize(e);
     }
 

@@ -30,9 +30,6 @@ export default class BaseComponent extends React.Component {
         super(props, context);
 
         this.state = {
-
-            __root_id: this.__generate_id(),
-
             //alert(Dialog)
             __alert_title: ' ',
             __alert_text: ' ',
@@ -60,12 +57,12 @@ export default class BaseComponent extends React.Component {
 
         var _this = this;
         setTimeout(function(){
-            var root = _this.refs[_this.state.__root_id];
+            var root = _this.refs.root;
 
             if (!root) return;
 
-            var left = (root.parentElement.scrollWidth - Loading_Size) / 2;
-            var top = (root.parentElement.scrollHeight - Loading_Size) / 3;
+            var left = (root.scrollWidth - Loading_Size) / 2;
+            var top = (root.scrollHeight - Loading_Size) / 3;
 
             _this.setState({
                 __loading_left: left,
@@ -147,12 +144,12 @@ export default class BaseComponent extends React.Component {
     showLoading() {
         var _this = this;
         setTimeout(function(){
-            var root = _this.refs[_this.state.__root_id];
+            var root = _this.refs.root;
 
             if (!root) return;
 
-            var left = (root.parentElement.scrollWidth - Loading_Size) / 2;
-            var top = (root.parentElement.scrollHeight - Loading_Size) / 3;
+            var left = (root.scrollWidth - Loading_Size) / 2;
+            var top = (root.scrollHeight - Loading_Size) / 3;
 
             _this.setState({
                 __loading_show: true,
@@ -181,14 +178,6 @@ export default class BaseComponent extends React.Component {
         });
     }
 
-    __generate_id() {
-        var Max = 99999;
-        var Min = 10000;
-        var Range = Max - Min;   
-        var Rand = Math.random();   
-        return(Min + Math.round(Rand * Range)) + ''; 
-    }
-
     render() {
         var _this = this;
 
@@ -203,7 +192,7 @@ export default class BaseComponent extends React.Component {
             : [];
 
         return (
-            <div ref={this.state.__root_id } style={styles.container}>
+            <div ref="root" style={styles.container}>
 
                 {
                     this.state.__loading_show ? 

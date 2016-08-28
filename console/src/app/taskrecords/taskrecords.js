@@ -11,6 +11,7 @@ import request from 'superagent/lib/client';
 import BaseComponent from '../libs/BaseComponent';
 
 import TaskRecordDetail from './taskrecord_detail';
+import TaskRecordLogs from './taskrecord_logs';
 
 import config from '../config/config';
 
@@ -64,17 +65,14 @@ export default class TaskRecords extends BaseComponent {
         this.handleClose = this.handleClose.bind(this);
     }
 
-    handleResize = (e) => {
+    handleResize(e) {
+        super.handleResize(e);
         this.setState({height: (window.innerHeight - 142) + 'px'});
     }
 
     componentDidMount() {
+        super.componentDidMount();
         this.load();
-        window.addEventListener('resize', this.handleResize);
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize);
     }
 
     status(item) {
@@ -93,7 +91,7 @@ export default class TaskRecords extends BaseComponent {
         }
     }
 
-    render() {
+    _render() {
         var _this = this;
 
         var page = this.state.page;
@@ -196,8 +194,6 @@ export default class TaskRecords extends BaseComponent {
 
         return (
             <div>
-                
-                {super.render()}
 
                 <Dialog
                     title={'任务记录信息'}
@@ -242,7 +238,7 @@ export default class TaskRecords extends BaseComponent {
     }
 
     handleLog(item) {
-        alert('log');
+        this.showDialog("任务日志", TaskRecordLogs, {});
     }
 
     handleClose() {

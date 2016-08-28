@@ -99,7 +99,7 @@ const Main = () => (
     <MuiThemeProvider muiTheme={muiTheme}>
         <Router history={history}>
             <Route path="/" component={App}>
-                ＜IndexRedirect to="/triggers" />
+                ＜IndexRoute component={Triggers} />
                 <Route path="/triggers" component={Triggers}/>
                 <Route path="/tasks" component={Tasks}/>
                 <Route path="/taskrecords" component={TaskRecords}/>

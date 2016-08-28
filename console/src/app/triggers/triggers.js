@@ -57,20 +57,17 @@ export default class Triggers extends BaseComponent {
         this.handleClose = this.handleClose.bind(this);
     }
 
-    handleResize = (e) => {
+    handleResize(e) {
+        super.handleResize(e);
         this.setState({height: (window.innerHeight - 130) + 'px'});
     }
 
     componentDidMount() {
+        super.componentDidMount();
         this.load();
-        window.addEventListener('resize', this.handleResize);
     }
 
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize);
-    }
-
-    render() {
+    _render() {
 
         var _this = this;
 
@@ -169,9 +166,6 @@ export default class Triggers extends BaseComponent {
 
         return (
             <div>
-                
-                {super.render()}
-
                 <Dialog
                     title={getTriggerTitle()}
                     modal={false}
@@ -209,6 +203,7 @@ export default class Triggers extends BaseComponent {
                             _this.showAlert('错误提示', '删除触发器失败', '知道了');
                         } else {
                             _this.load();
+                            _this.showSnack('触发器删除成功');
                         }
                     });
             }
@@ -218,11 +213,13 @@ export default class Triggers extends BaseComponent {
     handleUpdated = () => {
         this.handleClose();
         this.load();
+        this.showSnack('触发器更新成功');
     }
     
     handleCreated = () => {
         this.handleClose();
         this.load();
+        this.showSnack('触发器创建成功');
     }
 
     handleClose() {

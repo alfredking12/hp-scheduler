@@ -1,31 +1,22 @@
 import React from 'react';
 
 require('rc-pagination/assets/index.css');
-require('rc-select/assets/index.css');
 import Pagination from 'rc-pagination';
-import Select from 'rc-select';
 
 import request from 'superagent/lib/client';
 
-import TaskLogList from './tasklog_list';
+import TaskLogList from '../tasklogs/tasklog_list';
 
 import config from '../config/config';
 
-//TODO: 支持时间范围查询和关键字查询
-
-export default class TaskLogs extends TaskLogList {
+export default class TaskRecordLogs extends TaskLogList {
 
     constructor(props, context) {
         super(props, context);
 
         Object.assign(this.state, {
-            height: (window.innerHeight - 300) + 'px',
+            height: '300px'
         });
-    }
-
-    handleResize(e) {
-        super.handleResize(e);
-        this.setState({height: (window.innerHeight - 300) + 'px'});
     }
 
     _render() {
@@ -36,16 +27,12 @@ export default class TaskLogs extends TaskLogList {
                 <div style={{overflow: 'hidden'}}>
                     <div style={style}>
                         <Pagination 
-                            showSizeChanger
                             className="ant-pagination"
                             current={this.state.page + 1}
                             defaultCurrent={1}
                             total={this.state.count}
-                            pageSize={this.state.pageSize}
-                            onChange={this.handlePageChange.bind(this)} 
-                            pageSizeOptions={['30', '50', '100', '200']} 
-                            selectComponentClass={Select} 
-                            onShowSizeChange={this.handleSizeChange.bind(this)} />
+                            pageSize={50}
+                            onChange={this.handlePageChange.bind(this)} />
                     </div>
                 </div>
             );
@@ -53,7 +40,6 @@ export default class TaskLogs extends TaskLogList {
 
         return (
             <div>
-                {pager({paddingRight: '10px', float:'right'})}
                 {super._render()}
                 {pager({paddingBottom: '10px', paddingRight: '10px', float:'right'})}
             </div>
@@ -61,20 +47,12 @@ export default class TaskLogs extends TaskLogList {
     }
 
     handlePageChange(page) {
+
+        this.close();
+        return;
+        
         this.setState({
             page: page - 1
-        });
-
-        var _this = this;
-        setTimeout(function() {
-            _this.load();
-        }, 0);
-    }
-    
-    handleSizeChange(current, pageSize) {
-        this.setState({
-            pageSize: pageSize,
-            page: 0
         });
 
         var _this = this;

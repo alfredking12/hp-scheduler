@@ -55,20 +55,17 @@ export default class Tasks extends BaseComponent {
         this.handleClose = this.handleClose.bind(this);
     }
 
-    handleResize = (e) => {
+    handleResize(e) {
+        super.handleResize(e);
         this.setState({height: (window.innerHeight - 130) + 'px'});
     }
 
     componentDidMount() {
+        super.componentDidMount();
         this.load();
-        window.addEventListener('resize', this.handleResize);
     }
 
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize);
-    }
-
-    render() {
+    _render() {
         var _this = this;
 
         const getTable = () => {
@@ -153,16 +150,14 @@ export default class Tasks extends BaseComponent {
             } else if (this.state.taskOpt === TaskOpts.View) {
                 return <TaskDetail.View id={this.state.taskId} />;
             } else if (this.state.taskOpt === TaskOpts.Edit) {
-                return <TaskDetail.Edit id={this.state.taskId} onUpdated={this.handleUpdated} />;
+                return <TaskDetail.Edit id={this.state.taskId} onUpdated={this.handleUpdated.bind(this)} />;
             } else if (this.state.taskOpt === TaskOpts.Create) {
-                return <TaskDetail.Create onCreated={this.handleCreated}  />;
+                return <TaskDetail.Create onCreated={this.handleCreated.bind(this)}  />;
             }
         }
 
         return (
             <div>
-                
-                {super.render()}
 
                 <Dialog
                     title={getTaskTitle()}
@@ -175,19 +170,20 @@ export default class Tasks extends BaseComponent {
                 </Dialog>
 
                 {getTable() }
-
             </div>
         );
     }
     
-    handleUpdated = () => {
+    handleUpdated() {
         this.handleClose();
         this.load();
+        this.showSnack('任务更新成功');
     }
     
-    handleCreated = () => {
+    handleCreated() {
         this.handleClose();
         this.load();
+        this.showSnack('任务创建成功');
     }
 
     handleCreate() {
@@ -211,6 +207,7 @@ export default class Tasks extends BaseComponent {
                             _this.showAlert('错误提示', '删除任务失败', '知道了');
                         } else {
                             _this.load();
+                            _this.showSnack('任务删除成功');
                         }
                     });
             }

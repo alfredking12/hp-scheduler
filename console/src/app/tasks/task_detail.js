@@ -144,12 +144,10 @@ class TaskDetail extends BaseComponent {
         this.setState({ data: data });
     };
 
-    render() {
+    _render() {
 
         return (
             <div>
-            
-                {super.render()}
 
                 <TextField
                     style={styles.TextField}
@@ -337,10 +335,10 @@ class TaskEdit extends TaskView {
         });
     }
 
-    render() {
+    _render() {
         return (
             <div>
-                {super.render() }
+                {super._render() }
 
                 <div style={{overflow: 'hidden'}}>
                     <RaisedButton 
@@ -380,11 +378,13 @@ class TaskEdit extends TaskView {
             .set('Accept', 'application/json')
             .send(data)
             .end(function (err, res) {
-                if (err) {
-                    _this.showAlert('提示', '修改任务失败', '重试', function() {
-                        setTimeout(function(){
-                            _this.submit(data);
-                        }, 0);
+                if (err || res.body.ret) {
+                    _this.showAlert('提示', '修改任务失败', ['重试', '知道了'], function(index) {
+                        if (index == 0) {
+                            setTimeout(function(){
+                                _this._submit(data);
+                            }, 0);
+                        }
                     });
                 } else if (res.body.ret) {
                     _this.showAlert('提示', res.body.msg, '知道了');
@@ -409,10 +409,10 @@ class TaskCreate extends TaskDetail {
         this.handleCreate = this.handleCreate.bind(this);
     }
 
-    render() {
+    _render() {
         return (
             <div>
-                {super.render() }
+                {super._render() }
 
                 <div style={{overflow: 'hidden'}}>
                     <RaisedButton 
@@ -451,11 +451,13 @@ class TaskCreate extends TaskDetail {
             .set('Accept', 'application/json')
             .send(data)
             .end(function (err, res) {
-                if (err) {
-                    _this.showAlert('提示', '创建任务失败', '重试', function() {
-                        setTimeout(function(){
-                            _this.submit(data);
-                        }, 0);
+                if (err || res.body.ret) {
+                    _this.showAlert('提示', '创建任务失败', ['重试', '知道了'], function(index) {
+                        if (index == 0) {
+                            setTimeout(function(){
+                                _this._submit(data);
+                            }, 0);
+                        }
                     });
                 } else {
                     _this.props.onCreated && _this.props.onCreated();

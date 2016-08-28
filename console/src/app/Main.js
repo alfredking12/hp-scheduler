@@ -3,7 +3,7 @@
  * which incorporates components provided by Material-UI.
  */
 import React, {Component} from 'react';
-import { Router, Route, hashHistory, IndexRoute, browserHistory, Link } from 'react-router';
+import { IndexRedirect, Router, Route, hashHistory, IndexRoute, browserHistory, Link } from 'react-router';
 
 import {deepOrange500} from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -99,7 +99,7 @@ const Main = () => (
     <MuiThemeProvider muiTheme={muiTheme}>
         <Router history={history}>
             <Route path="/" component={App}>
-                ＜IndexRoute component={Triggers} />
+                <IndexRedirect to='/triggers' />
                 <Route path="/triggers" component={Triggers}/>
                 <Route path="/tasks" component={Tasks}/>
                 <Route path="/taskrecords" component={TaskRecords}/>

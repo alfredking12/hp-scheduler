@@ -20,11 +20,6 @@ require('rc-select/assets/index.css');
 import Pagination from 'rc-pagination';
 import Select from 'rc-select';
 
-const TaskRecordOpts = {
-    None: -1,
-    View: 2
-}
-
 const styles = {
     smallIcon: {
         width: 18,
@@ -52,9 +47,6 @@ export default class TaskRecords extends BaseComponent {
             stripedRows: true,
             showRowHover: false,
             height: (window.innerHeight - 142) + 'px',
-
-            taskRecordOpt: TaskRecordOpts.None,
-
 
             pageSize: 30,
             page: 0,
@@ -97,7 +89,6 @@ export default class TaskRecords extends BaseComponent {
         var page = this.state.page;
         var per_page = this.state.pageSize;
 
-
         const pager = (style) => {
             return (
                 <div style={{overflow: 'hidden'}}>
@@ -118,94 +109,67 @@ export default class TaskRecords extends BaseComponent {
             );
         }
 
-        const getTable = () => {
-            return (
-                <div>
-                    {pager({paddingRight: '10px', float:'right'})}
-                    <Table
-                        height={this.state.height}
-                        fixedHeader={this.state.fixedHeader}
-                        fixedFooter={this.state.fixedFooter}
-                        >
-                        <TableHeader
-                            displaySelectAll={false}
-                            adjustForCheckbox={false}
-                            >
-                            <TableRow displayBorder={true}>
-                                <TableHeaderColumn tooltip="序号" style={{width: '20px'}}>#</TableHeaderColumn>
-                                <TableHeaderColumn>任务名称</TableHeaderColumn>
-                                <TableHeaderColumn>任务标识</TableHeaderColumn>
-                                <TableHeaderColumn>创建时间</TableHeaderColumn>
-                                <TableHeaderColumn>开始时间</TableHeaderColumn>
-                                <TableHeaderColumn>结束时间</TableHeaderColumn>
-                                <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>耗时</TableHeaderColumn>
-                                <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>执行结果</TableHeaderColumn>
-                                <TableHeaderColumn style={{textAlign: 'right', width: '50px'}}>操作</TableHeaderColumn>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody
-                            displayRowCheckbox={false}
-                            showRowHover={this.state.showRowHover}
-                            stripedRows={this.state.stripedRows}
-                            >
-                            {this.state.data.map((row, index) => (
-                                <TableRow key={index}
-                                    style={{height: '28px'}}>
-                                    <TableRowColumn style={{height: '28px', width: '20px'}}>{index + 1 + page * per_page}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.name}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.id}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.updatedAt}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.stime}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.etime}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{row.spent}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{_this.status(row)}</TableRowColumn>
-                                    <TableRowColumn style={{width: '50px', height: '28px'}}>
-                                        <IconButton
-                                            iconStyle={styles.smallIcon}
-                                            style={styles.small}
-                                            onTouchTap={_this.handleView.bind(_this, row)} 
-                                            >
-                                            <ActionView />
-                                        </IconButton>
-                                        <IconButton
-                                            iconStyle={styles.smallIcon}
-                                            style={styles.small}
-                                            onTouchTap={_this.handleLog.bind(_this, row)} 
-                                            >
-                                            <ActionLog />
-                                        </IconButton>
-                                    </TableRowColumn>
-                                </TableRow>
-                            )) }
-                        </TableBody>
-                        {pager({paddingBottom: '10px', paddingRight: '10px', float:'right'})}
-                    </Table>
-                </div>
-            );
-        }
-
-        const getTaskRecordComponent = () => {
-            if (this.state.taskRecordOpt === TaskRecordOpts.None) {
-                return null;
-            } else if (this.state.taskRecordOpt === TaskRecordOpts.View) {
-                return <TaskRecordDetail data={this.state.taskRecord} />;
-            }
-        }
-
         return (
             <div>
-
-                <Dialog
-                    title={'任务记录信息'}
-                    modal={false}
-                    open={this.state.taskRecordOpt != TaskRecordOpts.None}
-                    onRequestClose={this.handleClose}
+                {pager({paddingRight: '10px', float:'right'})}
+                <Table
+                    height={this.state.height}
+                    fixedHeader={this.state.fixedHeader}
+                    fixedFooter={this.state.fixedFooter}
                     >
-                    {getTaskRecordComponent()}
-                </Dialog>
-
-                {getTable() }
-
+                    <TableHeader
+                        displaySelectAll={false}
+                        adjustForCheckbox={false}
+                        >
+                        <TableRow displayBorder={true}>
+                            <TableHeaderColumn tooltip="序号" style={{width: '20px'}}>#</TableHeaderColumn>
+                            <TableHeaderColumn>任务名称</TableHeaderColumn>
+                            <TableHeaderColumn>任务标识</TableHeaderColumn>
+                            <TableHeaderColumn>创建时间</TableHeaderColumn>
+                            <TableHeaderColumn>开始时间</TableHeaderColumn>
+                            <TableHeaderColumn>结束时间</TableHeaderColumn>
+                            <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>耗时</TableHeaderColumn>
+                            <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>执行结果</TableHeaderColumn>
+                            <TableHeaderColumn style={{textAlign: 'right', width: '50px'}}>操作</TableHeaderColumn>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody
+                        displayRowCheckbox={false}
+                        showRowHover={this.state.showRowHover}
+                        stripedRows={this.state.stripedRows}
+                        >
+                        {this.state.data.map((row, index) => (
+                            <TableRow key={index}
+                                style={{height: '28px'}}>
+                                <TableRowColumn style={{height: '28px', width: '20px'}}>{index + 1 + page * per_page}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.name}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.id}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.updatedAt}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.stime}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.etime}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{row.spent}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{_this.status(row)}</TableRowColumn>
+                                <TableRowColumn style={{width: '50px', height: '28px'}}>
+                                    <IconButton
+                                        iconStyle={styles.smallIcon}
+                                        style={styles.small}
+                                        onTouchTap={_this.handleView.bind(_this, row)} 
+                                        >
+                                        <ActionView />
+                                    </IconButton>
+                                    <IconButton
+                                        iconStyle={styles.smallIcon}
+                                        style={styles.small}
+                                        onTouchTap={_this.handleLog.bind(_this, row)} 
+                                        >
+                                        <ActionLog />
+                                    </IconButton>
+                                </TableRowColumn>
+                            </TableRow>
+                        )) }
+                    </TableBody>
+                    {pager({paddingBottom: '10px', paddingRight: '10px', float:'right'})}
+                </Table>
             </div>
         );
     }
@@ -234,7 +198,13 @@ export default class TaskRecords extends BaseComponent {
     }
     
     handleView(item) {
-        this.setState({taskRecordOpt: TaskRecordOpts.View, taskRecord: item});
+        this.showDialog({
+            title: '任务记录信息',
+            type: TaskRecordDetail,
+            props: {
+                data: item
+            }
+        })
     }
 
     handleLog(item) {
@@ -242,10 +212,6 @@ export default class TaskRecords extends BaseComponent {
             title: "任务日志", 
             type: TaskRecordLogs
         });
-    }
-
-    handleClose() {
-        this.setState({ taskRecordOpt: TaskRecordOpts.None, taskRecord: null });
     }
 
     _load(cb) {

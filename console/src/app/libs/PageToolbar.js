@@ -61,7 +61,7 @@ export default class PageToolbar extends React.Component {
                 <div>第{this.state.page + 1}/{Math.ceil(this.props.count / this.state.per_page)}页</div>
                 <SelectField
                     value={this.state.per_page}
-                    onChange={this.handleSelectChange}
+                    onChange={this.handleSelectChange.bind(this)}
                     >
                     {
                         this.props.pages.map(function(page, index){
@@ -94,7 +94,7 @@ export default class PageToolbar extends React.Component {
         this.load();
     }
 
-    handleSelectChange = (event, index, value) => {
+    handleSelectChange(event, index, value) {
         this.setState({
             per_page: value,
             page: 0,

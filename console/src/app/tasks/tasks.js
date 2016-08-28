@@ -13,13 +13,6 @@ import TaskDetail from './task_detail';
 
 import config from '../config/config';
 
-const TaskOpts = {
-    None: -1,
-    Create: 0,
-    Edit: 1,
-    View: 2
-}
-
 const styles = {
     smallIcon: {
         width: 18,
@@ -45,8 +38,6 @@ export default class Tasks extends BaseComponent {
             stripedRows: true,
             showRowHover: false,
             height: (window.innerHeight - 130) + 'px',
-
-            taskOpt: TaskOpts.None,
 
             data: []
         });

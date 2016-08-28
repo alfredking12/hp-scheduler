@@ -29,13 +29,6 @@ const styles = {
     },
 }
 
-const TriggerOpts = {
-    None: -1,
-    Create: 0,
-    Edit: 1,
-    View: 2
-}
-
 export default class Triggers extends BaseComponent {
 
     constructor(props, context) {
@@ -47,8 +40,6 @@ export default class Triggers extends BaseComponent {
             stripedRows: true,
             showRowHover: false,
             height: (window.innerHeight - 130) + 'px',
-
-            triggerOpt: TriggerOpts.None,
 
             data: []
         });

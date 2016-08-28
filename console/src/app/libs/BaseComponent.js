@@ -22,6 +22,8 @@ const styles = {
 const Snackbar_Duration = 3000;
 const Loading_Size = 50;
 
+//TODO: Loading需增加遮层
+
 export default class BaseComponent extends React.Component {
 
     constructor(props, context) {
@@ -136,7 +138,7 @@ export default class BaseComponent extends React.Component {
             var root = _this.refs[_this.state.__root_id];
 
             if (!root) return;
-            
+
             var left = (root.parentElement.scrollWidth - Loading_Size) / 2;
             var top = (root.parentElement.scrollHeight - Loading_Size) / 3;
 
@@ -145,7 +147,7 @@ export default class BaseComponent extends React.Component {
                 __loading_left: left,
                 __loading_top: top
             });
-        }, 500);
+        }, 100);
     }
 
     hideLoading() {

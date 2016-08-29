@@ -277,7 +277,10 @@ export default class TaskRecords extends BaseComponent {
     handleLog(item) {
         this.showDialog({
             title: "任务日志", 
-            type: TaskRecordLogs
+            type: TaskRecordLogs,
+            props: {
+                id: item.id
+            }
         });
     }
 

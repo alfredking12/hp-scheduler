@@ -12,25 +12,31 @@ module.exports = {
         var key = req.params.key;
         var stime = util.toInt(req.params.stime);
         var etime = util.toInt(req.params.etime);
+        var task_record_id = req.params.recordid;
 
         if (per_page > config.max_page_size) per_page = config.max_page_size;
 
         var whereSql = [];
         var bind = {};
 
-        if (key) {
-            whereSql.push('(tasks.name like $key or message like $key)');
-            bind.key = '%' + key + '%';
-        }
+        if (!task_record_id) {
+            if (key) {
+                whereSql.push('(tasks.name like $key or message like $key)');
+                bind.key = '%' + key + '%';
+            }
 
-        if (stime) {
-            whereSql.push('tasklogs.time >= $stime');
-            bind.stime = stime;
-        }
+            if (stime) {
+                whereSql.push('tasklogs.time >= $stime');
+                bind.stime = stime;
+            }
 
-        if (etime) {
-            whereSql.push('tasklogs.time < $etime');
-            bind.etime = etime;
+            if (etime) {
+                whereSql.push('tasklogs.time < $etime');
+                bind.etime = etime;
+            }
+        } else {
+            whereSql.push('taskrecords.id = $task_record_id');
+            bind.task_record_id = task_record_id;
         }
 
         if (whereSql.length) {

@@ -42,7 +42,7 @@ jspm_packages
 # tmp
 .tmp
 *.zip
+*.rar
 
 # Insensitive Config
 .config.js
-

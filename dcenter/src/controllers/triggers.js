@@ -2,6 +2,8 @@ var Triggers = require('../models/triggers');
 var util = require('../libs/util');
 var scheduler = require('../libs/scheduler');
 
+//TODO: 优化错误提示
+
 module.exports = {
 
     // 获取触发器列表

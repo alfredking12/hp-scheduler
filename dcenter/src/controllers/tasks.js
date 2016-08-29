@@ -5,6 +5,8 @@ var db = require('../libs/db');
 var scheduler = require('../libs/scheduler');
 var Log = require('../libs/log');
 
+//TODO: 优化错误提示
+
 module.exports = {
 
     getList: function(req,res,next) {

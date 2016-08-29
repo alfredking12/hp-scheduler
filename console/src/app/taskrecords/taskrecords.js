@@ -56,7 +56,7 @@ export default class TaskRecords extends BaseComponent {
             fixedFooter: true,
             stripedRows: true,
             showRowHover: false,
-            height: (window.innerHeight - 280) + 'px',
+            height: (window.innerHeight - 344) + 'px',
 
             start: null,
             end: null,
@@ -71,7 +71,7 @@ export default class TaskRecords extends BaseComponent {
 
     handleResize(e) {
         super.handleResize(e);
-        this.setState({height: (window.innerHeight - 280) + 'px'});
+        this.setState({height: (window.innerHeight - 344) + 'px'});
     }
 
     componentDidMount() {

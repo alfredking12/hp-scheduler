@@ -37,7 +37,7 @@ export default class Tasks extends BaseComponent {
             fixedFooter: true,
             stripedRows: true,
             showRowHover: false,
-            height: (window.innerHeight - 126) + 'px',
+            height: (window.innerHeight - 190) + 'px',
 
             data: []
         });
@@ -45,7 +45,7 @@ export default class Tasks extends BaseComponent {
 
     handleResize(e) {
         super.handleResize(e);
-        this.setState({height: (window.innerHeight - 126) + 'px'});
+        this.setState({height: (window.innerHeight - 190) + 'px'});
     }
 
     componentDidMount() {

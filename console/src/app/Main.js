@@ -10,7 +10,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import RaisedButton from 'material-ui/RaisedButton';
-
+import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
 
 import Tasks from './tasks/tasks';
@@ -22,15 +22,20 @@ var history = hashHistory;
 
 const styles = {
     container: {
-        paddingTop: 16,
-        paddingLeft: 200,
+        paddingTop: 10,
+        paddingLeft: 0,
+        float: 'left'
+    },
+    container_open: {
+        paddingTop: 10,
+        paddingLeft: 190,
         float: 'left'
     },
     paper: {
         display: 'inline-block',
         float: 'left',
         position: 'absolute',
-        margin: '16px 32px 16px 0',
+        margin: '10px 32px 10px 0',
     },
     rightIcon: {
         textAlign: 'center',
@@ -64,8 +69,13 @@ class App extends Component {
         super(props, context);
         
         this.state = {
-            index: 0
+            index: 0,
+            open: false
         }
+    }
+
+    handleMenu() {
+        this.setState({open: !this.state.open});
     }
 
     render() {
@@ -80,12 +90,19 @@ class App extends Component {
 
         return (
             <div>
-                <Paper  zDepth={2} style={styles.paper}>
-                    <div >
-                        {menuItems}
-                    </div>
-                </Paper>
-                <div style={styles.container}>
+                <AppBar
+                    title="分布式任务调度系统 - 管理控制台"
+                    iconClassNameRight="muidocs-icon-navigation-expand-more"
+                    onLeftIconButtonTouchTap={this.handleMenu.bind(this)}
+                />
+                <div style={this.state.open ? {} : {display: 'none'}}>
+                    <Paper zDepth={2} style={styles.paper}>
+                        <div >
+                            {menuItems}
+                        </div>
+                    </Paper>
+                </div>
+                <div style={this.state.open ? styles.container_open : styles.container}>
                     <Paper  zDepth={2}>
                         {this.props.children}
                     </Paper>

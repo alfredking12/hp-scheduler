@@ -53,6 +53,7 @@ export default class TaskLogList extends BaseComponent {
                     height={this.state.height}
                     fixedHeader={this.state.fixedHeader}
                     fixedFooter={this.state.fixedFooter}
+                    selectable={false}
                     style={this.state.tableStyle}
                     >
                     <TableHeader

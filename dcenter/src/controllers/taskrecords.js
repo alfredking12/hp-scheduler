@@ -2,6 +2,7 @@ var TaskRecords = require('../models/taskrecords');
 var util = require('../libs/util');
 var config = require('../config/config');
 var moment = require('moment');
+var Log = require('../libs/log');
 
 module.exports = {
 
@@ -37,24 +38,25 @@ module.exports = {
         if (stime) {
             cond = cond || {};
             Object.assign(cond, {
-                time: {
-                    $gt: stime
+                stime: {
+                    $gte: stime
                 }
             });         
         }
         
         if (etime) {
             cond = cond || {};
-            Object.assign(cond, {
-                time: {
-                    $gt: etime
-                }
+            cond.stime = cond.stime || {};
+            Object.assign(cond.stime, {
+                $lt: etime
             });         
         }
 
         if (cond) {
             options.where = cond;
         } 
+
+        Log.d('options:' + JSON.stringify(options));
 
         var TaskRecordModel = TaskRecords.define();
         TaskRecordModel.count(cond ? {where: cond} : {})

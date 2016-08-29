@@ -70,6 +70,7 @@ export default class Tasks extends BaseComponent {
                     height={this.state.height}
                     fixedHeader={this.state.fixedHeader}
                     fixedFooter={this.state.fixedFooter}
+                    selectable={false}
                     >
                     <TableHeader
                         displaySelectAll={false}

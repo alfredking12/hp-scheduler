@@ -59,14 +59,21 @@ function scheduler() {
         //     value: "*/3 * * * * *"
         // });
 
+        var _this = this;
+        
         Triggers.define();
         Tasks.define();
         TaskLogs.define();
         TaskRecords.define();
-        db.sync({force: false});
-        
-        this.listenLogs();
-        this.initTriggers();        
+        db.sync({force: false})
+            .then(function(){
+                _this.listenLogs();
+                _this.initTriggers();
+            })
+            .catch(function(err){
+                Log.e('初始化失败', err);
+            });
+                
     },
 
     this.listenLogs = function() {

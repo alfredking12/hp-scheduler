@@ -15,19 +15,46 @@ module.exports = {
 
         if (per_page > config.max_page_size) per_page = config.max_page_size;
 
-        //TODO: 支持关键字模糊查询
-        //TODO: 支持日期范围查询
+        var whereSql = [];
+        var bind = {};
+
+        if (key) {
+            whereSql.push('(tasks.name like $key or message like $key)');
+            bind.key = '%' + key + '%';
+        }
+
+        if (stime) {
+            whereSql.push('tasklogs.time >= $stime');
+            bind.stime = stime;
+        }
+
+        if (etime) {
+            whereSql.push('tasklogs.time < $etime');
+            bind.etime = etime;
+        }
+
+        if (whereSql.length) {
+            whereSql = ' where ' + whereSql.join(' AND ');
+        } else {
+            whereSql = '';
+            bind = null
+        }
 
         var start = page * per_page;
         var end = start + per_page;
 
-        TaskLogs.define().count({})
+        var sql = "select tasklogs.*, tasks.name from tasklogs inner join taskrecords on tasklogs.taskrecord_id=taskrecords.id inner join tasks on taskrecords.task_id=tasks.id " + whereSql + " order by tasklogs.time desc LIMIT " + start + "," + per_page;
+        var sql_count = "select count(*) AS count from tasklogs inner join taskrecords on tasklogs.taskrecord_id=taskrecords.id inner join tasks on taskrecords.task_id=tasks.id " + whereSql;
+        var options = bind ? {bind: bind} : {};
+
+        db.select(sql_count, options)
             .then(function(cnt){
+                var cnt = cnt[0].count;
                 if (cnt < start) {
                     return util.ok(req, res, next, {data: [], count: 0});    
                 } else {
                     req.cnt = cnt;
-                    return db.select("select tasklogs.*, tasks.name from tasklogs inner join taskrecords on tasklogs.taskrecord_id=taskrecords.id inner join tasks on taskrecords.task_id=tasks.id order by tasklogs.time desc LIMIT " + start + "," + per_page);
+                    return db.select(sql, options);
                 }
             })
             .then(function (data) {

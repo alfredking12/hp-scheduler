@@ -17,12 +17,9 @@ import 'react-date-picker/index.css';
 import { DateField } from 'react-date-picker';
 
 import moment from 'moment';
-
 import request from 'superagent/lib/client';
 
-
 import BaseComponent from '../libs/BaseComponent';
-
 import TaskRecordDetail from './taskrecord_detail';
 import TaskRecordLogs from './taskrecord_logs';
 

@@ -5,19 +5,27 @@ import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
 import ActionView from 'material-ui/svg-icons/action/visibility';
 import ActionLog from 'material-ui/svg-icons/action/schedule';
+import ActionRefresh from 'material-ui/svg-icons/action/search';
+import TextField from 'material-ui/TextField';
+
+import 'rc-pagination/assets/index.css';
+import 'rc-select/assets/index.css';
+import Pagination from 'rc-pagination';
+import Select from 'rc-select';
+
+import 'react-date-picker/index.css';
+import { DateField } from 'react-date-picker';
+
+import moment from 'moment';
 
 import request from 'superagent/lib/client';
+
 
 import BaseComponent from '../libs/BaseComponent';
 
 import TaskRecordDetail from './taskrecord_detail';
 
 import config from '../config/config';
-
-require('rc-pagination/assets/index.css');
-require('rc-select/assets/index.css');
-import Pagination from 'rc-pagination';
-import Select from 'rc-select';
 
 const TaskRecordOpts = {
     None: -1,
@@ -30,11 +38,18 @@ const styles = {
         height: 18,
     },
     small: {
-        float: 'right',
         marginRight: 0,
         width: 24,
-        height: 24,
-        padding: 0,
+        height: 24
+    },
+
+    middle: {
+        marginTop: 8
+    },
+
+    middleIcon: {
+        width: 28,
+        height: 28,
     },
 }
 
@@ -54,6 +69,9 @@ export default class TaskRecords extends BaseComponent {
 
             taskRecordOpt: TaskRecordOpts.None,
 
+            start: null,
+            end: null,
+            key: '',
 
             pageSize: 30,
             page: 0,
@@ -93,12 +111,33 @@ export default class TaskRecords extends BaseComponent {
         }
     }
 
+    handleChangeStart(dateString) {
+        this.setState({
+            start: dateString
+        });
+    }
+
+    handleChangeEnd(dateString) {
+        this.setState({
+            end: dateString
+        });
+    }
+
+    handleSearch() {
+        this.load();
+    }
+
+    handleChangeKey(e) {
+        this.setState({
+            key: e.target.value
+        });
+    }
+
     render() {
         var _this = this;
 
         var page = this.state.page;
         var per_page = this.state.pageSize;
-
 
         const pager = (style) => {
             return (
@@ -123,6 +162,39 @@ export default class TaskRecords extends BaseComponent {
         const getTable = () => {
             return (
                 <div>
+                
+                    <div style={{paddingLeft: '20px', paddingRight: '20px'}}>
+                        
+                        <DateField 
+                            style={{marginRight: '20px'}}
+                            value={this.state.start} 
+                            placeholder={'开始时间'}
+                            dateFormat="YYYY-MM-DD HH:mm:ss"
+                            onChange={this.handleChangeStart.bind(this)} 
+                            />
+                        <DateField 
+                            style={{marginRight: '20px'}}
+                            value={this.state.end} 
+                            placeholder={'结束时间'}
+                            dateFormat="YYYY-MM-DD HH:mm:ss" 
+                            onChange={this.handleChangeEnd.bind(this)} 
+                            />
+
+                        <TextField
+                            style={{marginRight: '20px', paddingTop: 0, marginTop: 0}}
+                            value={this.state.key}
+                            onChange={this.handleChangeKey.bind(this)}
+                            floatingLabelText="输入关键字搜索"
+                            />
+
+                        <IconButton
+                            iconStyle={styles.middleIcon}
+                            style={styles.middle}
+                            onTouchTap={this.handleSearch.bind(this)} 
+                            >
+                            <ActionRefresh />
+                        </IconButton>
+                    </div>
                     {pager({paddingRight: '10px', float:'right'})}
                     <Table
                         height={this.state.height}
@@ -254,8 +326,12 @@ export default class TaskRecords extends BaseComponent {
         var page = this.state.page;
         var per_page = this.state.pageSize;
 
+        var stime = this.state.start ? moment(this.state.start).valueOf() : '';
+        var etime = this.state.end ? moment(this.state.end).valueOf() : '';
+        var key = this.state.key;
+
         request
-            .get(config.api_server + '/taskrecords?page=' + page + '&per_page=' + per_page)
+            .get(config.api_server + '/taskrecords?page=' + page + '&per_page=' + per_page + '&stime=' + stime + '&etime=' + etime + '&key=' + key)
             .set('Accept', 'application/json')
             .end(function (err, res) {
                 if (err) {

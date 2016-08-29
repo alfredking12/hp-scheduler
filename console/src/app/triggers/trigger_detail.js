@@ -15,7 +15,6 @@ import TimePicker from 'material-ui/TimePicker';
 import request from 'superagent/lib/client';
 
 import BaseComponent from '../libs/BaseComponent';
-import validate from '../libs/validate';
 
 import config from '../config/config';
 
@@ -105,43 +104,6 @@ class TriggerDetail extends BaseComponent {
         }
 
         return true;
-    }
-
-    merge(date, time) {
-
-        if (!date || !time) return null;
-
-        var ret = new Date();
-        
-        ret.setFullYear(date.getFullYear());
-        ret.setMonth(date.getMonth());
-        ret.getDate(date.getDate());
-        
-        ret.setHours(time.getHours());
-        ret.setMinutes(time.getMinutes());
-        ret.setSeconds(time.getSeconds());
-
-        return ret;
-    }
-
-    date(timestamp) {
-        if (!timestamp) return null;
-        var t = new Date(timestamp);
-        var ret = new Date();
-        ret.setFullYear(t.getFullYear());
-        ret.setMonth(t.getMonth());
-        ret.getDate(t.getDate());
-        return ret;
-    }
-
-    time(timestamp) {
-        if (!timestamp) return null;
-        var t = new Date(timestamp);
-        var ret = new Date();
-        ret.setHours(t.getHours());
-        ret.setMinutes(t.getMinutes());
-        ret.setSeconds(t.getSeconds());
-        return ret;
     }
 
     error(attr, msg) {
@@ -356,10 +318,10 @@ class TriggerView extends TriggerDetail {
                     id: data.data.id,
                     name: data.data.name,
                     code: data.data.code,
-                    start_date: _this.date(data.data.stime), 
-                    start_time: _this.time(data.data.stime),
-                    end_date: _this.date(data.data.etime),
-                    end_time: _this.time(data.data.etime),
+                    start_date: util.date(data.data.stime), 
+                    start_time: util.time(data.data.stime),
+                    end_date: util.date(data.data.etime),
+                    end_time: util.time(data.data.etime),
                     type: data.data.type + '',
                     value: data.data.value
                 }
@@ -421,8 +383,8 @@ class TriggerEdit extends TriggerView {
         if (!super.checkInput())
             return;
 
-        var start = this.merge(this.state.data.start_date, this.state.data.start_time);
-        var end = this.merge(this.state.data.end_date, this.state.data.end_time);
+        var start = util.merge(this.state.data.start_date, this.state.data.start_time);
+        var end = util.merge(this.state.data.end_date, this.state.data.end_time);
 
         if (end) {
 
@@ -517,8 +479,8 @@ class TriggerCreate extends TriggerDetail {
         if (!super.checkInput())
             return;
 
-        var start = this.merge(this.state.data.start_date, this.state.data.start_time);
-        var end = this.merge(this.state.data.end_date, this.state.data.end_time);
+        var start = util.merge(this.state.data.start_date, this.state.data.start_time);
+        var end = util.merge(this.state.data.end_date, this.state.data.end_time);
 
         if (end) {
 

@@ -15,9 +15,6 @@ module.exports = {
 
         if (per_page > config.max_page_size) per_page = config.max_page_size;
 
-        //TODO: 支持关键字模糊查询
-        //TODO: 支持日期范围查询
-
         var options = {
             order: [
                 ['updatedAt', 'DESC'],
@@ -26,8 +23,41 @@ module.exports = {
             limit: per_page
         }
 
+        var cond = null;
+
+        if (key !== null && key !== undefined && (key + '').trim().length != 0) {
+            cond = cond || {};
+            Object.assign(cond, {
+                name: {
+                    $like: '%' + key + '%'
+                }
+            });
+        } 
+
+        if (stime) {
+            cond = cond || {};
+            Object.assign(cond, {
+                time: {
+                    $gt: stime
+                }
+            });         
+        }
+        
+        if (etime) {
+            cond = cond || {};
+            Object.assign(cond, {
+                time: {
+                    $gt: etime
+                }
+            });         
+        }
+
+        if (cond) {
+            options.where = cond;
+        } 
+
         var TaskRecordModel = TaskRecords.define();
-        TaskRecordModel.count({})
+        TaskRecordModel.count(cond ? {where: cond} : {})
             .then(function(cnt){
                 if (cnt < page * per_page) {
                     return util.ok(req, res, next, {data: [], count: 0});    
@@ -42,6 +72,10 @@ module.exports = {
                     data.map(function(item, index){
                         var spent = item.etime ? ((item.etime - item.stime) + 'ms') : '-';
                         item.setDataValue('spent', spent);
+                        var updatedAt = item.updatedAt ? moment.utc(item.updatedAt).format('YYYY-MM-DD HH:mm:ss.SSS') : '';
+                        item.setDataValue('updatedAt', updatedAt);
+                        var createdAt = item.createdAt ? moment.utc(item.createdAt).format('YYYY-MM-DD HH:mm:ss.SSS') : '';
+                        item.setDataValue('createdAt', createdAt);
                         item.stime = item.stime ? moment(item.stime).format('YYYY-MM-DD HH:mm:ss.SSS') : '';
                         item.etime = item.etime ? moment(item.etime).format('YYYY-MM-DD HH:mm:ss.SSS') : '';
                     });

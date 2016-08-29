@@ -41,7 +41,7 @@ export default class TaskLogs extends BaseComponent {
             fixedFooter: true,
             stripedRows: false,
             showRowHover: false,
-            height: (window.innerHeight - 300) + 'px',
+            height: (window.innerHeight - 280) + 'px',
             tableStyle: null,
 
             start: null,
@@ -60,7 +60,7 @@ export default class TaskLogs extends BaseComponent {
 
     handleResize(e) {
         super.handleResize(e);
-        this.setState({height: (window.innerHeight - 300) + 'px'});
+        this.setState({height: (window.innerHeight - 280) + 'px'});
     }
 
     componentDidMount() {

@@ -56,7 +56,7 @@ export default class TaskRecords extends BaseComponent {
             fixedFooter: true,
             stripedRows: true,
             showRowHover: false,
-            height: (window.innerHeight - 142) + 'px',
+            height: (window.innerHeight - 280) + 'px',
 
             start: null,
             end: null,
@@ -71,7 +71,7 @@ export default class TaskRecords extends BaseComponent {
 
     handleResize(e) {
         super.handleResize(e);
-        this.setState({height: (window.innerHeight - 142) + 'px'});
+        this.setState({height: (window.innerHeight - 280) + 'px'});
     }
 
     componentDidMount() {
@@ -235,8 +235,8 @@ export default class TaskRecords extends BaseComponent {
                             </TableRow>
                         )) }
                     </TableBody>
-                    {pager({paddingBottom: '10px', paddingRight: '10px', float:'right'})}
                 </Table>
+                {pager({paddingBottom: '10px', paddingRight: '10px', float:'right'})}
             </div>
         );
     }

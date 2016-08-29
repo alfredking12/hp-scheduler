@@ -44,3 +44,8 @@ jspm_packages
 
 # Insensitive Config
 .config.js
+
+# .NET
+bin
+obj
+packages

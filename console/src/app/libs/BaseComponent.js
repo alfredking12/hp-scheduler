@@ -1,6 +1,4 @@
 import React from 'react';
-import Addons from 'react-addons';
-
 
 import FlatButton from 'material-ui/FlatButton';
 import RefreshIndicator from 'material-ui/RefreshIndicator';

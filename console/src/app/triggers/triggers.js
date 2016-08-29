@@ -59,9 +59,6 @@ export default class Triggers extends BaseComponent {
 
         var _this = this;
 
-        if (this.state.data.length == 0)
-            return null;
-
         return (
             <div>
                 <div style={{ overflow: 'hidden' }}>

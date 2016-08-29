@@ -528,7 +528,7 @@ class TriggerCreate extends TriggerDetail {
         var _this = this;
 
         request
-            .post('http://localhost:9001/triggers')
+            .post(config.api_server + '/triggers')
             .set('Accept', 'application/json')
             .send(data)
             .end(function (err, res) {

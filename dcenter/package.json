@@ -24,10 +24,12 @@
     "amqplib": "^0.4.2",
     "async": "^2.0.1",
     "cron-parser": "^2.1.1",
+    "lodash": "^4.15.0",
     "moment": "^2.14.1",
     "mysql": "^2.11.1",
     "node-schedule": "^1.1.1",
     "node-uuid": "^1.4.7",
+    "require-dir": "^0.3.0",
     "restify": "^4.1.1",
     "sequelize": "^3.24.1"
   }

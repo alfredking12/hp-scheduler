@@ -16,13 +16,20 @@ var dcenter = {
         server.use(restify.acceptParser(server.acceptable));
         server.use(restify.queryParser());
         server.use(restify.bodyParser());
-        support_cors(restify, server);
+        support_cors(restify, server); 
+
+        var routers = [];
 
         for (var i = 0; i < arguments.length; i++) {
-            var m = arguments[i];
-            if (m) {
+            var arg = arguments[i];
+            routers = routers.concat(arg);
+        }
+
+        for (var i = 0; i < routers.length; i++) {
+            var router = routers[i];
+            if (router) {
                 try {
-                    m(server);
+                    router(server);
                 } catch (e) {
                     Log.e("Index:" + i + ", router load failed", e);
                 }

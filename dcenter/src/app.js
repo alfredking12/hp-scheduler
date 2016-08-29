@@ -2,18 +2,14 @@
 var dcenter = require('./libs/dcenter.js');
 var Log = require('./libs/log.js');
 
-
 process.on('uncaughtException', function(err) {
     Log.e('### UncaughtException:' + err.stack);
 });
 
 var server = dcenter.createServer(
-    require('./routers/tasks'),
-    require('./routers/triggers'),
-    require('./routers/taskrecords'),
-    require('./routers/tasklogs')
+    require('lodash').values(require('require-dir')('./routers'))
 );
 
 server.listen(process.env.PORT || 9001, function(){
-    console.log('listening', server.name, server.url);
+    Log.i('listening:' + server.name + ' '+ server.url);
 });

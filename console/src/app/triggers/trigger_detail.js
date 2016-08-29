@@ -13,6 +13,7 @@ import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
 
 import request from 'superagent/lib/client';
+var randomstring = require("randomstring");
 
 import BaseComponent from '../libs/BaseComponent';
 
@@ -28,6 +29,17 @@ const styles = {
     Button: {
         margin: 12,
         marginLeft: 0
+    },
+
+    Button2: {
+        margin: 12,
+        marginLeft: 0
+    },
+
+    _Button2: {
+        marginBottom: 0,
+        marginRight: 0,
+        float: 'right'
     },
 
     time: {
@@ -181,11 +193,18 @@ class TriggerDetail extends BaseComponent {
         this.setState({data: data});
     }
 
+    handleGenerate() {
+        var data = this.state.data;
+        data.code = randomstring.generate(8);
+        this.setState({
+            data: data
+        })
+    }
+
     _render() {
 
         return (
             <div>
-
                 <TextField
                     style={styles.TextField}
                     name={"name"}
@@ -198,32 +217,31 @@ class TriggerDetail extends BaseComponent {
                     fullWidth={true}
                     errorText={this.state.name_error}
                     />
-
-                <TextField
-                    style={styles.TextField}
-                    name={"code"}
-                    onChange={this.handleChange}
-                    value={this.state.data.code}
-                    disabled={!this.state.codeEditable}
-                    floatingLabelText="触发器标识"
-                    floatingLabelFixed={true}
-                    hintText="请输入触发器标识"
-                    fullWidth={true}
-                    errorText={this.state.code_error}
-                    />
-                
+                <div>
+                    <TextField
+                        style={styles.TextField}
+                        name={"code"}
+                        onChange={this.handleChange}
+                        value={this.state.data.code}
+                        disabled={!this.state.codeEditable}
+                        floatingLabelText="触发器标识"
+                        floatingLabelFixed={true}
+                        hintText="请输入触发器标识"
+                        fullWidth={!this.state.codeEditable}
+                        errorText={this.state.code_error}
+                    />&nbsp;
+                    {this.state.codeEditable ? <RaisedButton label="生成" primary={true} style={styles.Button2} onTouchTap={this.handleGenerate.bind(this)} /> : null}
+                </div>
                 <div>
                     <DatePicker onChange={this.handleChangeStartDate.bind(this)} value={this.state.data.start_date} style={styles.time} hintText="开始日期" mode="landscape" autoOk={true} cancelLabel={'取消'} okLabel={'选择'}/>&nbsp;
                     <TimePicker onChange={this.handleChangeStartTime.bind(this)} value={this.state.data.start_time} style={styles.time} format="24hr" hintText="开始时间" cancelLabel={'取消'} okLabel={'选择'}/>&nbsp;
-                    <RaisedButton label="清除" primary={true} style={styles.Button} onTouchTap={this.handleClear.bind(this, 0)} />
+                    <RaisedButton label="清除" primary={true} style={styles.Button2} onTouchTap={this.handleClear.bind(this, 0)} />
                 </div>
-                
                 <div>
                     <DatePicker onChange={this.handleChangeEndDate.bind(this)} value={this.state.data.end_date} style={styles.time} hintText="结束日期" mode="landscape" autoOk={true} cancelLabel={'取消'} okLabel={'选择'}/>&nbsp;
                     <TimePicker onChange={this.handleChangeEndTime.bind(this)} value={this.state.data.end_time} style={styles.time} format="24hr" hintText="结束时间" cancelLabel={'取消'} okLabel={'选择'}/>&nbsp;
-                    <RaisedButton label="清除" primary={true} style={styles.Button} onTouchTap={this.handleClear.bind(this, 1)} />
+                    <RaisedButton label="清除" primary={true} style={styles.Button2} onTouchTap={this.handleClear.bind(this, 1)} />
                 </div>
-
                 <SelectField
                     onChange={this.handleSelectChange.bind(this)}
                     value={this.state.data.type}
@@ -231,11 +249,10 @@ class TriggerDetail extends BaseComponent {
                     floatingLabelText="* 触发器类型"
                     floatingLabelFixed={true}
                     fullWidth={true}
-                    >
+                >
                     <MenuItem value={'0'} primaryText="普通触发器" />
                     <MenuItem value={'1'} primaryText="Cron触发器" />
                 </SelectField>
-
                 <TextField
                     style={styles.TextField}
                     name={"value"}

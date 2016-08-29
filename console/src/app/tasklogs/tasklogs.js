@@ -39,7 +39,7 @@ export default class TaskLogs extends BaseComponent {
         Object.assign(this.state, {
             fixedHeader: true,
             fixedFooter: true,
-            stripedRows: true,
+            stripedRows: false,
             showRowHover: false,
             height: (window.innerHeight - 300) + 'px',
             tableStyle: null,
@@ -51,7 +51,10 @@ export default class TaskLogs extends BaseComponent {
             pageSize: 30,
             page: 0,
             count: 0,
-            data: []
+            data: [],
+
+            expand_index: -1,
+            expand_text: ''
         });
     }
 
@@ -87,6 +90,20 @@ export default class TaskLogs extends BaseComponent {
         });
     }
 
+    handleRowClick(data) {
+        if (this.state.expand_index == data.index) {
+            this.setState({
+                expand_text: null,
+                expand_index: -1
+            })
+        } else {
+            this.setState({
+                expand_text: this.status(data.item),
+                expand_index: data.index
+            })
+        }
+    }
+
     status(item) {
         if (item.progress !== undefined && item.progress !== null) {
             if(item.progress < 0) {
@@ -104,6 +121,45 @@ export default class TaskLogs extends BaseComponent {
         var per_page = this.state.pageSize;
 
         const getTable = () => {
+            
+            var rows = [];
+
+            for (var index = 0;index< _this.state.data.length;index++) {
+                var row = _this.state.data[index];
+                var item = (
+                    <TableRow
+                        key={index}
+                        style={{height: '28px'}}
+                        onTouchTap={_this.handleRowClick.bind(_this, {item: row, index: index})}
+                        >
+                        <TableRowColumn style={{height: '28px', width: '30px'}}>{index + 1 + page * per_page}</TableRowColumn>
+                        <TableRowColumn style={{height: '28px',width: '200px'}}>{row.name}</TableRowColumn>
+                        <TableRowColumn style={{height: '28px', width: '30px'}}>{row.taskrecord_id}</TableRowColumn>
+                        <TableRowColumn style={{height: '28px'}}>{_this.status(row)}</TableRowColumn>
+                        <TableRowColumn style={{height: '28px', width: '150px'}}>{row.time}</TableRowColumn>
+                    </TableRow>
+                );
+
+                rows.push(item);
+
+                if (index == _this.state.expand_index) {
+                    item = (
+                        <TableRow key={'expand_' + index}
+                            style={{background: 'rgba(120, 120, 120, 0.1)'}}
+                            >
+                            <TableRowColumn colSpan="5" style={{
+                                wordWrap: 'break-all',
+                                wordBreak: 'normal',
+                                whiteSpace: 'break-all'
+                            }}>
+                                {_this.state.expand_text}
+                            </TableRowColumn>
+                        </TableRow>
+                    );
+                    rows.push(item);
+                }
+            }
+
             return (
                 <div>
                     <Table
@@ -130,16 +186,7 @@ export default class TaskLogs extends BaseComponent {
                             showRowHover={this.state.showRowHover}
                             stripedRows={this.state.stripedRows}
                             >
-                            {this.state.data.map((row, index) => (
-                                <TableRow key={index}
-                                    style={{height: '28px'}}>
-                                    <TableRowColumn style={{height: '28px', width: '30px'}}>{index + 1 + page * per_page}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px',width: '200px'}}>{row.name}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px', width: '30px'}}>{row.taskrecord_id}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{_this.status(row)}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px', width: '150px'}}>{row.time}</TableRowColumn>
-                                </TableRow>
-                            )) }
+                            {rows}
                         </TableBody>
                     </Table>
                 </div>
@@ -253,6 +300,12 @@ export default class TaskLogs extends BaseComponent {
     }
 
     load() {
+
+        this.setState({
+            expand_index: -1,
+            expand_text: null
+        });
+
         var _this = this;
 
         _this.showLoading();

@@ -306,6 +306,12 @@ export default class TaskRecords extends BaseComponent {
     }
 
     load() {
+        
+        this.setState({
+            expand_index: -1,
+            expand_text: null
+        });
+
         var _this = this;
 
         _this.showLoading();

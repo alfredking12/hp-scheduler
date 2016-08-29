@@ -29,13 +29,6 @@ const styles = {
     },
 }
 
-const TriggerOpts = {
-    None: -1,
-    Create: 0,
-    Edit: 1,
-    View: 2
-}
-
 export default class Triggers extends BaseComponent {
 
     constructor(props, context) {
@@ -48,152 +41,118 @@ export default class Triggers extends BaseComponent {
             showRowHover: false,
             height: (window.innerHeight - 130) + 'px',
 
-            triggerOpt: TriggerOpts.None,
-
             data: []
         });
-
-        this.handleCreate = this.handleCreate.bind(this);
-        this.handleClose = this.handleClose.bind(this);
     }
 
-    handleResize = (e) => {
+    handleResize(e) {
+        super.handleResize(e);
         this.setState({height: (window.innerHeight - 130) + 'px'});
     }
 
     componentDidMount() {
+        super.componentDidMount();
         this.load();
-        window.addEventListener('resize', this.handleResize);
     }
 
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize);
-    }
-
-    render() {
+    _render() {
 
         var _this = this;
 
-        const getTable = () => {
-            if (this.state.data.length == 0)
-                return null;
-            return (
-                <div>
-                    <div style={{ overflow: 'hidden' }}>
-                        <FlatButton
-                            label="新建触发器"
-                            primary={true}
-                            style={{marginLeft: 10}}
-                            onTouchTap={this.handleCreate} 
-                            />
-                    </div>
-                    <Table
-                        height={this.state.height}
-                        fixedHeader={this.state.fixedHeader}
-                        fixedFooter={this.state.fixedFooter}
-                        selectable={false}
-                        >
-                        <TableHeader
-                            displaySelectAll={false}
-                            adjustForCheckbox={false}
-                            >
-                            <TableRow displayBorder={true}>
-                                <TableHeaderColumn tooltip="序号" style={{width: '20px'}}>#</TableHeaderColumn>
-                                <TableHeaderColumn>触发器名称</TableHeaderColumn>
-                                <TableHeaderColumn>触发器标识</TableHeaderColumn>
-                                <TableHeaderColumn>触发器规则</TableHeaderColumn>
-                                <TableHeaderColumn style={{textAlign: 'right', paddingRight: '48px'}}>操作</TableHeaderColumn>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody
-                            displayRowCheckbox={false}
-                            showRowHover={this.state.showRowHover}
-                            stripedRows={this.state.stripedRows}
-                            >
-                            {this.state.data.map((row, index) => (
-                                <TableRow
-                                    key={index}
-                                    style={{height: '28px'}}
-                                    >
-                                    <TableRowColumn style={{height: '28px', width: '20px'}}>{index + 1}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.name}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.code}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.type == 0 ? ('间隔: ' + row.value + 's') : ('cron: ' + row.value)}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>
-                                        <IconButton
-                                            iconStyle={styles.smallIcon}
-                                            style={styles.small}
-                                            onTouchTap={_this.handleEdit.bind(_this, row)} 
-                                            >
-                                            <ActionEdit />
-                                        </IconButton>
-                                        <IconButton
-                                            iconStyle={styles.smallIcon}
-                                            style={styles.small}
-                                            onTouchTap={_this.handleDelete.bind(_this, row)} 
-                                            >
-                                            <DeleteEdit />
-                                        </IconButton>
-                                    </TableRowColumn>
-                                </TableRow>
-                            )) }
-                        </TableBody>
-                    </Table>
-                </div>
-            );
-        }
-
-        const getTriggerTitle = () => {
-            if (this.state.triggerOpt === TriggerOpts.None) {
-                return ' ';
-            } else if (this.state.triggerOpt === TriggerOpts.View) {
-                return '触发器详情';
-            } else if (this.state.triggerOpt === TriggerOpts.Edit) {
-                return '修改触发器';
-            } else if (this.state.triggerOpt === TriggerOpts.Create) {
-                return '新建触发器';
-            }
-        }
-
-        const getTriggerComponent = () => {
-            if (this.state.triggerOpt === TriggerOpts.None) {
-                return null;
-            } else if (this.state.triggerOpt === TriggerOpts.View) {
-                return <TriggerDetail.View id={this.state.triggerId} />;
-            } else if (this.state.triggerOpt === TriggerOpts.Edit) {
-                return <TriggerDetail.Edit id={this.state.triggerId} onUpdated={this.handleUpdated} />;
-            } else if (this.state.triggerOpt === TriggerOpts.Create) {
-                return <TriggerDetail.Create  onCreated={this.handleCreated} />;
-            }
-        }
+        if (this.state.data.length == 0)
+            return null;
 
         return (
             <div>
-                
-                {super.render()}
-
-                <Dialog
-                    title={getTriggerTitle()}
-                    modal={false}
-                    open={this.state.triggerOpt != TriggerOpts.None}
-                    onRequestClose={this.handleClose}
-                    autoScrollBodyContent={true}
+                <div style={{ overflow: 'hidden' }}>
+                    <FlatButton
+                        label="新建触发器"
+                        primary={true}
+                        style={{marginLeft: 10}}
+                        onTouchTap={this.handleCreate.bind(this)} 
+                        />
+                </div>
+                <Table
+                    height={this.state.height}
+                    fixedHeader={this.state.fixedHeader}
+                    fixedFooter={this.state.fixedFooter}
+                    selectable={false}
                     >
-                    {getTriggerComponent()}
-                </Dialog>
-
-                {getTable() }
-
+                    <TableHeader
+                        displaySelectAll={false}
+                        adjustForCheckbox={false}
+                        >
+                        <TableRow displayBorder={true}>
+                            <TableHeaderColumn tooltip="序号" style={{width: '20px'}}>#</TableHeaderColumn>
+                            <TableHeaderColumn>触发器名称</TableHeaderColumn>
+                            <TableHeaderColumn>触发器标识</TableHeaderColumn>
+                            <TableHeaderColumn>触发器规则</TableHeaderColumn>
+                            <TableHeaderColumn style={{textAlign: 'right', paddingRight: '48px'}}>操作</TableHeaderColumn>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody
+                        displayRowCheckbox={false}
+                        showRowHover={this.state.showRowHover}
+                        stripedRows={this.state.stripedRows}
+                        >
+                        {this.state.data.map((row, index) => (
+                            <TableRow
+                                key={index}
+                                style={{height: '28px'}}
+                                >
+                                <TableRowColumn style={{height: '28px', width: '20px'}}>{index + 1}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.name}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.code}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.type == 0 ? ('间隔: ' + row.value + 's') : ('cron: ' + row.value)}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>
+                                    <IconButton
+                                        iconStyle={styles.smallIcon}
+                                        style={styles.small}
+                                        onTouchTap={_this.handleEdit.bind(_this, row)} 
+                                        >
+                                        <ActionEdit />
+                                    </IconButton>
+                                    <IconButton
+                                        iconStyle={styles.smallIcon}
+                                        style={styles.small}
+                                        onTouchTap={_this.handleDelete.bind(_this, row)} 
+                                        >
+                                        <DeleteEdit />
+                                    </IconButton>
+                                </TableRowColumn>
+                            </TableRow>
+                        )) }
+                    </TableBody>
+                </Table>
             </div>
         );
     }
     
     handleCreate() {
-        this.setState({triggerOpt: TriggerOpts.Create, triggerId: null});
+        var _this = this;
+        this.showDialog({
+            title: "新建触发器", 
+            type: TriggerDetail.Create,
+            callback: function() {
+                _this.load();
+                _this.showSnack('触发器创建成功');
+            }
+        });
     }
 
-    handleEdit = (item, e) => {
-        this.setState({triggerOpt: TriggerOpts.Edit, triggerId: item.id});
+    handleEdit(item) {
+        var _this = this;
+        this.showDialog({
+            title: "修改触发器", 
+            type: TriggerDetail.Edit,
+            props: {
+                id: item.id
+            },
+            callback: function() {
+                _this.load();
+                _this.showSnack('触发器更新成功');
+            }
+        });
     }
 
     handleDelete(item) {
@@ -209,24 +168,11 @@ export default class Triggers extends BaseComponent {
                             _this.showAlert('错误提示', '删除触发器失败', '知道了');
                         } else {
                             _this.load();
+                            _this.showSnack('触发器删除成功');
                         }
                     });
             }
         })
-    }
-
-    handleUpdated = () => {
-        this.handleClose();
-        this.load();
-    }
-    
-    handleCreated = () => {
-        this.handleClose();
-        this.load();
-    }
-
-    handleClose() {
-        this.setState({ triggerOpt: TriggerOpts.None, triggerId: null });
     }
 
     _load(cb) {

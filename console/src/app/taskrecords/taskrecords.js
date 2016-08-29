@@ -24,13 +24,9 @@ import request from 'superagent/lib/client';
 import BaseComponent from '../libs/BaseComponent';
 
 import TaskRecordDetail from './taskrecord_detail';
+import TaskRecordLogs from './taskrecord_logs';
 
 import config from '../config/config';
-
-const TaskRecordOpts = {
-    None: -1,
-    View: 2
-}
 
 const styles = {
     smallIcon: {
@@ -67,8 +63,6 @@ export default class TaskRecords extends BaseComponent {
             showRowHover: false,
             height: (window.innerHeight - 142) + 'px',
 
-            taskRecordOpt: TaskRecordOpts.None,
-
             start: null,
             end: null,
             key: '',
@@ -78,21 +72,16 @@ export default class TaskRecords extends BaseComponent {
             count: 0,
             data: []
         });
-
-        this.handleClose = this.handleClose.bind(this);
     }
 
-    handleResize = (e) => {
+    handleResize(e) {
+        super.handleResize(e);
         this.setState({height: (window.innerHeight - 142) + 'px'});
     }
 
     componentDidMount() {
+        super.componentDidMount();
         this.load();
-        window.addEventListener('resize', this.handleResize);
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize);
     }
 
     status(item) {
@@ -133,7 +122,7 @@ export default class TaskRecords extends BaseComponent {
         });
     }
 
-    render() {
+    _render() {
         var _this = this;
 
         var page = this.state.page;
@@ -159,129 +148,99 @@ export default class TaskRecords extends BaseComponent {
             );
         }
 
-        const getTable = () => {
-            return (
-                <div>
-                
-                    <div style={{paddingLeft: '20px', paddingRight: '20px'}}>
-                        
-                        <DateField 
-                            style={{marginRight: '20px'}}
-                            value={this.state.start} 
-                            placeholder={'开始时间'}
-                            dateFormat="YYYY-MM-DD HH:mm:ss"
-                            onChange={this.handleChangeStart.bind(this)} 
-                            />
-                        <DateField 
-                            style={{marginRight: '20px'}}
-                            value={this.state.end} 
-                            placeholder={'结束时间'}
-                            dateFormat="YYYY-MM-DD HH:mm:ss" 
-                            onChange={this.handleChangeEnd.bind(this)} 
-                            />
-
-                        <TextField
-                            style={{marginRight: '20px', paddingTop: 0, marginTop: 0}}
-                            value={this.state.key}
-                            onChange={this.handleChangeKey.bind(this)}
-                            floatingLabelText="输入关键字搜索"
-                            />
-
-                        <IconButton
-                            iconStyle={styles.middleIcon}
-                            style={styles.middle}
-                            onTouchTap={this.handleSearch.bind(this)} 
-                            >
-                            <ActionRefresh />
-                        </IconButton>
-                    </div>
-                    {pager({paddingRight: '10px', float:'right'})}
-                    <Table
-                        height={this.state.height}
-                        fixedHeader={this.state.fixedHeader}
-                        fixedFooter={this.state.fixedFooter}
-                        >
-                        <TableHeader
-                            displaySelectAll={false}
-                            adjustForCheckbox={false}
-                            >
-                            <TableRow displayBorder={true}>
-                                <TableHeaderColumn tooltip="序号" style={{width: '20px'}}>#</TableHeaderColumn>
-                                <TableHeaderColumn>任务名称</TableHeaderColumn>
-                                <TableHeaderColumn>任务标识</TableHeaderColumn>
-                                <TableHeaderColumn>创建时间</TableHeaderColumn>
-                                <TableHeaderColumn>开始时间</TableHeaderColumn>
-                                <TableHeaderColumn>结束时间</TableHeaderColumn>
-                                <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>耗时</TableHeaderColumn>
-                                <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>执行结果</TableHeaderColumn>
-                                <TableHeaderColumn style={{textAlign: 'right', width: '50px'}}>操作</TableHeaderColumn>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody
-                            displayRowCheckbox={false}
-                            showRowHover={this.state.showRowHover}
-                            stripedRows={this.state.stripedRows}
-                            >
-                            {this.state.data.map((row, index) => (
-                                <TableRow key={index}
-                                    style={{height: '28px'}}>
-                                    <TableRowColumn style={{height: '28px', width: '20px'}}>{index + 1 + page * per_page}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.name}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.id}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.updatedAt}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.stime}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px'}}>{row.etime}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{row.spent}</TableRowColumn>
-                                    <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{_this.status(row)}</TableRowColumn>
-                                    <TableRowColumn style={{width: '50px', height: '28px'}}>
-                                        <IconButton
-                                            iconStyle={styles.smallIcon}
-                                            style={styles.small}
-                                            onTouchTap={_this.handleView.bind(_this, row)} 
-                                            >
-                                            <ActionView />
-                                        </IconButton>
-                                        <IconButton
-                                            iconStyle={styles.smallIcon}
-                                            style={styles.small}
-                                            onTouchTap={_this.handleLog.bind(_this, row)} 
-                                            >
-                                            <ActionLog />
-                                        </IconButton>
-                                    </TableRowColumn>
-                                </TableRow>
-                            )) }
-                        </TableBody>
-                        {pager({paddingBottom: '10px', paddingRight: '10px', float:'right'})}
-                    </Table>
-                </div>
-            );
-        }
-
-        const getTaskRecordComponent = () => {
-            if (this.state.taskRecordOpt === TaskRecordOpts.None) {
-                return null;
-            } else if (this.state.taskRecordOpt === TaskRecordOpts.View) {
-                return <TaskRecordDetail data={this.state.taskRecord} />;
-            }
-        }
-
         return (
             <div>
-                
-                {super.render()}
+                <div style={{paddingLeft: '20px', paddingRight: '20px'}}>
+                    
+                    <DateField 
+                        style={{marginRight: '20px'}}
+                        value={this.state.start} 
+                        placeholder={'开始时间'}
+                        dateFormat="YYYY-MM-DD HH:mm:ss"
+                        onChange={this.handleChangeStart.bind(this)} 
+                        />
+                    <DateField 
+                        style={{marginRight: '20px'}}
+                        value={this.state.end} 
+                        placeholder={'结束时间'}
+                        dateFormat="YYYY-MM-DD HH:mm:ss" 
+                        onChange={this.handleChangeEnd.bind(this)} 
+                        />
 
-                <Dialog
-                    title={'任务记录信息'}
-                    modal={false}
-                    open={this.state.taskRecordOpt != TaskRecordOpts.None}
-                    onRequestClose={this.handleClose}
+                    <TextField
+                        style={{marginRight: '20px', paddingTop: 0, marginTop: 0}}
+                        value={this.state.key}
+                        onChange={this.handleChangeKey.bind(this)}
+                        floatingLabelText="输入关键字搜索"
+                        />
+
+                    <IconButton
+                        iconStyle={styles.middleIcon}
+                        style={styles.middle}
+                        onTouchTap={this.handleSearch.bind(this)} 
+                        >
+                        <ActionRefresh />
+                    </IconButton>
+                </div>
+                {pager({paddingRight: '10px', float:'right'})}
+                <Table
+                    height={this.state.height}
+                    fixedHeader={this.state.fixedHeader}
+                    fixedFooter={this.state.fixedFooter}
                     >
-                    {getTaskRecordComponent()}
-                </Dialog>
-
-                {getTable() }
-
+                    <TableHeader
+                        displaySelectAll={false}
+                        adjustForCheckbox={false}
+                        >
+                        <TableRow displayBorder={true}>
+                            <TableHeaderColumn tooltip="序号" style={{width: '20px'}}>#</TableHeaderColumn>
+                            <TableHeaderColumn>任务名称</TableHeaderColumn>
+                            <TableHeaderColumn>任务标识</TableHeaderColumn>
+                            <TableHeaderColumn>创建时间</TableHeaderColumn>
+                            <TableHeaderColumn>开始时间</TableHeaderColumn>
+                            <TableHeaderColumn>结束时间</TableHeaderColumn>
+                            <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>耗时</TableHeaderColumn>
+                            <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>执行结果</TableHeaderColumn>
+                            <TableHeaderColumn style={{textAlign: 'right', width: '50px'}}>操作</TableHeaderColumn>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody
+                        displayRowCheckbox={false}
+                        showRowHover={this.state.showRowHover}
+                        stripedRows={this.state.stripedRows}
+                        >
+                        {this.state.data.map((row, index) => (
+                            <TableRow key={index}
+                                style={{height: '28px'}}>
+                                <TableRowColumn style={{height: '28px', width: '20px'}}>{index + 1 + page * per_page}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.name}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.id}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.updatedAt}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.stime}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px'}}>{row.etime}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{row.spent}</TableRowColumn>
+                                <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{_this.status(row)}</TableRowColumn>
+                                <TableRowColumn style={{width: '50px', height: '28px'}}>
+                                    <IconButton
+                                        iconStyle={styles.smallIcon}
+                                        style={styles.small}
+                                        onTouchTap={_this.handleView.bind(_this, row)} 
+                                        >
+                                        <ActionView />
+                                    </IconButton>
+                                    <IconButton
+                                        iconStyle={styles.smallIcon}
+                                        style={styles.small}
+                                        onTouchTap={_this.handleLog.bind(_this, row)} 
+                                        >
+                                        <ActionLog />
+                                    </IconButton>
+                                </TableRowColumn>
+                            </TableRow>
+                        )) }
+                    </TableBody>
+                    {pager({paddingBottom: '10px', paddingRight: '10px', float:'right'})}
+                </Table>
             </div>
         );
     }
@@ -310,15 +269,20 @@ export default class TaskRecords extends BaseComponent {
     }
     
     handleView(item) {
-        this.setState({taskRecordOpt: TaskRecordOpts.View, taskRecord: item});
+        this.showDialog({
+            title: '任务记录信息',
+            type: TaskRecordDetail,
+            props: {
+                data: item
+            }
+        })
     }
 
     handleLog(item) {
-        alert('log');
-    }
-
-    handleClose() {
-        this.setState({ taskRecordOpt: TaskRecordOpts.None, taskRecord: null });
+        this.showDialog({
+            title: "任务日志", 
+            type: TaskRecordLogs
+        });
     }
 
     _load(cb) {

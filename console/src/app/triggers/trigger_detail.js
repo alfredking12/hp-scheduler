@@ -149,42 +149,40 @@ class TriggerDetail extends BaseComponent {
         this.setState(data);
     }
 
-    handleChangeStartDate = (event, date) => {
+    handleChangeStartDate(event, date) {
         var data = this.state.data;
         data.start_date = date;
         this.setState({data: data});
     }
 
-    handleChangeEndDate = (event, date) => {
+    handleChangeEndDate(event, date) {
         var data = this.state.data;
         data.end_date = date;
         this.setState({data: data});
     }
 
-    handleChangeStartTime = (event, date) => {
+    handleChangeStartTime(event, date) {
         var data = this.state.data;
         data.start_time = date;
         this.setState({data: data});
     }
 
-    handleChangeEndTime = (event, date) => {
+    handleChangeEndTime(event, date) {
         var data = this.state.data;
         data.end_time = date;
         this.setState({data: data});
     }
 
-    handleSelectChange = (event, index, value) => {
+    handleSelectChange(event, index, value) {
         var data = this.state.data;
         data.type = value;
         this.setState({data: data});
     }
 
-    render() {
+    _render() {
 
         return (
             <div>
-            
-                {super.render()}
 
                 <TextField
                     style={styles.TextField}
@@ -213,19 +211,19 @@ class TriggerDetail extends BaseComponent {
                     />
                 
                 <div>
-                    <DatePicker onChange={this.handleChangeStartDate} value={this.state.data.start_date} style={styles.time} hintText="开始日期" mode="landscape" autoOk={true} cancelLabel={'取消'} okLabel={'选择'}/>&nbsp;
-                    <TimePicker onChange={this.handleChangeStartTime} value={this.state.data.start_time} style={styles.time} format="24hr" hintText="开始时间" cancelLabel={'取消'} okLabel={'选择'}/>&nbsp;
+                    <DatePicker onChange={this.handleChangeStartDate.bind(this)} value={this.state.data.start_date} style={styles.time} hintText="开始日期" mode="landscape" autoOk={true} cancelLabel={'取消'} okLabel={'选择'}/>&nbsp;
+                    <TimePicker onChange={this.handleChangeStartTime.bind(this)} value={this.state.data.start_time} style={styles.time} format="24hr" hintText="开始时间" cancelLabel={'取消'} okLabel={'选择'}/>&nbsp;
                     <RaisedButton label="清除" primary={true} style={styles.Button} onTouchTap={this.handleClear.bind(this, 0)} />
                 </div>
                 
                 <div>
-                    <DatePicker onChange={this.handleChangeEndDate} value={this.state.data.end_date} style={styles.time} hintText="结束日期" mode="landscape" autoOk={true} cancelLabel={'取消'} okLabel={'选择'}/>&nbsp;
-                    <TimePicker onChange={this.handleChangeEndTime} value={this.state.data.end_time} style={styles.time} format="24hr" hintText="结束时间" cancelLabel={'取消'} okLabel={'选择'}/>&nbsp;
+                    <DatePicker onChange={this.handleChangeEndDate.bind(this)} value={this.state.data.end_date} style={styles.time} hintText="结束日期" mode="landscape" autoOk={true} cancelLabel={'取消'} okLabel={'选择'}/>&nbsp;
+                    <TimePicker onChange={this.handleChangeEndTime.bind(this)} value={this.state.data.end_time} style={styles.time} format="24hr" hintText="结束时间" cancelLabel={'取消'} okLabel={'选择'}/>&nbsp;
                     <RaisedButton label="清除" primary={true} style={styles.Button} onTouchTap={this.handleClear.bind(this, 1)} />
                 </div>
 
                 <SelectField
-                    onChange={this.handleSelectChange}
+                    onChange={this.handleSelectChange.bind(this)}
                     value={this.state.data.type}
                     disabled={!this.state.typeEditable}
                     floatingLabelText="* 触发器类型"
@@ -360,11 +358,10 @@ class TriggerEdit extends TriggerView {
         });
     }
     
-    render() {
+    _render() {
         return (
             <div>
-                {super.render() }
-
+                {super._render()}
                 <div style={{overflow: 'hidden'}}>
                     <RaisedButton 
                         label="更新" 
@@ -373,7 +370,6 @@ class TriggerEdit extends TriggerView {
                         onTouchTap={this.handleUpdate} 
                     />
                 </div>
-
             </div>
         );
     }
@@ -417,17 +413,19 @@ class TriggerEdit extends TriggerView {
             .set('Accept', 'application/json')
             .send(data)
             .end(function (err, res) {
-                if (err) {
-                    _this.showAlert('提示', '修改触发器失败', '重试', function() {
-                        setTimeout(function(){
-                            _this.submit(data);
-                        }, 0);
+                if (err || res.body.ret) {
+                    _this.showAlert('提示', '修改触发器失败', ['重试', '知道了'], function(index) {
+                        if (index == 0) {
+                            setTimeout(function(){
+                                _this._submit(data);
+                            }, 0);
+                        }
                     });
                 } else if (res.body.ret) {
                     _this.showAlert('提示', res.body.msg, '知道了');
                     
                 } else {
-                    _this.props.onUpdated && _this.props.onUpdated();
+                    _this.close(true);
                 }
             });
     }
@@ -457,10 +455,10 @@ class TriggerCreate extends TriggerDetail {
         });
     }
 
-    render() {
+    _render() {
         return (
             <div>
-                {super.render() }
+                {super._render() }
 
                 <div style={{overflow: 'hidden'}}>
                     <RaisedButton 
@@ -515,21 +513,19 @@ class TriggerCreate extends TriggerDetail {
             .set('Accept', 'application/json')
             .send(data)
             .end(function (err, res) {
-                if (err) {
-                    _this.showAlert('提示', '创建触发器失败', '重试', function() {
-                        setTimeout(function(){
-                            _this.submit(data);
-                        }, 0);
+                if (err || res.body.ret) {
+                    _this.showAlert('提示', '创建触发器失败', ['重试', '知道了'], function(index) {
+                        if (index == 0) {
+                            setTimeout(function(){
+                                _this._submit(data);
+                            }, 0);
+                        }
                     });
                 } else {
-                    _this.props.onCreated && _this.props.onCreated();
+                    _this.close(true);
                 }
             });
     }
-}
-
-TriggerCreate.defaultProps = {
-    onCreated: null
 }
 
 exports.View = TriggerView;

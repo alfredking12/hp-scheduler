@@ -41,6 +41,7 @@ jspm_packages
 
 # tmp
 .tmp
+*.zip
 
 # Insensitive Config
 .config.js

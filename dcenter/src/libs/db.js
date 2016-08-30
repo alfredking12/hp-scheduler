@@ -21,7 +21,7 @@ module.exports = {
     },
 
     sync: function(options) {
-        this.sequelize().sync(options);
+        return this.sequelize().sync(options);
     },
 
     select: function(sql, options) {

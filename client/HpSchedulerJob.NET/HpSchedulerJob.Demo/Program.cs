@@ -20,7 +20,7 @@ namespace HpSchedulerJob.Demo
         static void Main(string[] args)
         {
 
-            new Demo().run("amqp://mquser:Bysun@120.26.242.51:5672", "dev_demo1");
+            new Demo().run("amqp://mquser:Bysun@120.26.242.51:5672", "dev_demo");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using HpSchedulerJob.NET.HpSchedule;
+﻿using HpSchedulerJob.NET.Foundation.Utils;
+using HpSchedulerJob.NET.HpSchedule;
 
 namespace HpSchedulerJob.Demo
 {
@@ -19,7 +20,10 @@ namespace HpSchedulerJob.Demo
     {
         static void Main(string[] args)
         {
-            new Demo().run("amqp://mquser:Bysun@120.26.242.51:5672", "dev_demo");
+            new Demo().run("amqp://mquser:Bysun@120.26.242.51:5672", "dev_demo", new HpScheduleOptions() {
+                Debug = true,
+                Log4net = AppUtil.GetPath() + "\\..\\..\\log4net.config"
+            });
         }
     }
 }

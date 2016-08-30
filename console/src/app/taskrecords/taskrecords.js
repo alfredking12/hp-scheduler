@@ -5,6 +5,7 @@ import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
 import ActionView from 'material-ui/svg-icons/action/visibility';
 import ActionLog from 'material-ui/svg-icons/action/schedule';
+import ActionDelete from 'material-ui/svg-icons/action/delete';
 import ActionRefresh from 'material-ui/svg-icons/action/search';
 import TextField from 'material-ui/TextField';
 
@@ -197,7 +198,7 @@ export default class TaskRecords extends BaseComponent {
                             <TableHeaderColumn>结束时间</TableHeaderColumn>
                             <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>耗时</TableHeaderColumn>
                             <TableHeaderColumn style={{width: '80px', textAlign:'center'}}>执行结果</TableHeaderColumn>
-                            <TableHeaderColumn style={{textAlign: 'right', width: '50px'}}>操作</TableHeaderColumn>
+                            <TableHeaderColumn style={{textAlign: 'right', width: '80px'}}>操作</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody
@@ -216,7 +217,7 @@ export default class TaskRecords extends BaseComponent {
                                 <TableRowColumn style={{height: '28px'}}>{row.etime}</TableRowColumn>
                                 <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{row.spent}</TableRowColumn>
                                 <TableRowColumn style={{height: '28px', width: '80px', textAlign:'center'}}>{_this.status(row)}</TableRowColumn>
-                                <TableRowColumn style={{width: '50px', height: '28px'}}>
+                                <TableRowColumn style={{width: '80px', height: '28px'}}>
                                     <IconButton
                                         iconStyle={styles.smallIcon}
                                         style={styles.small}
@@ -230,6 +231,13 @@ export default class TaskRecords extends BaseComponent {
                                         onTouchTap={_this.handleLog.bind(_this, row)} 
                                         >
                                         <ActionLog />
+                                    </IconButton>
+                                    <IconButton
+                                        iconStyle={styles.smallIcon}
+                                        style={styles.small}
+                                        onTouchTap={_this.handleDelete.bind(_this, row)} 
+                                        >
+                                        <ActionDelete />
                                     </IconButton>
                                 </TableRowColumn>
                             </TableRow>
@@ -282,6 +290,26 @@ export default class TaskRecords extends BaseComponent {
                 id: item.id
             }
         });
+    }
+
+    handleDelete(item) {
+        var _this = this;
+        
+        this.showAlert('操作提示', '确认是否要删除任务该记录吗?', ['取消', '删除'], function(index){
+            if (index == 1) {
+                request
+                    .delete(config.api_server + '/taskrecords/' + item.id)
+                    .set('Accept', 'application/json')
+                    .end(function (err, res) {
+                        if (err || res.body.ret) {
+                            _this.showAlert('错误提示', '删除任务该记录失败', '知道了');
+                        } else {
+                            _this.load();
+                            _this.showSnack('任务该记录删除成功');
+                        }
+                    });
+            }
+        })
     }
 
     _load(cb) {

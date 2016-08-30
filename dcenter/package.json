@@ -31,6 +31,7 @@
     "node-uuid": "^1.4.7",
     "require-dir": "^0.3.0",
     "restify": "^4.1.1",
-    "sequelize": "^3.24.1"
+    "sequelize": "^3.24.1",
+    "when": "^3.7.7"
   }
 }

@@ -1,80 +1,53 @@
-var amqp = require('amqplib/callback_api');
+var amqp = require('amqplib');
 var config = require('../config/config');
 var Log = require('./log');
+var when = require('when');
 
 var MQ = {
 
-    send: function(routeKey, msgs, cb) {
-        if (!Array.isArray(msgs)) {
-            msgs = [msgs];
-        }
+    send: function(q, msg, cb) {
+        amqp.connect(config.rabbitmq_url).then(function(conn) {
+            Log.i(" [" + q + "] connected.");
+            return conn.createChannel().then(function(ch) {
+                Log.i(" [" + q + "] created channel.");
+                return ch.assertQueue(q, {
+                        durable: true
+                    }).then(function(ok){
+                        Log.i(" [" + q + "] sending message:" + msg);
+                        return ch.sendToQueue(q, new Buffer(msg), {persistent: true});
+                    }).then(function(){
+                        Log.i(" [" + q + "] sent message:" + msg);
+                        cb();
+                    })
+            }).ensure(function(){ setTimeout(function(){conn.close();}, 0) })
+        }).then(null, function(err){
+            Log.i("[" + q + "]: 发送消息异常", err);
+            cb(err);
+        }).catch(function(err){
 
-        amqp.connect(config.rabbitmq_url, function(err, conn) {
-            
-            if (err) {
-                Log.i("send: 连接MQ失败");
-                cb && cb(err);
-                return ;
-            }
-
-            Log.i("send: 连接MQ成功");
-
-            conn.createChannel(function(err, ch) {
-                
-                if (err) {
-                    Log.i("send: 连接管道失败");
-                    conn.close();
-                    cb && cb(err);
-                    return ;
-                }
-
-                Log.i("send: 连接管道成功");
-                
-                var q = routeKey;
-                ch.assertQueue(q, {durable: true});
-                for(var i=0;i<msgs.length;i++) {
-                    var msg = msgs[i];
-                    ch.sendToQueue(q, new Buffer(msg), {persistent: true});
-                    Log.i(" [" + q + "] Sent " + msg);
-                }
-
-                cb && cb();
-                //conn.close();
-            });
         });
     },
 
-    recv: function(routeKey, cb) {
+    recv: function(q, cb) {
 
-        amqp.connect(config.rabbitmq_url, function(err, conn) {
-            
-            if (err) {
-                Log.i("recv: 连接MQ失败");
-                return ;
-            }
+        amqp.connect(config.rabbitmq_url).then(function(conn) {
+            process.once('SIGINT', function() { conn.close(); });
+            Log.i(" [" + q + "] connected.");
 
-            Log.i("recv: 连接MQ成功");
-
-            conn.createChannel(function(err, ch) {
-                    
-                if (err) {
-                    Log.i("recv: 连接管道失败");
-                    return ;
-                }
-
-                Log.i("recv: 连接管道成功");
-                
-                var q = routeKey;
-                ch.assertQueue(q, {durable: true});
-                ch.prefetch(1);
-                ch.consume(q, function(msg) {
-                    var m = msg.content.toString();
-                    Log.i("[ " + q + "] Recv " + m);
-                    cb(m);
-                    ch.ack(msg);
-                }, {noAck: false});
-            });
-        });
+            return conn.createChannel().then(function(ch) {
+                    Log.i(" [" + q + "] created channel.");
+                    return ch.assertQueue(q, {durable: true})
+                        .then(function(ok){
+                            ch.prefetch(1);
+                            return ch.consume(q, function(msg) {
+                                var m = msg.content.toString();
+                                Log.i("[ " + q + "] recv message: " + m);
+                                cb(m);
+                                ch.ack(msg);
+                            }, {noAck: false});
+                        });
+            })
+        }).then(null, console.warn);
     }
 }
 

@@ -36,6 +36,8 @@ namespace HpSchedulerJob.NET.Foundation
         [ThreadStatic]
         public static string ContextName = "";
 
+        public static bool SimpleFormat = false;
+
         #region 初始化和关闭
 
         //加载配置文件
@@ -418,6 +420,21 @@ namespace HpSchedulerJob.NET.Foundation
 
         private static string format(object msg, string action, int level, Exception e)
         {
+            if (SimpleFormat)
+            {
+                if (!(msg is string))
+                {
+                    msg = JsonUtil.SerializeObject(msg);
+                }
+
+                if (e != null)
+                {
+                    msg = msg + ", exception: " + e.ToString();
+                }
+
+                return string.Format("{0} - {1}", DateTimeUtil.format(DateTime.Now, "yyyy-MM-dd HH:mm:ss.fff"), msg.ToString());
+            }
+
             string ex_msg = null;
             if (e != null)
             {

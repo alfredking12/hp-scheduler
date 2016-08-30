@@ -99,5 +99,21 @@ module.exports = {
                     util.fail(req, res, next, "任务记录不存在");
             })
             .catch(next);
-    }
+    },
+
+    //删除触发器
+    deleteItem: function (req, res, next) {
+        var id = req.params.id;
+
+        TaskRecords.define()
+            .destroy({
+                where: {
+                    id: id
+                }
+            })
+            .then(function (count) {
+                util.ok(req, res, next);
+            })
+            .catch(next);
+    },
 }

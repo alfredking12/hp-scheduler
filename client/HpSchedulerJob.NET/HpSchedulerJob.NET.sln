@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HpSchedulerJob.NET", "HpSchedulerJob.NET.csproj", "{E4C746BA-BD70-4843-B7C5-281D0AD12B53}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HpSchedulerJob.NET", "HpSchedulerJob.NET\HpSchedulerJob.NET.csproj", "{E4C746BA-BD70-4843-B7C5-281D0AD12B53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HpSchedulerJob.Demo", "..\HpSchedulerJob.Demo\HpSchedulerJob.Demo.csproj", "{4112AA0C-8157-4699-A9B4-F413F14C0C45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HpSchedulerJob.Demo", "HpSchedulerJob.Demo\HpSchedulerJob.Demo.csproj", "{4112AA0C-8157-4699-A9B4-F413F14C0C45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -427,12 +427,15 @@ function scheduler() {
                 task_id: data.id,
                 param: data.param
             }), function(err){
+                
                 if (err) {
                     Log.f("发送任务消息失败:" + task.name + ", recordId:" + data.id, err);
 
                     TaskRecordModel
                         .destroy({where: { id: id }})
                         .then(function(){});
+                } else {
+                    Log.i('发送任务消息成功:' + task.name + ", recordId:" + data.id);
                 }
             });
 

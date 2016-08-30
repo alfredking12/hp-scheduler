@@ -403,7 +403,7 @@ function scheduler() {
         }
 
         var item = {
-            task_id: task.id,
+            target: task.target,
             param: data.param,
             status: 0
         };
@@ -427,9 +427,18 @@ function scheduler() {
                 task_id: data.id,
                 param: data.param
             }), function(err){
-                if (err)
+                if (err) {
                     Log.f("发送任务消息失败:" + task.name + ", recordId:" + data.id, err);
+
+                    TaskRecordModel
+                        .destroy({where: { id: id }})
+                        .then(function(){});
+                }
             });
+
+
+
+
         }).catch(function(err){
             Log.f("触发任务失败:" + task.name + ',' + err.message);    
         });

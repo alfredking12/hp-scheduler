@@ -30,17 +30,29 @@ namespace HpSchedulerJob.NET.HpSchedule
 
             Log.config(options.Log4net);
 
+            if (options.Debug)
+            {
+                //简单格式的Log
+                Log.SimpleFormat = true;
+            }
+
+            Log.i("启动服务");
+
             try
             {
                 var factory = new WorkQueueFactory(rabbitmq_url);
 
                 var consumer = factory.CreateMqConsumer();
 
+                Log.i("建立连接: " + rabbitmq_url);
+
                 consumer.ReceivedMessage(jobKey, (model, ea) =>
                 {
                     var message = Encoding.UTF8.GetString(ea.Body);
                     GetMsg(message, options);
                 });
+
+                Log.i("监听MQ消息: " + jobKey);
             }
             catch (Exception ex)
             {
@@ -61,8 +73,10 @@ namespace HpSchedulerJob.NET.HpSchedule
             context.param = entity.param;
             context.routingkey = dispatch_center_callback_key;
             context.rabbimqUrl = rabbitmq_url;
-
+            Log.ContextName = this.GetType().ToString();
+            Log.ContextID = Guid.NewGuid().ToString("D");
             Execute(context);
+            Log.ContextName = null;
         }
 
     }

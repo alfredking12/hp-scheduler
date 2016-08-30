@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="log4net.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HpSchedulerJob.NET\HpSchedulerJob.NET.csproj">

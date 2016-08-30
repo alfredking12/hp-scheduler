@@ -44,7 +44,7 @@ namespace HpSchedulerJob.NET.HpSchedule
             }
             catch (Exception ex)
             {
-                Log.e(ex);
+                Log.e(ex);                                                                                                                                                                           
             }
         }
 

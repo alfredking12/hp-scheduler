@@ -11,8 +11,6 @@ namespace HpSchedulerJob.NET.RabbitMq
 
         private static readonly Dictionary<string, IRabbtMqManagerProxy> Map = new Dictionary<string, IRabbtMqManagerProxy>();
 
-        private static IRabbtMqManagerProxy mClient = null;
-
         public static void AddClientManager(IRabbtMqManagerProxy clientMgr, string key = "")
         {
             Map.Add(key, clientMgr);

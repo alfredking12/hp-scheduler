@@ -32,7 +32,7 @@ namespace HpSchedulerJob.NET.RabbitMq.RabbitMqScene.WorkQueue
         }
 
         public void Dispose()
-        {
+        {  
             this.mClient.Dispose();
         }
     }

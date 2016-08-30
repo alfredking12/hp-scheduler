@@ -28,13 +28,6 @@ namespace HpSchedulerJob.NET.RabbitMq
             this.rabbitMqManagerClient = new RabbitMqManagerClient(uri);
         }
 
-        public void Dispose()
-        {
-            this.publishConnection?.Dispose();
-            this.consumerConnection?.Dispose();
-            this.mConnection?.Dispose();
-        }
-
         public IRabbitMqClient GetCustomerClient()
         {
             this.consumerConnection = this.rabbitMqManagerClient.CreateConsumerConnection();
@@ -51,6 +44,13 @@ namespace HpSchedulerJob.NET.RabbitMq
         {
             this.mConnection = rabbitMqManagerClient.CreateConnection();
             return new RabbitMqClient(this.rabbitMqManagerClient.CreateChannel());
+        }
+
+        public void Dispose()
+        {
+            this.publishConnection?.Dispose();
+            this.consumerConnection?.Dispose();
+            this.mConnection?.Dispose();
         }
     }
 }

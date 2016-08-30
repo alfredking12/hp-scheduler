@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client.Events;
+﻿using HpSchedulerJob.NET.RabbitMQ.RabbiMqSDK;
+using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,33 +8,33 @@ using System.Threading.Tasks;
 
 namespace HpSchedulerJob.NET.RabbitMq.RabbitMqScene.WorkQueue
 {
-    internal class WorkQueueConsumer : IMQConsumer 
+    internal class WorkQueueConsumer : IMQConsumer
     {
-        private string mRabbitMqUrl = string.Empty;
+        private IRabbitMqChannel mChannel = null;
+        private IRabbitMqConnection mConnection = null;
 
-        private IRabbitMqClient mClient = null;
-
-        public WorkQueueConsumer(IRabbtMqManagerProxy proxy)
+        //TODO:判断连接失败
+        public static WorkQueueConsumer createInstance(IRabbitMqFactory factory)
         {
-            this.mClient = proxy.GetRabbitMqClient();
+            WorkQueueConsumer instance = new WorkQueueConsumer();
+            instance.mConnection = factory.CreateConnection();
+            instance.mChannel = instance.mConnection.CreateChannel();
+            return instance;
         }
 
         public void ReceivedMessage(string routingKey, EventHandler<BasicDeliverEventArgs> callback)
         {
             var queName = routingKey;
-
-            mClient.QueueDeclare(queue: queName, durable: true, exclusive: false, autoDelete: false, arguments: null);
-
-            var consumer = mClient.GetEventingBasicConsumer();
-
+            mChannel.QueueDeclare(queue: queName, durable: true, exclusive: false, autoDelete: false, arguments: null);
+            var consumer = mChannel.GetEventingBasicConsumer();
             consumer.Received += callback;
-
-            mClient.BasicConsume(queue: queName, noack: true, consumer: consumer);
+            mChannel.BasicConsume(queue: queName, noack: true, consumer: consumer);
         }
 
         public void Dispose()
-        {  
-            this.mClient.Dispose();
+        {
+            mChannel.Dispose();
+            mConnection.Dispose();
         }
     }
 }

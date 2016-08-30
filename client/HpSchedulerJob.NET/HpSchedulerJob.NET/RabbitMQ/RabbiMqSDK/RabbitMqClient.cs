@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Collections.Generic;
+using System;
 
 namespace HpSchedulerJob.NET.RabbitMq
 {
-    internal class RabbitMqClient : IRabbitMqClient
+    internal class RabbitMqChannel : IRabbitMqChannel
     {
 
         private IModel mChannel;
 
-        internal RabbitMqClient(IModel Channel)
+        internal RabbitMqChannel(IModel Channel)
         {
             this.mChannel = Channel;
         }
@@ -54,9 +51,12 @@ namespace HpSchedulerJob.NET.RabbitMq
             mChannel.QueueDeclare(queue, durable, exclusive, autoDelete, arguments);
         }
 
+
         public void Dispose()
         {
-            mChannel?.Dispose();
+            mChannel.Dispose();
         }
+
+
     }
 }

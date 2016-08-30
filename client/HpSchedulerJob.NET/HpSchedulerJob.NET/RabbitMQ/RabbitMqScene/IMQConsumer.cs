@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HpSchedulerJob.NET.RabbitMq.RabbitMqScene
 {
-   
+
     public interface IMQConsumer : IDisposable
     {
         void ReceivedMessage(string routingKey, EventHandler<BasicDeliverEventArgs> callback);

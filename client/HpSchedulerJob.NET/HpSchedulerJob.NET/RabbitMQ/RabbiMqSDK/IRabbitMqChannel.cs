@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HpSchedulerJob.NET.RabbitMq
 {
-    public interface IRabbitMqClient : IDisposable
+    public interface IRabbitMqChannel : IDisposable
     {
         /// <summary>
         /// 队列声明

@@ -32,7 +32,7 @@ namespace HpSchedulerJob.NET.HpSchedule
 
             try
             {
-                var factory = new WorkQueueFactory(rabbitmq_url);
+                var factory = SchedulerMq.getInstance(rabbitmq_url).getFactory();
 
                 var consumer = factory.CreateMqConsumer();
 

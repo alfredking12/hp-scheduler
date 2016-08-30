@@ -52,14 +52,16 @@ namespace HpSchedulerJob.NET.HpSchedule
                     progress = progress,
                     time = DateTimeUtil.timestamp(DateTime.Now)// DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")
                 };
+
                 var jsonstr = JsonConvert.SerializeObject(callback);
 
-                var factory = new WorkQueueFactory(rabbimqUrl);
+                var factory = SchedulerMq.getInstance(rabbimqUrl).getFactory();
 
                 using (var producer = factory.CreateMqProducer())
                 {
                     producer.sendMessage(routingkey, jsonstr);
                 }
+
             }
             catch (Exception ex)
             {

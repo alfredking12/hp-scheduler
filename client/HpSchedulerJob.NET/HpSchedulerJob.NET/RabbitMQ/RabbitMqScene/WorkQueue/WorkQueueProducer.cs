@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HpSchedulerJob.NET.RabbitMQ.RabbiMqSDK;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,31 +9,31 @@ namespace HpSchedulerJob.NET.RabbitMq.RabbitMqScene.WorkQueue
 {
     internal class WorkQueueProducer : IMQProducer
     {
-        private IRabbitMqClient mClient = null;
+        private IRabbitMqChannel mChannel = null;
+        private IRabbitMqConnection mConnection = null;
 
-        private string mRabbitMqUrl = string.Empty;
-
-        public WorkQueueProducer(IRabbtMqManagerProxy proxy)
+        //TODO:判断连接失败
+        public static WorkQueueProducer createInstance(IRabbitMqFactory factory)
         {
-            this.mClient = proxy.GetRabbitMqClient();
-        }
-
-        public void Dispose()
-        {
-            this.mClient.Dispose();
+            WorkQueueProducer instance = new WorkQueueProducer();
+            instance.mConnection = factory.CreateConnection();
+            instance.mChannel = instance.mConnection.CreateChannel();
+            return instance;
         }
 
         public void sendMessage(string routingKey, string msg)
         {
             var queName = routingKey;
-
-            mClient.QueueDeclare(queue: queName, durable: true, exclusive: false, autoDelete: false, arguments: null);
-
+            mChannel.QueueDeclare(queue: queName, durable: true, exclusive: false, autoDelete: false, arguments: null);
             var body = Encoding.UTF8.GetBytes(msg);
-
-            mClient.BasicPublish("", queName, null, body);
-
-
+            mChannel.BasicPublish("", queName, null, body);
         }
+
+        public void Dispose()
+        {
+            mChannel.Dispose();
+            mConnection.Dispose();
+        }
+        
     }
 }

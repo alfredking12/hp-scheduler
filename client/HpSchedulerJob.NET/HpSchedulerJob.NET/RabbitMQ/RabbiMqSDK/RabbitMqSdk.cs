@@ -8,22 +8,16 @@ namespace HpSchedulerJob.NET.RabbitMq
 {
     public class RabbitMqSdk
     {
+        private static readonly Dictionary<string, IRabbitMqFactory> Map = new Dictionary<string, IRabbitMqFactory>();
 
-        private static readonly Dictionary<string, IRabbtMqManagerProxy> Map = new Dictionary<string, IRabbtMqManagerProxy>();
-
-        public static void AddClientManager(IRabbtMqManagerProxy clientMgr, string key = "")
+        public static void AddClientManager(IRabbitMqFactory clientMgr, string key = "")
         {
             Map.Add(key, clientMgr);
         }
 
-        public static IRabbtMqManagerProxy GetRabbtiMqClient(string key)
+        public static IRabbitMqFactory GetRabbtiMqClient(string key = "")
         {
             return Map[key];
-        }
-
-        public static IRabbtMqManagerProxy GetMqClient(string rabbitmquri)
-        {
-            return (IRabbtMqManagerProxy)new RabbtMqManagerProxy(rabbitmquri);
         }
 
     }

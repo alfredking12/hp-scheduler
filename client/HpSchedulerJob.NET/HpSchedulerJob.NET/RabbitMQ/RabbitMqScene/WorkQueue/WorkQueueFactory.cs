@@ -3,38 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HpSchedulerJob.NET.RabbitMQ.RabbiMqSDK;
 
 namespace HpSchedulerJob.NET.RabbitMq.RabbitMqScene.WorkQueue
 {
-    public class WorkQueueFactory : IMQFactory
+    public class WorkQueueFactory : RabbitMqFactory, IMQFactory
     {
-
-        private string mRabbimqUri;
-
-        private  IRabbitMqClient mClient = null;
-
-        private  IRabbtMqManagerProxy mRabbitMqManagerProxy = null;
-
-        public WorkQueueFactory(string rabbitmquri)
+        public WorkQueueFactory(string hostName, string userName, string passWord) : base(hostName, userName, passWord)
         {
-            this.mRabbimqUri = rabbitmquri;
-            this.mRabbitMqManagerProxy = RabbitMqSdk.GetMqClient(rabbitmquri);
-            this.mClient = this.mRabbitMqManagerProxy.GetRabbitMqClient();
+        }
+
+        public WorkQueueFactory(string uri) : base(uri)
+        {
         }
 
         public IMQConsumer CreateMqConsumer()
         {
-            return (IMQConsumer)(new WorkQueueConsumer(this.mRabbitMqManagerProxy));
+            return (IMQConsumer)(WorkQueueConsumer.createInstance(this));
         }
 
         public IMQProducer CreateMqProducer()
         {
-            return (IMQProducer)(new WorkQueueProducer(this.mRabbitMqManagerProxy));
-        }
-
-        public void Dispose()
-        {
-            mRabbitMqManagerProxy?.Dispose();
+            return (IMQProducer)(WorkQueueProducer.createInstance(this));
         }
     }
 }

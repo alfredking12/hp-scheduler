@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HpSchedulerJob.NET.RabbitMq.RabbitMqScene
 {
-    public interface IMQFactory : IDisposable
+    public interface IMQFactory
     {
         IMQProducer CreateMqProducer();
         IMQConsumer CreateMqConsumer();

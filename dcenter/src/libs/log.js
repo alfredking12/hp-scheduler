@@ -201,6 +201,9 @@ var Log = {
         
         if (SimpleFormat) {
             msg = item.msg ? JSON.stringify(item.msg) : item.message;
+            if (item.exception) {
+                msg = msg + item.exception;
+            }
         } else {
             msg = JSON.stringify(item);
         }

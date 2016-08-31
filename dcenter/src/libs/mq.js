@@ -30,9 +30,18 @@ var MQ = {
 
     recv: function(q, cb) {
 
+        var _this = this;
+
         amqp.connect(config.rabbitmq_url).then(function(conn) {
             process.once('SIGINT', function() { conn.close(); });
             Log.i(" [" + q + "] connected.");
+
+            conn.on('error', function(err) {
+                Log.i('MQ connection error:' + err);
+                setTimeout(function(){
+                    _this.recv(q, cb);
+                }, 5000);
+            });
 
             return conn.createChannel().then(function(ch) {
                     Log.i(" [" + q + "] created channel.");
@@ -47,7 +56,12 @@ var MQ = {
                             }, {noAck: false});
                         });
             })
-        }).then(null, console.warn);
+        }).catch(function(err){
+            Log.w('MQ connection exception:', err);
+            setTimeout(function(){
+                _this.recv(q, cb);
+            }, 5000);
+        });
     }
 }
 

@@ -14,6 +14,8 @@ var MQ = require('./mq');
 var db = require('./db');
 var Log = require('./log');
 
+var config = require('../config/config');
+
 function scheduler() {
     if (!(this instanceof scheduler)) {
         return new TaskCenter();
@@ -78,8 +80,13 @@ function scheduler() {
 
     this.listenLogs = function() {
 
-        MQ.recv("__dispatcher_center_callback", function(msg) {
-            var data = JSON.parse(msg);
+        MQ.recv(config.dispatcher_center_callback, function(msg) {
+            var data = null;
+
+            try { data = JSON.parse(msg);} catch(err) {
+                Log.e("收到任务日志格式错误:", err);
+                return;
+            }
 
             if (!data.task_id || !data.time) {
                 Log.e('日志参数错误:' + msg);

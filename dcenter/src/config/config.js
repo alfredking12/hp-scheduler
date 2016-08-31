@@ -7,5 +7,7 @@ module.exports = {
 
     rabbitmq_url: 'amqp://mquser:Bysun@120.26.242.51:5672',
 
+    dispatcher_center_callback: '__dispatcher_center_callback.local',
+
     max_page_size: 200,
 }

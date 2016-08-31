@@ -57,6 +57,11 @@ namespace HpSchedulerJob.NET.RabbitMq
             mChannel.BasicAck(deliveryTag, multiple);
         }
 
+        public void BasicNack(ulong deliveryTag, bool multiple, bool requeue = true)
+        {
+            mChannel.BasicNack(deliveryTag, multiple, requeue);
+        }
+
         public void Dispose()
         {
             mChannel.Dispose();

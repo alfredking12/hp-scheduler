@@ -17,14 +17,14 @@ namespace HpSchedulerJob.NET.RabbitMq.RabbitMqScene.WorkQueue
         {
         }
 
-        public IMQConsumer CreateMqConsumer()
+        public IMQConsumer CreateMqConsumer(string routingKey)
         {
-            return (IMQConsumer)(WorkQueueConsumer.createInstance(this));
+            return (IMQConsumer)(WorkQueueConsumer.createInstance(this, routingKey));
         }
 
-        public IMQProducer CreateMqProducer()
+        public IMQProducer CreateMqProducer(string routingKey)
         {
-            return (IMQProducer)(WorkQueueProducer.createInstance(this));
+            return (IMQProducer)(WorkQueueProducer.createInstance(this, routingKey));
         }
     }
 }

@@ -8,8 +8,8 @@ namespace HpSchedulerJob.NET.RabbitMq.RabbitMqScene
 {
     public interface IMQFactory
     {
-        IMQProducer CreateMqProducer();
-        IMQConsumer CreateMqConsumer();
+        IMQProducer CreateMqProducer(string routingKey);
+        IMQConsumer CreateMqConsumer(string routingKey);
 
     }
 }

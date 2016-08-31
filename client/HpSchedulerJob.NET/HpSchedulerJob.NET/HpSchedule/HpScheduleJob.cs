@@ -1,6 +1,7 @@
 ﻿using HpSchedulerJob.NET.Foundation;
 using HpSchedulerJob.NET.Foundation.Utils;
 using HpSchedulerJob.NET.HpSchedule.Model;
+using HpSchedulerJob.NET.RabbitMq.RabbitMqScene;
 using HpSchedulerJob.NET.RabbitMq.RabbitMqScene.WorkQueue;
 using Newtonsoft.Json;
 using RabbitMQ.Client.Events;
@@ -36,11 +37,7 @@ namespace HpSchedulerJob.NET.HpSchedule
                 //简单格式的Log
                 Log.SimpleFormat = true;
             }
-
-            Log.i("开始运行");
-
-            StructureMessage(rabbitmq_url, "开始运行", 0);
-
+            
             Log.i("启动服务");
 
             MonitorMqueue(rabbitmq_url, jobKey, options);
@@ -53,13 +50,13 @@ namespace HpSchedulerJob.NET.HpSchedule
             {
                 var factory = SchedulerMq.getInstance(rabbitmq_url).getFactory();
 
-                var consumer = factory.CreateMqConsumer();
+                var consumer = factory.CreateMqConsumer(jobKey);
 
                 Log.i("建立连接: " + rabbitmq_url);
 
-                consumer.ReceivedMessage(jobKey, (message) =>
+                consumer.ReceivedMessage((deliveryTag, message) =>
                 {
-                    HandleMsg(message, options);
+                    HandleMsg(consumer, message, deliveryTag, options);
                 });
 
                 Log.i("监听MQ消息: " + jobKey);
@@ -70,7 +67,7 @@ namespace HpSchedulerJob.NET.HpSchedule
             }
         }
 
-        private void HandleMsg(string message, HpScheduleOptions option)
+        private void HandleMsg(IMQConsumer consumer, string message, ulong deliveryTag, HpScheduleOptions option)
         {
             if (option.IsLog)
             {
@@ -91,6 +88,14 @@ namespace HpSchedulerJob.NET.HpSchedule
                 Log.ContextName = this.GetType().ToString();
                 Log.ContextID = Guid.NewGuid().ToString("D");
 
+                if (!context.Log("开始执行任务", 0))
+                {
+                    consumer.NAck(deliveryTag);
+                    return;
+                }
+
+                consumer.Ack(deliveryTag);
+
                 Execute(context);
 
                 Log.ContextName = null;
@@ -100,16 +105,6 @@ namespace HpSchedulerJob.NET.HpSchedule
                 Log.i(ex);
                 context.Log(ex.ToString(), -1);
             }
-        }
-
-
-        private void StructureMessage(string rabbitmqurl, string message, int progress)
-        {
-            var context = new HpScheduleContext();
-            context.rabbimqUrl = rabbitmqurl;
-            context.routingkey = dispatch_center_callback_key;
-            context.taskid = "0";
-            context.Log(message, progress);
         }
 
     }

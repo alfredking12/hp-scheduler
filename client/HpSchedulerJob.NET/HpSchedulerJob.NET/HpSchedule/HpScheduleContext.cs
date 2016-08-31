@@ -21,7 +21,7 @@ namespace HpSchedulerJob.NET.HpSchedule
         internal string rabbimqUrl { get; set; }
 
 
-        public void Log(string message, int? progress = null)
+        public bool Log(string message, int? progress = null)
         {
             if (progress != null)
             {
@@ -36,10 +36,10 @@ namespace HpSchedulerJob.NET.HpSchedule
                 }
             }
 
-            sendMsg(message, progress);
+            return sendMsg(message, progress);
         }
 
-        private void sendMsg(string message, int? progress)
+        private bool sendMsg(string message, int? progress)
         {
             HpSchedulerJob.NET.Foundation.Log.i(String.Format("Task({0}) ::: send message = {1}, progress = {2}", this.taskid, message, progress == null ? "null" : progress.ToString()));
 
@@ -57,15 +57,17 @@ namespace HpSchedulerJob.NET.HpSchedule
 
                 var factory = SchedulerMq.getInstance(rabbimqUrl).getFactory();
 
-                using (var producer = factory.CreateMqProducer())
+                using (var producer = factory.CreateMqProducer(routingkey))
                 {
-                    producer.sendMessage(routingkey, jsonstr);
+                    producer.sendMessage(jsonstr);
                 }
 
+                return true;
             }
             catch (Exception ex)
             {
                 HpSchedulerJob.NET.Foundation.Log.e(ex);
+                return false;
             }
         }
 

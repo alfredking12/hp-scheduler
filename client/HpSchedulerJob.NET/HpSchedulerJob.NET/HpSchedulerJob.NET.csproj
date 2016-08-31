@@ -65,7 +65,7 @@
     <Compile Include="RabbitMQ\RabbiMqSDK\IRabbitMqChannel.cs" />
     <Compile Include="RabbitMQ\RabbiMqSDK\IRabbitMqConnection.cs" />
     <Compile Include="RabbitMQ\RabbiMqSDK\IRabbitMqFactory.cs" />
-    <Compile Include="RabbitMQ\RabbiMqSDK\RabbitMqClient.cs" />
+    <Compile Include="RabbitMQ\RabbiMqSDK\RabbitMqChannel.cs" />
     <Compile Include="RabbitMQ\RabbiMqSDK\RabbitMqConfig.cs" />
     <Compile Include="RabbitMQ\RabbiMqSDK\RabbitMqConnection.cs" />
     <Compile Include="RabbitMQ\RabbiMqSDK\RabbitMqFactory.cs" />

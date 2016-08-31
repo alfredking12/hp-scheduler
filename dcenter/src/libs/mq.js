@@ -51,8 +51,15 @@ var MQ = {
                             return ch.consume(q, function(msg) {
                                 var m = msg.content.toString();
                                 Log.i("[ " + q + "] recv message: " + m);
-                                cb(m);
-                                ch.ack(msg);
+                                cb({
+                                    message: m,
+                                    ack: function() {
+                                        ch.ack(msg);
+                                    },
+                                    nack: function() {
+                                        ch.nack(msg);
+                                    }
+                                });
                             }, {noAck: false});
                         });
             })

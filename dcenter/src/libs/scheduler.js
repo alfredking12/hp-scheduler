@@ -80,9 +80,9 @@ function scheduler() {
 
     this.listenLogs = function() {
 
-        MQ.recv(config.dispatcher_center_callback, function(msg) {
+        MQ.recv(config.dispatcher_center_callback, function(mq_msg) {
             var data = null;
-
+            var msg = mq_msg.message;
             try { data = JSON.parse(msg);} catch(err) {
                 Log.e("收到任务日志格式错误:", err);
                 return;
@@ -169,9 +169,11 @@ function scheduler() {
                     return TaskRecordModel.update(item, {where: {id: taskid}});
                 })
                 .then(function(data){
+                    mq_msg.ack();
                 })
                 .catch(function(err){
                     Log.f("更新任务记录状态失败", err);
+                    mq_msg.nack();
                 });
         });
     }

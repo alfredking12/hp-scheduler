@@ -10,4 +10,7 @@ module.exports = {
     dispatcher_center_callback: '__dispatcher_center_callback.local',
 
     max_page_size: 200,
+
+    log_sql: false,
+    log_simpleformat: true
 }

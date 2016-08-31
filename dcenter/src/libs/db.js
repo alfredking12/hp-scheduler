@@ -12,7 +12,8 @@ module.exports = {
                     max: config.db_pool_max,
                     min: config.db_pool_min,
                     idle: config.db_pool_idle,
-                }
+                },
+                logging: require('../config/config').log_sql
             });
 
         }

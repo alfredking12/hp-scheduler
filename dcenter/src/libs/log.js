@@ -1,6 +1,8 @@
 var ReqCtx = require('./reqctx.js');
 var moment = require('moment');
 
+var SimpleFormat = require('../config/config').log_simpleformat;
+
 var Log = {
 
     level: {
@@ -195,16 +197,25 @@ var Log = {
         if (!(item instanceof Log.LogItem))
             return;
 
+        var msg = null;
+        
+        if (SimpleFormat) {
+            msg = item.msg ? JSON.stringify(item.msg) : item.message;
+        } else {
+            msg = JSON.stringify(item);
+        }
+        
+
         if (item.level === Log.level.debug) {
-            console.info(JSON.stringify(item));
+            console.info(msg);
         } else if (item.level === Log.level.info) {
-            console.info(JSON.stringify(item));
+            console.info(msg);
         } else if (item.level === Log.level.warn) {
-            console.warn(JSON.stringify(item));
+            console.warn(msg);
         } else if (item.level === Log.level.error) {
-            console.error(JSON.stringify(item));
+            console.error(msg);
         } else if (item.level === Log.level.fatal) {
-            console.error(JSON.stringify(item));
+            console.error(msg);
         }
     }
 }

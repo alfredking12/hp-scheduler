@@ -19,6 +19,7 @@ namespace HpSchedulerJob.NET.RabbitMQ.RabbiMqSDK
         {
             mConnectionFactory = new ConnectionFactory();
             mConnectionFactory.Uri = uri;
+            mConnectionFactory.AutomaticRecoveryEnabled = true;
         }
 
         public IRabbitMqConnection CreateConnection()

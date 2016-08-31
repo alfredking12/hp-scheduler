@@ -67,5 +67,8 @@ namespace HpSchedulerJob.NET.RabbitMq
         /// <returns></returns>
         EventingBasicConsumer GetEventingBasicConsumer();
 
+
+        void BasicAck(ulong deliveryTag, bool multiple);
+
     }
 }

@@ -52,11 +52,15 @@ namespace HpSchedulerJob.NET.RabbitMq
         }
 
 
+        public void BasicAck(ulong deliveryTag, bool multiple)
+        {
+            mChannel.BasicAck(deliveryTag, multiple);
+        }
+
         public void Dispose()
         {
             mChannel.Dispose();
         }
-
 
     }
 }

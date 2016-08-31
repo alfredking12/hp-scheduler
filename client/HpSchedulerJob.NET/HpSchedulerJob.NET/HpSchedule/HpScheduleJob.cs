@@ -1,4 +1,5 @@
 ﻿using HpSchedulerJob.NET.Foundation;
+using HpSchedulerJob.NET.Foundation.Utils;
 using HpSchedulerJob.NET.HpSchedule.Model;
 using HpSchedulerJob.NET.RabbitMq.RabbitMqScene.WorkQueue;
 using Newtonsoft.Json;
@@ -13,7 +14,7 @@ namespace HpSchedulerJob.NET.HpSchedule
 {
     public abstract class HpScheduleJob
     {
-        private readonly static string dispatch_center_callback_key = "__dispatcher_center_callback";
+        private readonly static string dispatch_center_callback_key = "__dispatcher_center_callback.local";
 
         private string rabbitmq_url;
 
@@ -36,8 +37,18 @@ namespace HpSchedulerJob.NET.HpSchedule
                 Log.SimpleFormat = true;
             }
 
+            Log.i("开始运行");
+
+            StructureMessage(rabbitmq_url, "开始运行", 0);
+
             Log.i("启动服务");
 
+            MonitorMqueue(rabbitmq_url, jobKey, options);
+        }
+
+
+        private void MonitorMqueue(string rabbitmq_url, string jobKey, HpScheduleOptions options)
+        {
             try
             {
                 var factory = SchedulerMq.getInstance(rabbitmq_url).getFactory();
@@ -46,21 +57,20 @@ namespace HpSchedulerJob.NET.HpSchedule
 
                 Log.i("建立连接: " + rabbitmq_url);
 
-                consumer.ReceivedMessage(jobKey, (model, ea) =>
+                consumer.ReceivedMessage(jobKey, (message) =>
                 {
-                    var message = Encoding.UTF8.GetString(ea.Body);
-                    GetMsg(message, options);
+                    HandleMsg(message, options);
                 });
 
                 Log.i("监听MQ消息: " + jobKey);
             }
             catch (Exception ex)
             {
-                Log.e(ex);                                                                                                                                                                           
+                Log.e(ex);
             }
         }
 
-        private void GetMsg(string message, HpScheduleOptions option)
+        private void HandleMsg(string message, HpScheduleOptions option)
         {
             if (option.IsLog)
             {
@@ -68,15 +78,38 @@ namespace HpSchedulerJob.NET.HpSchedule
             }
 
             var context = new HpScheduleContext();
-            var entity = Newtonsoft.Json.JsonConvert.DeserializeObject<DeliveredModel>(message);
-            context.taskid = entity.task_id;
-            context.param = entity.param;
+
+            try
+            {
+                var entity = JsonConvert.DeserializeObject<DeliveredModel>(message);
+
+                context.taskid = entity.task_id;
+                context.param = entity.param;
+                context.routingkey = dispatch_center_callback_key;
+                context.rabbimqUrl = rabbitmq_url;
+
+                Log.ContextName = this.GetType().ToString();
+                Log.ContextID = Guid.NewGuid().ToString("D");
+
+                Execute(context);
+
+                Log.ContextName = null;
+            }
+            catch (System.Exception ex)
+            {
+                Log.i(ex);
+                context.Log(ex.ToString(), -1);
+            }
+        }
+
+
+        private void StructureMessage(string rabbitmqurl, string message, int progress)
+        {
+            var context = new HpScheduleContext();
+            context.rabbimqUrl = rabbitmqurl;
             context.routingkey = dispatch_center_callback_key;
-            context.rabbimqUrl = rabbitmq_url;
-            Log.ContextName = this.GetType().ToString();
-            Log.ContextID = Guid.NewGuid().ToString("D");
-            Execute(context);
-            Log.ContextName = null;
+            context.taskid = "0";
+            context.Log(message, progress);
         }
 
     }

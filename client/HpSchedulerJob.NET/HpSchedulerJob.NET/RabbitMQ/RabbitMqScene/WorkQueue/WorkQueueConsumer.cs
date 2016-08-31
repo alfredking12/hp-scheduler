@@ -22,13 +22,21 @@ namespace HpSchedulerJob.NET.RabbitMq.RabbitMqScene.WorkQueue
             return instance;
         }
 
-        public void ReceivedMessage(string routingKey, EventHandler<BasicDeliverEventArgs> callback)
+        public void ReceivedMessage(string routingKey, OnMessage callback)
         {
             var queName = routingKey;
             mChannel.QueueDeclare(queue: queName, durable: true, exclusive: false, autoDelete: false, arguments: null);
             var consumer = mChannel.GetEventingBasicConsumer();
-            consumer.Received += callback;
-            mChannel.BasicConsume(queue: queName, noack: true, consumer: consumer);
+            consumer.Received += (model, ea) =>
+            {
+                var message = Encoding.UTF8.GetString(ea.Body);
+
+                callback(message);
+
+                mChannel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
+            };
+
+            mChannel.BasicConsume(queue: queName, noack: false, consumer: consumer);
         }
 
         public void Dispose()
@@ -36,5 +44,7 @@ namespace HpSchedulerJob.NET.RabbitMq.RabbitMqScene.WorkQueue
             mChannel.Dispose();
             mConnection.Dispose();
         }
+
+
     }
 }

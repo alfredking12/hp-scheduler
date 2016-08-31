@@ -15,7 +15,7 @@ var config = {
     log_simpleformat: true
 }
 
-//config = require('./config.dev');
+config = require('./config.dev');
 //config = require('./config.sit');
 //config = require('./config.pre');
 //config = require('./config.prd');

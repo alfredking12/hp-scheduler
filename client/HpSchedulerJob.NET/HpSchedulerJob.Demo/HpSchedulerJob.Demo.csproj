@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="config.json" />
     <None Include="log4net.config" />
   </ItemGroup>
   <ItemGroup>

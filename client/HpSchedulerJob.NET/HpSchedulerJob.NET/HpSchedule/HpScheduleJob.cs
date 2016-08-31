@@ -1,65 +1,62 @@
 ﻿using HpSchedulerJob.NET.Foundation;
-using HpSchedulerJob.NET.Foundation.Utils;
 using HpSchedulerJob.NET.HpSchedule.Model;
 using HpSchedulerJob.NET.RabbitMq.RabbitMqScene;
 using HpSchedulerJob.NET.RabbitMq.RabbitMqScene.WorkQueue;
 using Newtonsoft.Json;
-using RabbitMQ.Client.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HpSchedulerJob.NET.HpSchedule
 {
     public abstract class HpScheduleJob
     {
-        private readonly static string dispatch_center_callback_key = "__dispatcher_center_callback.local";
-
+        private IMQFactory mFactory;
         private string rabbitmq_url;
+        private string jobKey;
+        private string dispatcher_center_callback;
+
+        public HpScheduleJob(string rabbitmq_url, string jobKey)
+        {
+            this.rabbitmq_url = rabbitmq_url;
+            this.jobKey = jobKey;
+            //创建MQ工厂
+            this.mFactory = new WorkQueueFactory(rabbitmq_url);
+        }
 
         public abstract void Execute(HpScheduleContext context);
 
-        public void run(string rabbitmq_url, string jobKey, HpScheduleOptions options = null)
+        protected virtual string getJobName()
         {
-            if (options == null)
-            {
-                options = new HpScheduleOptions();
-            }
-
-            this.rabbitmq_url = rabbitmq_url;
-
-            Log.config(options.Log4net);
-
-            if (options.Debug)
-            {
-                //简单格式的Log
-                Log.SimpleFormat = true;
-            }
-            
-            Log.i("启动服务");
-
-            MonitorMqueue(rabbitmq_url, jobKey, options);
+            return this.GetType().ToString();
         }
 
+        internal void run(string dispatcher_center_callback)
+        {
+            this.dispatcher_center_callback = dispatcher_center_callback;
 
-        private void MonitorMqueue(string rabbitmq_url, string jobKey, HpScheduleOptions options)
+            Log.i("启动服务:" + this.getJobName());
+            this.listen(this.rabbitmq_url, this.jobKey);
+        }
+
+        private void listen(string rabbitmq_url, string jobKey)
         {
             try
             {
-                var factory = SchedulerMq.getInstance(rabbitmq_url).getFactory();
+                Log.i("建立连接: " + rabbitmq_url + ", jobKey: " + jobKey);
 
-                var consumer = factory.CreateMqConsumer(jobKey);
+                var consumer = mFactory.CreateMqConsumer(jobKey);
 
-                Log.i("建立连接: " + rabbitmq_url);
+                Log.i("监听MQ消息: " + jobKey);
 
                 consumer.ReceivedMessage((deliveryTag, message) =>
                 {
-                    HandleMsg(consumer, message, deliveryTag, options);
+                    Log.ContextName = this.GetType().ToString();
+                    Log.ContextID = Guid.NewGuid().ToString("D");
+                    Log.i(string.Format("收到消息[{0}-{1}]: {2}", this.getJobName(), jobKey, message));
+                    HandleMsg(consumer, message, deliveryTag);
+                    Log.ContextName = null;
                 });
 
-                Log.i("监听MQ消息: " + jobKey);
+                Log.i("服务启动成功:" + this.getJobName());
             }
             catch (Exception ex)
             {
@@ -67,14 +64,9 @@ namespace HpSchedulerJob.NET.HpSchedule
             }
         }
 
-        private void HandleMsg(IMQConsumer consumer, string message, ulong deliveryTag, HpScheduleOptions option)
+        private void HandleMsg(IMQConsumer consumer, string message, ulong deliveryTag)
         {
-            if (option.IsLog)
-            {
-                Log.i(message);
-            }
-
-            var context = new HpScheduleContext();
+            var context = new HpScheduleContext(mFactory);
 
             try
             {
@@ -82,30 +74,35 @@ namespace HpSchedulerJob.NET.HpSchedule
 
                 context.taskid = entity.task_id;
                 context.param = entity.param;
-                context.routingkey = dispatch_center_callback_key;
-                context.rabbimqUrl = rabbitmq_url;
-
-                Log.ContextName = this.GetType().ToString();
-                Log.ContextID = Guid.NewGuid().ToString("D");
+                context.routingkey = this.dispatcher_center_callback;
+                context.rabbimqUrl = this.rabbitmq_url;
 
                 if (!context.Log("开始执行任务", 0))
                 {
+                    //应答，并使该消息重新从队列获取
                     consumer.NAck(deliveryTag);
                     return;
                 }
 
+                //应答
                 consumer.Ack(deliveryTag);
 
-                Execute(context);
-
-                Log.ContextName = null;
+                try
+                {
+                    //执行任务
+                    Execute(context);
+                }
+                catch (Exception e)
+                {
+                    Log.f("执行任务失败", e);
+                    context.Log(e.ToString(), -1);
+                }
             }
-            catch (System.Exception ex)
+            catch (System.Exception e)
             {
-                Log.i(ex);
-                context.Log(ex.ToString(), -1);
+                Log.i(e);
+                context.Log(e.ToString(), -1);
             }
         }
-
     }
 }

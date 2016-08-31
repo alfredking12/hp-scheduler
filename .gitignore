@@ -46,6 +46,7 @@ jspm_packages
 
 # Insensitive Config
 .config.js
+config.prd.js
 
 # .NET
 bin

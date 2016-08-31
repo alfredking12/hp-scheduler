@@ -1,5 +1,6 @@
 ﻿using HpSchedulerJob.NET.Foundation.Utils;
 using HpSchedulerJob.NET.HpSchedule.Model;
+using HpSchedulerJob.NET.RabbitMq.RabbitMqScene;
 using HpSchedulerJob.NET.RabbitMq.RabbitMqScene.WorkQueue;
 using Newtonsoft.Json;
 using System;
@@ -19,6 +20,13 @@ namespace HpSchedulerJob.NET.HpSchedule
         internal string routingkey { get; set; }
 
         internal string rabbimqUrl { get; set; }
+
+        public WeakReference<IMQFactory> mFactory { get; set; }
+
+        internal HpScheduleContext(IMQFactory factory)
+        {
+            this.mFactory = new WeakReference<IMQFactory>(factory);
+        }
 
 
         public bool Log(string message, int? progress = null)
@@ -41,6 +49,12 @@ namespace HpSchedulerJob.NET.HpSchedule
 
         private bool sendMsg(string message, int? progress)
         {
+            IMQFactory factory = null;
+            if (!mFactory.TryGetTarget(out factory))
+            {
+                return false;
+            }
+
             HpSchedulerJob.NET.Foundation.Log.i(String.Format("Task({0}) ::: send message = {1}, progress = {2}", this.taskid, message, progress == null ? "null" : progress.ToString()));
 
             try
@@ -54,8 +68,6 @@ namespace HpSchedulerJob.NET.HpSchedule
                 };
 
                 var jsonstr = JsonConvert.SerializeObject(callback);
-
-                var factory = SchedulerMq.getInstance(rabbimqUrl).getFactory();
 
                 using (var producer = factory.CreateMqProducer(routingkey))
                 {

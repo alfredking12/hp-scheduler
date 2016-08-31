@@ -58,9 +58,9 @@
     <Compile Include="HpSchedule\HpScheduleContext.cs" />
     <Compile Include="HpSchedule\HpScheduleJob.cs" />
     <Compile Include="HpSchedule\HpScheduleOptions.cs" />
+    <Compile Include="HpSchedule\JobApplication.cs" />
     <Compile Include="HpSchedule\Model\CallBackModel.cs" />
     <Compile Include="HpSchedule\Model\DeliveredModel.cs" />
-    <Compile Include="HpSchedule\SchedulerMq.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RabbitMQ\RabbiMqSDK\IRabbitMqChannel.cs" />
     <Compile Include="RabbitMQ\RabbiMqSDK\IRabbitMqConnection.cs" />

@@ -1,6 +1,6 @@
 module.exports = {
     
-    db_connection_string: "mysql://dev:" + encodeURIComponent('Bysun4321$#@!') + "@dev.mysql.local:3306/hp_scheduler",
+    db_connection_string: "mysql://dev:" + encodeURIComponent('Bysun4321$#@!') + "@dev.mysql.local:3306/hp_scheduler_dev",
     db_pool_max: 2,
     db_pool_min: 0,
     db_pool_idle: 10000,

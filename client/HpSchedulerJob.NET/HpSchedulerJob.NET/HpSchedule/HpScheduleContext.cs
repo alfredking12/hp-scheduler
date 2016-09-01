@@ -42,7 +42,7 @@ namespace HpSchedulerJob.NET.HpSchedule
                     progress = 100;
                 }
 
-                if (this.progress > progress)
+                if (this.progress != null && this.progress > progress && progress > 0)
                 {
                     throw new Exception("progress less than before.");
                 }

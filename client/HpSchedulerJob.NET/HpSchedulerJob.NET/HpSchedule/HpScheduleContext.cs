@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace HpSchedulerJob.NET.HpSchedule
 {
+    public delegate void SubJob(HpScheduleSubContext context);
+
+
     public class HpScheduleContext
     {
         public string param { get; internal set; }
@@ -21,13 +24,9 @@ namespace HpSchedulerJob.NET.HpSchedule
 
         internal string rabbimqUrl { get; set; }
 
-        public WeakReference<IMQFactory> mFactory { get; set; }
+        private WeakReference<IMQFactory> mFactory { get; set; }
 
-        internal HpScheduleContext(IMQFactory factory)
-        {
-            this.mFactory = new WeakReference<IMQFactory>(factory);
-        }
-
+        public int? progress { get; internal set; }
 
         public bool Log(string message, int? progress = null)
         {
@@ -42,9 +41,33 @@ namespace HpSchedulerJob.NET.HpSchedule
                 {
                     progress = 100;
                 }
+
+                if (this.progress > progress)
+                {
+                    throw new Exception("progress less than before.");
+                }
+
+                this.progress = progress;
             }
 
             return sendMsg(message, progress);
+        }
+
+        public void createSubJob(int stage, SubJob job)
+        {
+            if (stage <= this.progress)
+            {
+                throw new System.Exception("stage small than progress");
+            }
+
+            if (stage > 100) stage = 100;
+
+            job(new HpScheduleSubContext(this, stage));
+        }
+
+        internal HpScheduleContext(IMQFactory factory)
+        {
+            this.mFactory = new WeakReference<IMQFactory>(factory);
         }
 
         private bool sendMsg(string message, int? progress)

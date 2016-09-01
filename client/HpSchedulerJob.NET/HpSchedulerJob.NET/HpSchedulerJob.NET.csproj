@@ -55,6 +55,7 @@
     <Compile Include="Core\ConfigurationCenter.cs" />
     <Compile Include="Core\JsonConfiguration.cs" />
     <Compile Include="Core\Log.cs" />
+    <Compile Include="HpSchedule\HpScheduleSubContext.cs" />
     <Compile Include="HpSchedule\HpScheduleContext.cs" />
     <Compile Include="HpSchedule\HpScheduleJob.cs" />
     <Compile Include="HpSchedule\HpScheduleOptions.cs" />

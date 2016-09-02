@@ -517,7 +517,7 @@ class TriggerCreate extends TriggerDetail {
             code: this.state.data.code,
             stime: start ? start.getTime() : undefined,
             etime: end ? end.getTime() : undefined,
-            value: parseInt(this.state.data.value),
+            value: this.state.data.value,
             type: parseInt(this.state.data.type || 0)
         };
 

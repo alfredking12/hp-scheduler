@@ -291,18 +291,10 @@ function scheduler() {
 
         } else /* if (trigger.type == 0) */ {   // --- Cron
             
-            var options = {rule : trigger.value};
-            if (trigger.stime != 0) {
-                options.start = new Date(trigger.stime);
-            }
-            if (trigger.etime != 0) {
-                options.end = new Date(trigger.etime);
-            }
-
             looper.timeout = setTimeout(function(){
                 looper.timeout = 0;
 
-                looper.job = schedule.scheduleJob(options, function() {
+                looper.job = schedule.scheduleJob(trigger.value, function() {
                     if (!_this.expired(trigger)) {
                         _this.trigger_tasks(trigger);
                     } else {

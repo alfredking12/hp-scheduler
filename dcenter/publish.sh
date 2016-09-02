@@ -1,1 +1,0 @@
-scp src wangfei@120.26.239.94:/bysunnet/scheduler/dcenter/dev/

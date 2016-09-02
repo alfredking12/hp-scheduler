@@ -59,6 +59,10 @@ git clone https://github.com/alfredking12/hp-scheduler.git
 ### 安装和配置 调度中心
 
 ```
+
+# mysql创建数据库
+mysql> create database scheduler; 
+
 # 安装 nodemon
 npm install -g nodemon --verbose
 
@@ -70,7 +74,7 @@ npm install --verbose
 
 var config = {
     # mysql连接串
-    db_connection_string: "mysql://dev:" + encodeURIComponent('Bysun4321$#@!') + "@dev.mysql.local:3306/hp_scheduler",
+    db_connection_string: "mysql://dev:" + encodeURIComponent('Bysun4321$#@!') + "@dev.mysql.local:3306/scheduler",
     # mysql连接池最大连接数
     db_pool_max: 2,
     # mysql连接池最小连接数

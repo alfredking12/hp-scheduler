@@ -1,0 +1,22 @@
+﻿{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Microsoft.Extensions.Logging": "1.0.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Logging.Console": "1.0.0",
+    "NETStandard.Library": "1.6.0",
+    "Newtonsoft.Json": "9.0.1",
+    "NLog.Extensions.Logging": "1.0.0-rtm-alpha4",
+    "RabbitMQ.Client": "4.0.1",
+    "System.Data.Common": "4.1.0",
+    "System.Text.Encoding.CodePages": "4.0.1",
+    "System.Xml.XmlDocument": "4.0.1"
+  },
+
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  }
+}

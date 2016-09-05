@@ -1,7 +1,6 @@
-﻿using HpSchedulerJob.NET.RabbitMq;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 
-namespace HpSchedulerJob.NET.RabbitMQ.RabbiMqSDK
+namespace HpScheduler.Core.RabbitMQ.RabbiMqSDK
 {
     public class RabbitMqFactory : IRabbitMqFactory
     {

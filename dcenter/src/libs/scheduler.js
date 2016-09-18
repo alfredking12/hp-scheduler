@@ -26,7 +26,7 @@ function scheduler() {
     this.triggers = {};
 
     this.initTriggers = function() {
-        Triggers.define()
+        Triggers.model()
             .findAll()
             .then(function(data){
                 for (var i=0;i<data.length;i++) {
@@ -81,6 +81,7 @@ function scheduler() {
     this.listenLogs = function() {
 
         MQ.recv(config.dispatcher_center_callback, function(mq_msg) {
+            
             var data = null;
             var msg = mq_msg.message;
             try { data = JSON.parse(msg);} catch(err) {
@@ -102,16 +103,15 @@ function scheduler() {
                 progress: data.progress
             };
 
-
             // 写入TaskLogs
-            TaskLogs.define().create(log)
+            TaskLogs.model().create(log)
                 .then(function(data){
                 })
                 .catch(function(err){
                     Log.f('写入日志数据失败:' + JSON.stringify(log), err);
                 });
-
-            var TaskRecordModel = TaskRecords.define();
+                
+            var TaskRecordModel = TaskRecords.model();
             TaskRecordModel.findById(taskid)
                 .then(function(data){
 
@@ -342,7 +342,7 @@ function scheduler() {
         //item.repeated ++;
 
         //读取数据库任务触发任务
-        Tasks.define()
+        Tasks.model()
             .findAll({
                 where: {
                     trigger_code: trigger.code
@@ -409,7 +409,7 @@ function scheduler() {
             status: 0
         };
 
-        var TaskRecordModel = TaskRecords.define();
+        var TaskRecordModel = TaskRecords.model();
 
         TaskRecordModel.count({
             where: item

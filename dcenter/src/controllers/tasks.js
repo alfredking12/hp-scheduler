@@ -12,7 +12,7 @@ module.exports = {
     getList: function(req,res,next) {
 
         Tasks
-            .define()
+            .model()
             .findAll({order: [ ['updatedAt', 'DESC'] ]})
             .then(function (data) {
                 util.ok(req, res, next, data);
@@ -23,7 +23,7 @@ module.exports = {
         var data = req.body;
 
         Triggers
-            .define()
+            .model()
             .findOne({
                 where: {
                     code: data.trigger_code
@@ -34,7 +34,7 @@ module.exports = {
                 if (trigger == null) {
                     util.fail(req, res, next, "触发器标识不存在");
                 } else {
-                    return Tasks.define().create(data);
+                    return Tasks.model().create(data);
                 }
             })
             .then(function (data) {
@@ -46,7 +46,7 @@ module.exports = {
     getItem: function(req,res,next) {
         var id = req.params.id;
 
-        Tasks.define()
+        Tasks.model()
             .findById(id)
             .then(function (data) {
                 if (data)
@@ -67,13 +67,13 @@ module.exports = {
         if (data.name !== undefined)
             delete data.name;
 
-        var TaskModel = Tasks.define();
+        var TaskModel = Tasks.model();
         var promise = null;
 
         if (data.trigger_code) {
 
             promise = Triggers
-                .define()
+                .model()
                 .findOne({
                     where: {
                         code: data.trigger_code
@@ -107,7 +107,7 @@ module.exports = {
     deleteItem: function(req,res,next) {
         var id = req.params.id;
 
-        Tasks.define()
+        Tasks.model()
             .destroy({
                 where: {
                     id: id
@@ -122,7 +122,7 @@ module.exports = {
     disableItem: function(req,res,next) {
         var id = req.params.id;
 
-        Tasks.define()
+        Tasks.model()
             .update({
                 disable: true
             }, {
@@ -139,7 +139,7 @@ module.exports = {
     enableItem: function(req,res,next) {
         var id = req.params.id;
 
-        Tasks.define()
+        Tasks.model()
             .update({
                 disable: false
             }, {
@@ -157,7 +157,7 @@ module.exports = {
     runOnceItem: function(req,res,next) {
         var id = req.params.id;
 
-        Tasks.define()
+        Tasks.model()
             .findById(id)
             .then(function (data) {
                 if (data) {

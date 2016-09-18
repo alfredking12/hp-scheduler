@@ -1,10 +1,11 @@
 var Sequelize = require("sequelize");
 var config = require('../config/config.js');
+var Log = require('./log');
 
 module.exports = {
 
     sequelize: function() {
-
+        
         if (!this._sequelize) {
 
             this._sequelize = new Sequelize(config.db_connection_string, {
@@ -13,9 +14,10 @@ module.exports = {
                     min: config.db_pool_min,
                     idle: config.db_pool_idle,
                 },
-                logging: require('../config/config').log_sql
+                logging: config.log_sql
             });
 
+            Log.i("create db instance sequelize !!!");
         }
 
         return this._sequelize;

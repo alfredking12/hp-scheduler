@@ -3,6 +3,21 @@ var moment = require('moment');
 
 var SimpleFormat = require('../config/config').log_simpleformat;
 
+function LogItem() {
+    if (!(this instanceof LogItem))
+        return new LogItem();
+
+    this.pid = undefined;
+    this.level = undefined;
+    this.time = undefined;
+    this.context_id  = undefined;
+    this.context_name = undefined;
+    this.action = undefined;
+    this.msg = undefined;
+    this.message = undefined;
+    this.exception = undefined;
+}
+
 var Log = {
 
     level: {
@@ -13,23 +28,8 @@ var Log = {
         fatal: 110000
     },
 
-    LogItem: function() {
-        if (!(this instanceof Log.LogItem))
-            return new Log.LogItem();
-
-        this.pid = undefined;
-        this.level = undefined;
-        this.time = undefined;
-        this.context_id  = undefined;
-        this.context_name = undefined;
-        this.action = undefined;
-        this.msg = undefined;
-        this.message = undefined;
-        this.exception = undefined;
-    },
-
     log_entry: function(req) {
-        var log_item = new Log.LogItem();
+        var log_item = new LogItem();
         log_item.pid = process.pid;
         log_item.level = 40000;
         log_item.time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
@@ -49,7 +49,7 @@ var Log = {
     log_exist: function(req, body) {
         var spent = (new Date().getTime()) - ReqCtx.get(req).stime;
 
-        var log_item = new Log.LogItem();
+        var log_item = new LogItem();
         log_item.pid = process.pid;
         log_item.level = 40000;
         log_item.time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
@@ -83,7 +83,7 @@ var Log = {
 
     create_item: function(level, msg, exception, req) {
         
-        var log_item = new Log.LogItem();
+        var log_item = new LogItem();
         log_item.pid = process.pid;
         log_item.level = level;
         log_item.time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
@@ -135,7 +135,7 @@ var Log = {
         
         if (args.length === 1) {
             var arg1 = args[0];
-            if (arg1 instanceof Log.LogItem) {
+            if (arg1 instanceof LogItem) {
                 item.log = arg1;
             } else {
                 if (arg1 && arg1.ctx) {
@@ -185,16 +185,10 @@ var Log = {
         } else {
             Log._log_item(Log.create_item(level, item.msg, item.err, item.req));
         }
-
-        var log_item = {
-            pid: process.pid,
-            level: level,
-            time: moment().format('YYYY-MM-DD HH:mm:ss.SSS')
-        };
     },
     
     _log_item : function(item) {
-        if (!(item instanceof Log.LogItem))
+        if (!(item instanceof LogItem))
             return;
 
         var msg = null;
@@ -220,6 +214,8 @@ var Log = {
         } else if (item.level === Log.level.fatal) {
             console.error(msg);
         }
+
+        delete item;
     }
 }
 

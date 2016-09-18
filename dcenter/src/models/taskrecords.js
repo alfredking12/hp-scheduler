@@ -46,5 +46,10 @@ module.exports = {
         return sequelize.define(model_decl[0], model_decl[1], {
             freezeTableName: true // Model tableName will be the same as the model name
         });
+    },
+
+    model: function() {
+        var sequelize = db.sequelize();
+        return sequelize.model(model_decl[0]);
     }
 }

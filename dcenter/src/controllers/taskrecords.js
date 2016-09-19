@@ -58,7 +58,7 @@ module.exports = {
 
         Log.d('options:' + JSON.stringify(options));
 
-        var TaskRecordModel = TaskRecords.define();
+        var TaskRecordModel = TaskRecords.model();
         TaskRecordModel.count(cond ? {where: cond} : {})
             .then(function(cnt){
                 if (cnt < page * per_page) {
@@ -90,7 +90,7 @@ module.exports = {
     getItem: function(req,res,next) {
         var id = req.params.id;
 
-        TaskRecords.define()
+        TaskRecords.model()
             .findById(id)
             .then(function (data) {
                 if (data)
@@ -105,7 +105,7 @@ module.exports = {
     deleteItem: function (req, res, next) {
         var id = req.params.id;
 
-        TaskRecords.define()
+        TaskRecords.model()
             .destroy({
                 where: {
                     id: id

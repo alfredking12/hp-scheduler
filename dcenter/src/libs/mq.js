@@ -7,6 +7,7 @@ var MQ = {
 
     send: function(q, msg, cb) {
         amqp.connect(config.rabbitmq_url).then(function(conn) {
+            process.once('SIGINT', function() { conn.close(); });
             Log.i(" [" + q + "] connected.");
             return conn.createChannel().then(function(ch) {
                 Log.i(" [" + q + "] created channel.");
@@ -51,6 +52,7 @@ var MQ = {
                             return ch.consume(q, function(msg) {
                                 var m = msg.content.toString();
                                 Log.i("[ " + q + "] recv message: " + m);
+
                                 cb({
                                     message: m,
                                     ack: function() {

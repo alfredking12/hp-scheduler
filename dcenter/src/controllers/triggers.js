@@ -8,7 +8,7 @@ module.exports = {
 
     // 获取触发器列表
     getList: function (req, res, next) {
-        Triggers.define()
+        Triggers.model()
             .findAll({
                 order: [
                     ['updatedAt', 'DESC'],
@@ -31,7 +31,7 @@ module.exports = {
             return;
         }
 
-        Triggers.define()
+        Triggers.model()
             .create(data)
             .then(function (data) {
                 util.ok(req, res, next, data);
@@ -44,7 +44,7 @@ module.exports = {
     getItem: function (req, res, next) {
         var id = req.params.id;
 
-        Triggers.define()
+        Triggers.model()
             .findById(id)
             .then(function (data) {
                 if (data)
@@ -81,7 +81,7 @@ module.exports = {
             }
         }
 
-        var TriggerModel = Triggers.define();
+        var TriggerModel = Triggers.model();
         TriggerModel
             .update(data, {
                 where: {
@@ -105,7 +105,7 @@ module.exports = {
     deleteItem: function (req, res, next) {
         var id = req.params.id;
 
-        Triggers.define()
+        Triggers.model()
             .destroy({
                 where: {
                     id: id
@@ -122,7 +122,7 @@ module.exports = {
     getItemWithCode: function (req, res, next) {
         var code = req.params.code;
 
-        Triggers.define()
+        Triggers.model()
             .findOne({
                 where: {
                     code: code

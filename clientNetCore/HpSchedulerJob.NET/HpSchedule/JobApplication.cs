@@ -18,7 +18,7 @@ namespace HpSchedulerJob.NET.HpSchedule
             }
 
             //初始化日志
-            if (!string.IsNullOrEmpty(options.Log4net))
+            if (options.Nlog)
             {
                 //Log.config(options.Log4net);
 

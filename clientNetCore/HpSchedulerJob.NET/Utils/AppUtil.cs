@@ -13,5 +13,11 @@ namespace HpSchedulerJob.NET.Foundation.Utils
         {
             return Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetEntryAssembly().CodeBase).LocalPath);
         }
+
+        public static string GetLocalPath(string path)
+        {
+            return Path.GetFullPath(path);
+        }
+
     }
 }

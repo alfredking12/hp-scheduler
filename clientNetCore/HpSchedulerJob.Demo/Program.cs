@@ -4,6 +4,7 @@ using HpSchedulerJob.NET.HpSchedule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HpSchedulerJob.Demo
@@ -45,6 +46,7 @@ namespace HpSchedulerJob.Demo
             //});
 
             context.Log("第一步完成", 30);
+            //Thread.Sleep(20000);
             context.Log("第二步完成", 60);
             context.Log("调试信息输出");
             context.Log("结束", 100);
@@ -64,14 +66,14 @@ namespace HpSchedulerJob.Demo
             JobApplication app = new JobApplication(new HpScheduleOptions()
             {
                 Debug = true,
-                Log4net = AppUtil.GetPath() + "\\..\\..\\log4net.config",
-                Config = AppUtil.GetPath() + "\\..\\..\\config.json"
+                Nlog = true,
+                Config = AppUtil.GetLocalPath("config.json")
             });
 
             var dispatcher_center_callback = ConfigurationCenter.getValue("dispatcher_center_callback");
 
             app.start(dispatcher_center_callback,
-                new Demo(ConfigurationCenter.getValue("rabbitmq_url"), "dev_demo_wfpb")
+                new Demo(ConfigurationCenter.getValue("rabbitmq_url"), "dev_demo")
                 );
 
             Console.ReadLine();

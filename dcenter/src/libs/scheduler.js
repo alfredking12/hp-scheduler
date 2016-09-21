@@ -26,12 +26,23 @@ function scheduler() {
     this.triggers = {};
 
     this.initTriggers = function() {
-        Triggers.model()
+        return Triggers.model()
             .findAll()
             .then(function(data){
+                var ret = [];
                 for (var i=0;i<data.length;i++) {
-                    _this.add(data[i]);
+                    var p = new Promise(function(resolve, reject){
+                        try {
+                            _this.add(data[i]);
+                            resolve();
+                        } catch (e) {
+                            reject(e);
+                        }
+                    });
+                    ret.push(p);
                 }
+
+                return Promise.all(ret);
             })
             .catch(function(err){
                 Log.e(err);
@@ -70,7 +81,7 @@ function scheduler() {
         db.sync({force: false})
             .then(function(){
                 _this.listenLogs();
-                _this.initTriggers();
+                return _this.initTriggers();
             })
             .catch(function(err){
                 Log.e('初始化失败', err);
@@ -350,9 +361,11 @@ function scheduler() {
             })
             .then(function(data){
                 if (data.length > 0) {
+                    var ret = []
                     for (var i=0;i<data.length;i++) {
-                        _this.run(data[i]);
+                        ret.push(_this.run(data[i]));
                     }
+                    return Promise.all(ret);
                 }
                 else {
                     Log.d("SCHEDULER:::EMPTY::: " + JSON.stringify(trigger));
@@ -403,6 +416,8 @@ function scheduler() {
             target: task.target
         }
 
+        var id;
+
         var item = {
             target: task.target,
             param: data.param,
@@ -411,7 +426,7 @@ function scheduler() {
 
         var TaskRecordModel = TaskRecords.model();
 
-        TaskRecordModel.count({
+        return TaskRecordModel.count({
             where: item
         }).then(function(cnt){
             if (cnt !== 0) {
@@ -423,28 +438,27 @@ function scheduler() {
             
         }).then(function(data){
 
+            id = data.id;
+
             // 发送消息到MQ
-            MQ.send(task.target, JSON.stringify({
+            return MQ.send(task.target, JSON.stringify({
                 task_id: data.id,
                 param: data.param
-            }), function(err){
-                
-                if (err) {
-                    Log.f("发送任务消息失败:" + task.name + ", recordId:" + data.id, err);
+            }))
 
-                    TaskRecordModel
-                        .destroy({where: { id: id }})
-                        .then(function(){});
-                } else {
-                    Log.i('发送任务消息成功:' + task.name + ", recordId:" + data.id);
-                }
-            });
+        }).then(function(){
 
-
-
+            Log.i('发送任务消息成功:' + task.name);
 
         }).catch(function(err){
-            Log.f("触发任务失败:" + task.name + ',' + err.message);    
+
+            Log.f("触发任务失败:" + task.name + err.message);
+
+            if (id) {
+                TaskRecordModel
+                    .destroy({where: { id: id }})
+                    .then(null);
+            }  
         });
     }
 }

@@ -31,7 +31,7 @@ module.exports = {
                     code: data.trigger_code
                 }
             })
-            .then(function(trigger){
+            .then(function cb_findOne_trigger(trigger){
                 Log.i("addItem find trigger: " + JSON.stringify(trigger));
                 if (trigger == null) {
                     return Promise.reject(new Error("触发器标识不存在"));
@@ -83,7 +83,7 @@ module.exports = {
                         code: data.trigger_code
                     }
                 })
-                .then(function(trigger){
+                .then(function cb_findOne_trigger2(trigger){
                     if (trigger == null) {
                         return Promise.reject(new Error("触发器标识不存在"));
                     } else {

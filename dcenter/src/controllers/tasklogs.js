@@ -54,7 +54,7 @@ module.exports = {
         var options = bind ? {bind: bind} : {};
 
         db.select(sql_count, options)
-            .then(function(cnt){
+            .then(function cb_count_of_taskklog(cnt){
                 var cnt = cnt[0].count;
                 if (cnt < start) {
                     return util.ok(req, res, next, {data: [], count: 0});    

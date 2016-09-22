@@ -60,7 +60,7 @@ module.exports = {
 
         var TaskRecordModel = TaskRecords.model();
         TaskRecordModel.count(cond ? {where: cond} : {})
-            .then(function(cnt){
+            .then(function cb_count_of_taskrecord(cnt){
                 if (cnt < page * per_page) {
                     return util.ok(req, res, next, {data: [], count: 0});    
                 } else {

@@ -31,7 +31,7 @@ function scheduler() {
             .then(function cb_triggerList(data){
                 var ret = [];
                 for (var i=0;i<data.length;i++) {
-                    var p = new Promise(function(resolve, reject){
+                    var p = new Promise(function addTrigger(resolve, reject){
                         try {
                             _this.add(data[i]);
                             resolve();
@@ -44,7 +44,7 @@ function scheduler() {
 
                 return Promise.all(ret);
             })
-            .catch(function(err){
+            .catch(function cb_initTrigers_error(err){
                 Log.e(err);
                 process.exit(1);
             });
@@ -79,11 +79,11 @@ function scheduler() {
         TaskLogs.define();
         TaskRecords.define();
         db.sync({force: false})
-            .then(function(){
+            .then(function cb_db_sync(){
                 _this.listenLogs();
                 return _this.initTriggers();
             })
-            .catch(function(err){
+            .catch(function cb_db_sync_error(err){
                 Log.e('初始化失败', err);
             })
             .done();
@@ -117,16 +117,16 @@ function scheduler() {
 
             // 写入TaskLogs
             TaskLogs.model().create(log)
-                .then(function(data){
+                .then(function cb_create_tasklog(data){
                 })
-                .catch(function(err){
+                .catch(function cb_create_tasklog_error(err){
                     Log.f('写入日志数据失败:' + JSON.stringify(log), err);
                 })
                 .done();
                 
             var TaskRecordModel = TaskRecords.model();
             TaskRecordModel.findById(taskid)
-                .then(function(data){
+                .then(function cb_findById_taskrecord(data){
 
                     var item = {
                         stime: log.time,
@@ -181,10 +181,10 @@ function scheduler() {
                     // 更新任务记录状态
                     return TaskRecordModel.update(item, {where: {id: taskid}});
                 })
-                .then(function(data){
+                .then(function cb_ack(data){
                     mq_msg.ack();
                 })
-                .catch(function(err){
+                .catch(function cb_taskrecord_error(err){
                     Log.f("更新任务记录状态失败", err);
                     mq_msg.nack();
                 }).done();
@@ -277,7 +277,7 @@ function scheduler() {
                 }
             }
 
-            looper.timeout = setTimeout(function(){
+            looper.timeout = setTimeout(function task_timeout(){
                 looper.timeout = 0;
 
                 ret = _this.expired(trigger);
@@ -287,7 +287,7 @@ function scheduler() {
                     if (ret == 0) {
                         _this.trigger_tasks(trigger);
                     }
-                    looper.interval = setInterval(function(){
+                    looper.interval = setInterval(function task_interval(){
 
                         ret = _this.expired(trigger);
 
@@ -304,10 +304,10 @@ function scheduler() {
 
         } else /* if (trigger.type == 0) */ {   // --- Cron
             
-            looper.timeout = setTimeout(function(){
+            looper.timeout = setTimeout(function task_timeout(){
                 looper.timeout = 0;
 
-                looper.job = schedule.scheduleJob(trigger.value, function() {
+                looper.job = schedule.scheduleJob(trigger.value, function task_schedule() {
                     if (!_this.expired(trigger)) {
                         _this.trigger_tasks(trigger);
                     } else {
@@ -361,7 +361,7 @@ function scheduler() {
                     trigger_code: trigger.code
                 }
             })
-            .then(function(data){
+            .then(function cb_findAll_task(data){
                 if (data.length > 0) {
                     var ret = []
                     for (var i=0;i<data.length;i++) {
@@ -373,7 +373,7 @@ function scheduler() {
                     Log.d("SCHEDULER:::EMPTY::: " + JSON.stringify(trigger));
                 }
             })
-            .catch(function(err){
+            .catch(function cb_findAll_task_error(err){
                 Log.e("执行触发器任务失败(获取任务列表失败):" + trigger.code, err);
             })
             .done();

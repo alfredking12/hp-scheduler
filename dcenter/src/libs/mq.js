@@ -7,6 +7,7 @@ var MQ = {
 
     send: function(q, msg) {
         return amqp.connect(config.rabbitmq_url).then(function(conn) {
+            process.once('SIGINT', function MQ_send_SIGINT() { conn.close(); process.exit(1); });
             Log.i(" [" + q + "] connected.");
             return conn.createChannel()
                 .then(function(ch) {
@@ -30,7 +31,7 @@ var MQ = {
         var _this = this;
 
         amqp.connect(config.rabbitmq_url).then(function(conn) {
-            process.once('SIGINT', function() { conn.close(); });
+            process.once('SIGINT', function MQ_recv_SIGINT() { conn.close(); process.exit(1); });
             Log.i(" [" + q + "] connected.");
 
             conn.on('error', function(err) {

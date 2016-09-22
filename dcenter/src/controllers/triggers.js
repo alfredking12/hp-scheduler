@@ -15,7 +15,8 @@ module.exports = {
                 ]
             }).then(function (data) {
                 util.ok(req, res, next, data);
-            }).catch(next);
+            }).catch(next)
+            .done();
     },
 
     //新建触发器
@@ -37,7 +38,8 @@ module.exports = {
                 util.ok(req, res, next, data);
                 scheduler.add(data);
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 
     //获取触发器对象
@@ -50,9 +52,10 @@ module.exports = {
                 if (data)
                     util.ok(req, res, next, data);
                 else
-                    util.fail(req, res, next, "触发器不存在");
+                    return Promise.reject(new Error("触发器不存在"));
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 
     //更新触发器
@@ -92,13 +95,14 @@ module.exports = {
                 if (data && data[0])
                     return TriggerModel.findById(id)
                 else
-                    util.fail(req, res, next, "更新失败");
+                    return Promise.reject(new Error("更新失败"));
             })
             .then(function (data) {
                 util.ok(req, res, next, data);
                 scheduler.update(data);
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 
     //删除触发器
@@ -115,7 +119,8 @@ module.exports = {
                 util.ok(req, res, next);
                 scheduler.remove(data);
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 
     //根据触发器标识获取触发器对象
@@ -132,8 +137,9 @@ module.exports = {
                 if (data)
                     util.ok(req, res, next, data);
                 else
-                    util.fail(req, res, next, "触发器不存在");
+                    return Promise.reject(new Error("触发器不存在"));
             })
-            .catch(next);
+            .catch(next)
+            .done();
     }
 }

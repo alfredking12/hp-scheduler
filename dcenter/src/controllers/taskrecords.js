@@ -84,7 +84,8 @@ module.exports = {
                     util.ok(req, res, next, {count: req.cnt, data: data});
                 }
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 
     getItem: function(req,res,next) {
@@ -96,9 +97,10 @@ module.exports = {
                 if (data)
                     util.ok(req, res, next, data);
                 else
-                    util.fail(req, res, next, "任务记录不存在");
+                    return Promise.reject(new Error("任务记录不存在"));
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 
     //删除触发器
@@ -114,6 +116,7 @@ module.exports = {
             .then(function (count) {
                 util.ok(req, res, next);
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 }

@@ -66,7 +66,7 @@ var MQ = {
             setTimeout(function(){
                 _this.recv(q, cb);
             }, 5000);
-        });
+        }).done();
     }
 }
 

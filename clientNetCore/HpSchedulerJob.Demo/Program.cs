@@ -4,6 +4,7 @@ using HpSchedulerJob.NET.HpSchedule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -59,26 +60,82 @@ namespace HpSchedulerJob.Demo
         }
     }
 
+    class App
+    {
+        private JobApplication _app;
+
+        public App() : this(false)
+        {
+        }
+
+        public App(bool debug)
+        {
+            HpScheduleOptions options = new HpScheduleOptions();
+
+            if (debug)
+            {
+                options.Debug = true;
+                options.Nlog = true;
+                options.Config = AppUtil.GetLocalPath("config.json");
+            }
+            else
+            {
+                options.Debug = false;
+                options.Nlog = true;
+                options.Config = AppUtil.GetLocalPath("config.json");
+            }
+
+            JobApplication app = new JobApplication(options);
+            _app = app;
+        }
+
+        public void Start()
+        {
+            var dispatcher_center_callback = ConfigurationCenter.getValue("dispatcher_center_callback");
+
+            _app.start(dispatcher_center_callback,
+                 new Demo(ConfigurationCenter.getValue("rabbitmq_url"), "dev_demo")
+                );
+        }
+
+        public void Stop()
+        {
+            _app.stop();
+        }
+    }
+
+
+
     class Program
     {
         static void Main(string[] args)
         {
-            JobApplication app = new JobApplication(new HpScheduleOptions()
+            bool isWindows = System.Runtime.InteropServices.RuntimeInformation
+                                               .IsOSPlatform(OSPlatform.Windows);
+
+            if (isWindows)
             {
-                Debug = true,
-                Nlog = true,
-                Config = AppUtil.GetLocalPath("config.json")
-            });
+            }
+            else
+            {
+                JobApplication app = new JobApplication(new HpScheduleOptions()
+                {
+                    Debug = true,
+                    Nlog = true,
+                    Config = AppUtil.GetLocalPath("config.json")
+                });
 
-            var dispatcher_center_callback = ConfigurationCenter.getValue("dispatcher_center_callback");
+                var dispatcher_center_callback = ConfigurationCenter.getValue("dispatcher_center_callback");
 
-            app.start(dispatcher_center_callback,
-                new Demo(ConfigurationCenter.getValue("rabbitmq_url"), "dev_demo")
-                );
+                app.start(dispatcher_center_callback,
+                    new Demo(ConfigurationCenter.getValue("rabbitmq_url"), "dev_demo")
+                    );
 
-            Console.ReadLine();
+                Console.ReadLine();
 
-            app.stop();
+                app.stop();
+            }
+
         }
     }
 }

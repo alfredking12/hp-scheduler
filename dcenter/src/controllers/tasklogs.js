@@ -71,6 +71,7 @@ module.exports = {
                     util.ok(req, res, next, {count: req.cnt, data: data});
                 }
             })
-            .catch(next);
+            .catch(next)
+            .done();
     }
 }

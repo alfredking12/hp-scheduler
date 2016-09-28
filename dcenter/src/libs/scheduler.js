@@ -26,12 +26,23 @@ function scheduler() {
     this.triggers = {};
 
     this.initTriggers = function() {
-        Triggers.model()
+        return Triggers.model()
             .findAll()
-            .then(function(data){
+            .then(function cb_triggerList(data){
+                var ret = [];
                 for (var i=0;i<data.length;i++) {
-                    _this.add(data[i]);
+                    var p = new Promise(function(resolve, reject){
+                        try {
+                            _this.add(data[i]);
+                            resolve();
+                        } catch (e) {
+                            reject(e);
+                        }
+                    });
+                    ret.push(p);
                 }
+
+                return Promise.all(ret);
             })
             .catch(function(err){
                 Log.e(err);
@@ -70,11 +81,12 @@ function scheduler() {
         db.sync({force: false})
             .then(function(){
                 _this.listenLogs();
-                _this.initTriggers();
+                return _this.initTriggers();
             })
             .catch(function(err){
                 Log.e('初始化失败', err);
-            });
+            })
+            .done();
                 
     },
 
@@ -109,7 +121,8 @@ function scheduler() {
                 })
                 .catch(function(err){
                     Log.f('写入日志数据失败:' + JSON.stringify(log), err);
-                });
+                })
+                .done();
                 
             var TaskRecordModel = TaskRecords.model();
             TaskRecordModel.findById(taskid)
@@ -174,7 +187,7 @@ function scheduler() {
                 .catch(function(err){
                     Log.f("更新任务记录状态失败", err);
                     mq_msg.nack();
-                });
+                }).done();
         });
     }
 
@@ -350,9 +363,11 @@ function scheduler() {
             })
             .then(function(data){
                 if (data.length > 0) {
+                    var ret = []
                     for (var i=0;i<data.length;i++) {
-                        _this.run(data[i]);
+                        ret.push(_this.run(data[i]));
                     }
+                    return Promise.all(ret);
                 }
                 else {
                     Log.d("SCHEDULER:::EMPTY::: " + JSON.stringify(trigger));
@@ -360,7 +375,8 @@ function scheduler() {
             })
             .catch(function(err){
                 Log.e("执行触发器任务失败(获取任务列表失败):" + trigger.code, err);
-            });
+            })
+            .done();
     }
 
     //=0 可以执行
@@ -403,6 +419,8 @@ function scheduler() {
             target: task.target
         }
 
+        var id;
+
         var item = {
             target: task.target,
             param: data.param,
@@ -411,41 +429,40 @@ function scheduler() {
 
         var TaskRecordModel = TaskRecords.model();
 
-        TaskRecordModel.count({
+        return TaskRecordModel.count({
             where: item
-        }).then(function(cnt){
+        }).then(function cb_getCount(cnt){
             if (cnt !== 0) {
-                throw new Error('相同任务不要重复触发');
+                return Promise.reject(new Error('相同任务不要重复触发'));
             }
 
             // 插入一条任务记录
             return TaskRecordModel.create(data)
             
-        }).then(function(data){
+        }).then(function cb_created(data){
+
+            id = data.id;
 
             // 发送消息到MQ
-            MQ.send(task.target, JSON.stringify({
+            return MQ.send(task.target, JSON.stringify({
                 task_id: data.id,
                 param: data.param
-            }), function(err){
-                
-                if (err) {
-                    Log.f("发送任务消息失败:" + task.name + ", recordId:" + data.id, err);
+            }))
 
-                    TaskRecordModel
-                        .destroy({where: { id: id }})
-                        .then(function(){});
-                } else {
-                    Log.i('发送任务消息成功:' + task.name + ", recordId:" + data.id);
-                }
-            });
+        }).then(function cb_send(){
 
+            Log.i('发送任务消息成功:' + task.name);
 
+        }).catch(function cb_error(err){
 
+            Log.f("触发任务失败:" + task.name + err.message);
 
-        }).catch(function(err){
-            Log.f("触发任务失败:" + task.name + ',' + err.message);    
-        });
+            if (id) {
+                TaskRecordModel
+                    .destroy({where: { id: id }})
+                    .then(null).done();
+            }  
+        }).done();
     }
 }
 

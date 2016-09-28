@@ -16,7 +16,9 @@ module.exports = {
             .findAll({order: [ ['updatedAt', 'DESC'] ]})
             .then(function (data) {
                 util.ok(req, res, next, data);
-            }).catch(next);
+            })
+            .catch(next)
+            .done();
     },
 
     addItem: function(req,res,next) {
@@ -32,7 +34,7 @@ module.exports = {
             .then(function(trigger){
                 Log.i("addItem find trigger: " + JSON.stringify(trigger));
                 if (trigger == null) {
-                    util.fail(req, res, next, "触发器标识不存在");
+                    return Promise.reject(new Error("触发器标识不存在"));
                 } else {
                     return Tasks.model().create(data);
                 }
@@ -40,7 +42,8 @@ module.exports = {
             .then(function (data) {
                 util.ok(req, res, next, data);
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 
     getItem: function(req,res,next) {
@@ -52,9 +55,10 @@ module.exports = {
                 if (data)
                     util.ok(req, res, next, data);
                 else
-                    util.fail(req, res, next, "任务不存在");
+                    return Promise.reject(new Error("任务不存在"));
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 
     updateItem: function(req,res,next) {
@@ -81,7 +85,7 @@ module.exports = {
                 })
                 .then(function(trigger){
                     if (trigger == null) {
-                        util.fail(req, res, next, "触发器标识不存在");
+                        return Promise.reject(new Error("触发器标识不存在"));
                     } else {
                         return TaskModel.update(data, {where: {id: id}});
                     }
@@ -96,12 +100,13 @@ module.exports = {
                 if (data && data[0])
                     return TaskModel.findById(id)
                 else
-                    util.fail(req, res, next, "更新失败");
+                    return Promise.reject(new Error("更新失败"))
             })
             .then(function (data) {
                 util.ok(req, res, next, data);
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 
     deleteItem: function(req,res,next) {
@@ -116,7 +121,8 @@ module.exports = {
             .then(function (count) {
                 util.ok(req, res, next);
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 
     disableItem: function(req,res,next) {
@@ -133,7 +139,8 @@ module.exports = {
             .then(function (count) {
                 util.ok(req, res, next);
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 
     enableItem: function(req,res,next) {
@@ -150,7 +157,8 @@ module.exports = {
             .then(function (count) {
                 util.ok(req, res, next);
             })
-            .catch(next);
+            .catch(next)
+            .done();
     },
 
     //执行一次性任务
@@ -165,9 +173,10 @@ module.exports = {
                     util.ok(req, res, next, data);
                 }
                 else {
-                    util.fail(req, res, next, "任务不存在");
+                    return Promise.reject(new Error("任务不存在"));
                 }
             })
-            .catch(next);
+            .catch(next)
+            .done();
     }
 }

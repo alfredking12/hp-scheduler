@@ -13,7 +13,7 @@ var model_decl = ["tasklogs", {
     time: { type: Sequelize.BIGINT(13), allowNull: false},
 
     // 日志消息
-    message: {type: Sequelize.STRING, allowNull: false, defaultValue: ''},
+    message: {type: Sequelize.STRING(2000), allowNull: false, defaultValue: ''},
 
     // 进度 (<0 失败, >=0 进度)
     progress: { type: Sequelize.INTEGER}

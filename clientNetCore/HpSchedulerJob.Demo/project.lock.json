@@ -2748,7 +2748,7 @@
           "lib/netstandard1.3/_._": {}
         }
       },
-      "HpSchedulerJob.NET/1.0.0": {
+      "HpSchedulerJob.Core/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
@@ -2762,10 +2762,10 @@
           "System.Text.Encoding.CodePages": "4.0.1"
         },
         "compile": {
-          "netstandard1.6/HpSchedulerJob.NET.dll": {}
+          "netstandard1.6/HpSchedulerJob.Core.dll": {}
         },
         "runtime": {
-          "netstandard1.6/HpSchedulerJob.NET.dll": {}
+          "netstandard1.6/HpSchedulerJob.Core.dll": {}
         }
       }
     }
@@ -8145,15 +8145,15 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "HpSchedulerJob.NET/1.0.0": {
+    "HpSchedulerJob.Core/1.0.0": {
       "type": "project",
-      "path": "../HpSchedulerJob.NET/project.json",
-      "msbuildProject": "../HpSchedulerJob.NET/HpSchedulerJob.NET.xproj"
+      "path": "../HpSchedulerJob.Core/project.json",
+      "msbuildProject": "../HpSchedulerJob.Core/HpSchedulerJob.Core.xproj"
     }
   },
   "projectFileDependencyGroups": {
     "": [
-      "HpSchedulerJob.NET >= 1.0.0-*",
+      "HpSchedulerJob.Core >= 1.0.0-*",
       "Microsoft.NETCore.App >= 1.0.0"
     ],
     ".NETCoreApp,Version=v1.0": []

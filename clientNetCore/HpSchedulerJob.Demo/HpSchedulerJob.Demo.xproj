@@ -7,7 +7,7 @@
 
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>ea2c2392-f0cb-41bc-94bd-4dabb0bb8876</ProjectGuid>
+    <ProjectGuid>5c162adf-c600-4d71-8060-2ea7b95ada4a</ProjectGuid>
     <RootNamespace>HpSchedulerJob.Demo</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>

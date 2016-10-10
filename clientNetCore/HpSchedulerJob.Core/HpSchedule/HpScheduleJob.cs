@@ -1,5 +1,4 @@
-﻿using HpSchedulerJob.NET.Foundation;
-using HpSchedulerJob.NET.HpSchedule.Model;
+﻿using HpSchedulerJob.NET.HpSchedule.Model;
 using HpSchedulerJob.NET.RabbitMq.RabbitMqScene;
 using HpSchedulerJob.NET.RabbitMq.RabbitMqScene.WorkQueue;
 using Newtonsoft.Json;

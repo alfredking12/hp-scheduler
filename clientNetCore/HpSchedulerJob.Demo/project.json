@@ -1,16 +1,16 @@
 {
   "version": "1.0.0-*",
   "buildOptions": {
-    "emitEntryPoint": true,
-    "define": [ "DEBUG", "TRACE" ]
+    "emitEntryPoint": true
   },
 
   "dependencies": {
-    "HpSchedulerJob.NET": "1.0.0-*",
+    "HpSchedulerJob.Core": "1.0.0-*",
     "Microsoft.NETCore.App": {
       "type": "platform",
       "version": "1.0.0"
-    }  },
+    }
+  },
 
   "frameworks": {
     "netcoreapp1.0": {

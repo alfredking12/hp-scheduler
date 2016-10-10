@@ -8,6 +8,8 @@ import ActionLog from 'material-ui/svg-icons/action/schedule';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
 import ActionRefresh from 'material-ui/svg-icons/action/search';
 import TextField from 'material-ui/TextField';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 
 import 'rc-pagination/assets/index.css';
 import 'rc-select/assets/index.css';
@@ -62,6 +64,8 @@ export default class TaskRecords extends BaseComponent {
             start: null,
             end: null,
             key: '',
+
+            status: '-1',
 
             pageSize: 30,
             page: 0,
@@ -169,6 +173,19 @@ export default class TaskRecords extends BaseComponent {
                         onChange={this.handleChangeKey.bind(this)}
                         floatingLabelText="输入关键字搜索"
                         />
+                    
+                    <SelectField
+                        value={this.state.status}
+                        disabled={false}
+                        onChange={this.handleSelectChange.bind(this)}
+                        >
+                        <MenuItem value={'-1'} primaryText="全部" />
+                        <MenuItem value={'0'} primaryText="未开始" />
+                        <MenuItem value={'1'} primaryText="执行中" />
+                        <MenuItem value={'2'} primaryText="执行成功" />
+                        <MenuItem value={'3'} primaryText="执行失败" />
+                    </SelectField>
+
 
                     <IconButton
                         iconStyle={styles.middleIcon}
@@ -249,6 +266,12 @@ export default class TaskRecords extends BaseComponent {
         );
     }
     
+    handleSelectChange(event, index, value) {
+        this.setState({
+            status: value
+        });
+    }
+
     handlePageChange(page) {
         this.setState({
             page: page - 1
@@ -320,9 +343,10 @@ export default class TaskRecords extends BaseComponent {
         var stime = this.state.start ? moment(this.state.start).valueOf() : '';
         var etime = this.state.end ? moment(this.state.end).valueOf() : '';
         var key = this.state.key;
+        var status = this.state.status;
 
         request
-            .get(config.api_server + '/taskrecords?page=' + page + '&per_page=' + per_page + '&stime=' + stime + '&etime=' + etime + '&key=' + key)
+            .get(config.api_server + '/taskrecords?page=' + page + '&per_page=' + per_page + '&stime=' + stime + '&etime=' + etime + '&key=' + key + '&status=' + status)
             .set('Accept', 'application/json')
             .end(function (err, res) {
                 if (err) {

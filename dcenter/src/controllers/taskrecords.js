@@ -13,6 +13,7 @@ module.exports = {
         var key = req.params.key;
         var stime = util.toInt(req.params.stime);
         var etime = util.toInt(req.params.etime);
+        var status = util.toInt(req.params.status, -1);
 
         if (per_page > config.max_page_size) per_page = config.max_page_size;
 
@@ -50,6 +51,13 @@ module.exports = {
             Object.assign(cond.stime, {
                 $lt: etime
             });         
+        }
+
+        if (status != -1) {
+            cond = cond || {};
+            Object.assign(cond, {
+                status: status
+            });
         }
 
         if (cond) {

@@ -84,7 +84,7 @@ function scheduler() {
             .then(function cb_db_sync(){
                 
                 //启动定时器，定时清理数据库数据
-                this.startClearTimer();
+                _this.startClearTimer();
 
                 _this.listenLogs();
 
@@ -98,10 +98,12 @@ function scheduler() {
     },
 
     this.startClearTimer = function() {
+        this.clearData();
+
         var _this = this;
         setInterval(function(){
             _this.clearData();
-        }, 86400);
+        }, 3600 * 1000); //1小时执行依此
     },
 
     this.clearData = function() {
@@ -109,7 +111,7 @@ function scheduler() {
         var filter = {
             where: {
                 createdAt: {
-                    $lt: moment().hour(0).minute(0).second(0).subtract("days", 30).toDate()
+                    $lt: moment().hour(0).minute(0).second(0).subtract("days", config.max_backlog || 7).toDate()
                 }
             }
         }

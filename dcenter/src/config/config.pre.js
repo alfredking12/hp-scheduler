@@ -12,5 +12,7 @@ module.exports = {
     max_page_size: 200,
 
     log_sql: false,
-    log_simpleformat: true
+    log_simpleformat: true,
+
+    max_backlog: 7,//tasklogs和taskrecords保留最近7天数据
 }

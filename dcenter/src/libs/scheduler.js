@@ -7,6 +7,8 @@ var TaskLogs = require('../models/tasklogs');
 var Tasks = require('../models/tasks');
 var TaskRecords = require('../models/taskrecords');
 
+var moment = require('moment');
+
 // MQ
 var MQ = require('./mq');
 
@@ -80,14 +82,48 @@ function scheduler() {
         TaskRecords.define();
         db.sync({force: false})
             .then(function cb_db_sync(){
+                
+                //启动定时器，定时清理数据库数据
+                this.startClearTimer();
+
                 _this.listenLogs();
+
                 return _this.initTriggers();
             })
             .catch(function cb_db_sync_error(err){
                 Log.e('初始化失败', err);
             })
             .done();
-                
+
+    },
+
+    this.startClearTimer = function() {
+        var _this = this;
+        setInterval(function(){
+            _this.clearData();
+        }, 86400);
+    },
+
+    this.clearData = function() {
+
+        var filter = {
+            where: {
+                createdAt: {
+                    $lt: moment().hour(0).minute(0).second(0).subtract("days", 30).toDate()
+                }
+            }
+        }
+
+        TaskLogs.model().destroy(filter).then(function(){
+            Log.d('清理tasklogs完成');
+        }).catch(function(err){
+            Log.e('清理tasklogs失败', err);
+        });
+        TaskRecords.model().destroy(filter).then(function(){
+            Log.d('清理taskrecords完成');
+        }).catch(function(err){
+            Log.e('清理taskrecords失败', err);
+        });
     },
 
     this.listenLogs = function() {

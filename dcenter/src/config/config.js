@@ -17,9 +17,9 @@ var config = {
     max_backlog: 7,//tasklogs和taskrecords保留最近7天数据
 }
 
-//config = require('./config.dev');
+config = require('./config.dev');
 //config = require('./config.sit');
-config = require('./config.pre');
+//config = require('./config.pre');
 //config = require('./config.prd');
 
 module.exports = config;

@@ -39,29 +39,22 @@ namespace HpSchedulerJob.NET.HpSchedule
 
         private void listen(string rabbitmq_url, string jobKey)
         {
-            try
+            Log.i("建立连接: " + rabbitmq_url + ", jobKey: " + jobKey);
+
+            var consumer = mFactory.CreateMqConsumer(jobKey);
+
+            Log.i("监听MQ消息: " + jobKey);
+
+            consumer.ReceivedMessage((deliveryTag, message) =>
             {
-                Log.i("建立连接: " + rabbitmq_url + ", jobKey: " + jobKey);
+                Log.ContextName = this.GetType().ToString();
+                Log.ContextID = Guid.NewGuid().ToString("D");
+                Log.i(string.Format("收到消息[{0}-{1}]: {2}", this.getJobName(), jobKey, message));
+                HandleMsg(consumer, message, deliveryTag);
+                Log.ContextName = null;
+            });
 
-                var consumer = mFactory.CreateMqConsumer(jobKey);
-
-                Log.i("监听MQ消息: " + jobKey);
-
-                consumer.ReceivedMessage((deliveryTag, message) =>
-                {
-                    Log.ContextName = this.GetType().ToString();
-                    Log.ContextID = Guid.NewGuid().ToString("D");
-                    Log.i(string.Format("收到消息[{0}-{1}]: {2}", this.getJobName(), jobKey, message));
-                    HandleMsg(consumer, message, deliveryTag);
-                    Log.ContextName = null;
-                });
-
-                Log.i("服务启动成功:" + this.getJobName());
-            }
-            catch (Exception ex)
-            {
-                Log.e(ex);
-            }
+            Log.i("服务启动成功:" + this.getJobName());
         }
 
         private void HandleMsg(IMQConsumer consumer, string message, ulong deliveryTag)

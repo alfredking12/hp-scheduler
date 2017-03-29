@@ -1,5 +1,8 @@
-﻿using HpSchedulerJob.NET.RabbitMq;
+﻿using HpSchedulerJob.NET.Foundation;
+using HpSchedulerJob.NET.RabbitMq;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using System;
 
 namespace HpSchedulerJob.NET.RabbitMQ.RabbiMqSDK
 {
@@ -19,14 +22,22 @@ namespace HpSchedulerJob.NET.RabbitMQ.RabbiMqSDK
         public RabbitMqFactory(string uri)
         {
             mConnectionFactory = new ConnectionFactory();
+            //mConnectionFactory.SetUri(new Uri(uri));
             mConnectionFactory.Uri = uri;
             mConnectionFactory.AutomaticRecoveryEnabled = true;
         }
 
         public IRabbitMqConnection CreateConnection()
         {
-            return new RabbitMqConnection(mConnectionFactory);
+            IConnection connection = mConnectionFactory.CreateConnection();
+            //connection.RecoverySucceeded += (object obj, EventArgs e) => {
+            //    Log.i("RecoverySucceeded");
+            //};
+            //connection.ConnectionRecoveryError += (object obj, ConnectionRecoveryErrorEventArgs e) =>
+            //{
+            //    Log.w("ConnectionRecoveryError");
+            //};
+            return new RabbitMqConnection(connection);
         }
-
     }
 }

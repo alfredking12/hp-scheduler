@@ -16,6 +16,5 @@
         /// 密码
         /// </summary>
         public string Password;
-
     }
 }

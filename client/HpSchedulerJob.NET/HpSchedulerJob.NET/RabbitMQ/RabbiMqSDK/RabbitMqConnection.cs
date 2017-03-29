@@ -1,6 +1,5 @@
 ﻿using HpSchedulerJob.NET.RabbitMq;
 using RabbitMQ.Client;
-using System;
 
 namespace HpSchedulerJob.NET.RabbitMQ.RabbiMqSDK
 {
@@ -8,9 +7,9 @@ namespace HpSchedulerJob.NET.RabbitMQ.RabbiMqSDK
     {
         private IConnection mConnection = null;
 
-        internal RabbitMqConnection(IConnectionFactory factory)
+        internal RabbitMqConnection(IConnection connection)
         {
-            this.mConnection = factory.CreateConnection();
+            this.mConnection = connection;
         }
 
         public IRabbitMqChannel CreateChannel()

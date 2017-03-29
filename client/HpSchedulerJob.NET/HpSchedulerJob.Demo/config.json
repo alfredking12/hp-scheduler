@@ -1,4 +1,4 @@
 ﻿{
-  "rabbitmq_url": "amqp://mquser:Bysun@dev.rabbitmq.local:5672",
+  "rabbitmq_url": "amqp://dev:dev@192.168.1.179:5672",
   "dispatcher_center_callback": "__dispatcher_center_callback.dev"
 }

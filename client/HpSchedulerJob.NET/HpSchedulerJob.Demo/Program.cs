@@ -6,7 +6,6 @@ using System.Threading;
 
 namespace HpSchedulerJob.Demo
 {
-
     public class Demo : HpScheduleJob
     {
         public Demo(string rabbitmq_url, string jobKey) : base(rabbitmq_url, jobKey)
@@ -45,7 +44,7 @@ namespace HpSchedulerJob.Demo
 
             context.Log("第一步完成", 30);
 
-            Thread.Sleep(30000);
+            Thread.Sleep(2000);
 
             context.Log("第二步完成", 60);
 
@@ -65,23 +64,29 @@ namespace HpSchedulerJob.Demo
     {
         static void Main(string[] args)
         {
-            JobApplication app = new JobApplication(new HpScheduleOptions()
+            try
             {
-                Debug = true,
-                Log4net = AppUtil.GetPath() + "\\..\\..\\log4net.config",
-                Config = AppUtil.GetPath() + "\\..\\..\\config.json"
-            });
+                JobApplication app = new JobApplication(new HpScheduleOptions()
+                {
+                    Debug = true,
+                    Log4net = AppUtil.GetPath() + "\\..\\..\\log4net.config",
+                    Config = AppUtil.GetPath() + "\\..\\..\\config.json"
+                });
 
-            var dispatcher_center_callback = ConfigurationCenter.getValue("dispatcher_center_callback");
+                var dispatcher_center_callback = ConfigurationCenter.getValue("dispatcher_center_callback");
 
-            app.start(dispatcher_center_callback,
-                      new Demo(ConfigurationCenter.getValue("rabbitmq_url"), "dev_demo"),
-                       new Demo(ConfigurationCenter.getValue("rabbitmq_url"), "dev_demo")
-                );
+                app.start(dispatcher_center_callback,
+                          new Demo(ConfigurationCenter.getValue("rabbitmq_url"), "dev_demo")
+                    );
 
-            Console.ReadLine();
+                Console.ReadLine();
 
-            app.stop();
+                app.stop();
+            }
+            catch(Exception e)
+            {
+                Log.f("启动失败", e);
+            }
         }
     }
 }

@@ -56,3 +56,6 @@ packages
 .user
 *.nupkg
 *.nuspec
+
+# Webstorm
+.idea

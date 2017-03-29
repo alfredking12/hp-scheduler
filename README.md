@@ -76,7 +76,7 @@ npm install --verbose
 
 var config = {
     # mysql连接串
-    db_connection_string: "mysql://dev:" + encodeURIComponent('Bysun4321$#@!') + "@dev.mysql.local:3306/scheduler",
+    db_connection_string: "mysql://dev:dev@dev.mysql.local:3306/scheduler",
     # mysql连接池最大连接数
     db_pool_max: 2,
     # mysql连接池最小连接数
@@ -85,7 +85,7 @@ var config = {
     db_pool_idle: 10000,
 
     # rabbitmq uri
-    rabbitmq_url: 'amqp://mquser:Bysun@dev.rabbitmq.local:5672',
+    rabbitmq_url: 'amqp://dev:dev@dev.rabbitmq.local:5672',
 
     # 监听任务执行单元日志和进度的 rabbitmq.routingKey
     dispatcher_center_callback: '__dispatcher_center_callback.local',

@@ -54,3 +54,5 @@ obj
 packages
 .suo
 .user
+*.nupkg
+*.nuspec
